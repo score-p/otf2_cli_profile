@@ -1,0 +1,64 @@
+COMMONINCLUDES =
+COMMONCXXFLAGS =
+COMMONLDADD = 
+COMMONDEPENDENCIES =
+COMMONSOURCES = \
+    tracereader.h \
+    tracereaderfactory.h \
+	clustering.h \
+	collect_data.h \
+	comparison.h \
+	create_csv.h \
+	create_circos.h \
+    circos_fix.h \
+	create_latex.h \
+	datastructs.h \
+	otfprofile.h \
+	summarize_data.h \
+	clustering.cpp \
+	collect_data.cpp \
+	comparison_clinkage.cpp \
+	comparison_kmeans.cpp \
+	create_csv.cpp \
+	create_circos.cpp \
+        circos_fix.cpp\
+	create_latex.cpp \
+	otfprofile.cpp \
+	summarize_data.cpp \
+        tracereader.cpp \
+        tracereaderfactory.cpp \
+	callpathtree.h \
+        datamap_reduce.h\
+        datamap_reduce.cpp
+
+
+if AMHAVECUBE
+COMMONSOURCES += \
+	create_cube.h \
+	create_cube.cpp
+COMMONINCLUDES += \
+	$(CUBE_INCLUDE_LINE)
+COMMONLDADD += \
+	$(CUBE_LIB_LINE)
+endif
+
+if AMHAVEOPENTRACEFORMAT
+
+COMMONSOURCES += \
+    OTFReader.h\
+    OTFReader.cpp
+COMMONINCLUDES += \
+    $(OTF_INCLUDE_LINE)
+COMMONLDADD += \
+    $(OTF_LIB_LINE)
+endif
+
+if AMHAVEOTF2
+COMMONSOURCES += \
+	OTF2Reader.h \
+	OTF2Reader.cpp
+COMMONINCLUDES += \
+	$(OTF2_INCLUDE_LINE)
+COMMONLDADD += \
+	$(OTF2_LIB_LINE)
+endif
