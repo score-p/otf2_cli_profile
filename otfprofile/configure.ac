@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.57)
 AC_INIT([otfprofile],
-	1.2-Alpha, dnl[m4_normalize(esyscmd([config/otf_get_version.sh VERSION --full]))],
+	1.20-Alpha, dnl[m4_normalize(esyscmd([config/otf_get_version.sh VERSION --full]))],
 	[maximilian.neumann@tu-dresden.de], [otfprofile])
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR(config/m4)
