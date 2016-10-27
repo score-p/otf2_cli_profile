@@ -5,6 +5,6 @@ Version 1.20 (Alpha)
 
 Recommended versions:
 
-cube 4.1.x or higher
+cube 4.2.x or higher
 
 circos 0.69 or higher
