@@ -299,7 +299,14 @@ bool CreateCube(AllData& alldata) {
         string       met_string;   
         
         cube::Cnode*  tmp_cnode;
-        cube::Thread* tmp_thread;        
+        cube::Thread* tmp_thread;    
+
+
+    #if CUBE_REVISION_NUMBER >= 14755
+
+    	cube_out.initialize();
+
+    #endif       
         
  /* insert values to the corresponding metrics */
     //Occ Time
