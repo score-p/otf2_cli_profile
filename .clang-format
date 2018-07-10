@@ -1,0 +1,18 @@
+﻿---
+BasedOnStyle: Google
+AlignConsecutiveAssignments: 'true'
+AlignConsecutiveDeclarations: 'true'
+AllowShortBlocksOnASingleLine: 'false'
+AllowShortIfStatementsOnASingleLine: 'false'
+AllowShortLoopsOnASingleLine: 'false'
+AlwaysBreakTemplateDeclarations: 'true'
+ColumnLimit: '120'
+IndentWidth: '4'
+Language: Cpp
+SpaceInEmptyParentheses: 'false'
+SpacesInParentheses: 'false'
+SpacesInSquareBrackets: 'false'
+Standard: Cpp11
+UseTab: Never
+
+...
