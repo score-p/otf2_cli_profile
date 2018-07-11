@@ -27,7 +27,7 @@ You then surround the function call of the new module like this:
     alldata.tm.stop(ScopeID::<scope_id>);
 */
 
-enum class ScopeID : uint8_t { TOTAL, COLLECT, REDUCE, CUBE };
+enum class ScopeID : uint8_t { TOTAL, COLLECT, REDUCE, CUBE , JSON, CSV};
 
 class TimeMeasurement {
    public:
@@ -102,6 +102,8 @@ struct Params {
     //bool        read_from_stats    = false;
     bool        read_metrics       = true;  // counter
     bool        create_cube        = false;
+    bool        create_json         = false;
+    bool        create_csv         = false;
     bool        summarize_it       = false;  // TODO added for testing
     std::string input_file_name    = "";
     std::string input_file_prefix  = "";
@@ -127,6 +129,8 @@ struct Params {
                           << std::endl
                           << "      --cube              generate CUBE xml profile" << std::endl
                           << "      --xlsx              generate XLSX ouptut file" << std::endl
+                          << "      --json              generate JSON output file"  << std::endl
+                          << "      --csv               generate csv output file"  << std::endl
                           << std::endl
                           << "                          (default: 50)" << std::endl
                           << "      -b <size>           set buffersize of the reader in Byte" << std::endl
@@ -157,6 +161,10 @@ struct Params {
                 summarize_it = true;
             } else if (arguments[i] == "--cube") {
                 create_cube = true;
+            }else if (arguments[i] == "--json") {
+                create_json = true;
+            }else if (arguments[i] == "--csv") {
+                create_csv = true;
             } else if (arguments[i] == "-i") {
                 if (!checkNext(arguments, i))
                     return false;

@@ -77,6 +77,11 @@ if (HAVE_CUBE AND USE_CUBE)
     list(APPEND EXTRA_LIBS "${CUBE_LIBRARIES}")
 endif (HAVE_CUBE AND USE_CUBE)
 
+list(APPEND SOURCE_FILES src/output/create_json.cpp)
+
+list(APPEND SOURCE_FILES src/output/create_csv.cpp)
+
+
 if (HAVE_MPI AND BUILD_MPI_VERSION)
 
 endif (HAVE_MPI AND BUILD_MPI_VERSION)

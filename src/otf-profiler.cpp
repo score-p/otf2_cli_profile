@@ -16,6 +16,10 @@
 #include "reduce_data.h"
 #endif /* OTFPROFILER_MPI */
 
+#include "create_json.h"
+#include "create_csv.h"
+
+
 using namespace std;
 
 int error() {
@@ -55,6 +59,9 @@ int main(int argc, char** argv) {
         alldata.tm.registerScope(ScopeID::COLLECT, "collection data process");
         alldata.tm.registerScope(ScopeID::REDUCE, "reduce data");
         alldata.tm.registerScope(ScopeID::CUBE, "Cube creation process");
+        alldata.tm.registerScope(ScopeID::JSON, "JSON creation process");
+        alldata.tm.registerScope(ScopeID::CSV, "CSV creation process");
+
     }
 
     /* starts runtime measurement for total time */
@@ -104,6 +111,19 @@ int main(int argc, char** argv) {
         alldata.tm.stop(ScopeID::CUBE);
     }
 #endif
+    // JSON
+    if (alldata.params.create_json) {
+        alldata.tm.start(ScopeID::JSON);
+        create_JSON(alldata);
+        alldata.tm.stop(ScopeID::JSON);
+    }
+
+    // CSV
+    if (alldata.params.create_csv) {
+        alldata.tm.start(ScopeID::CSV);
+        create_CSV(alldata);
+        alldata.tm.stop(ScopeID::CSV);
+    }
 
     alldata.tm.stop(ScopeID::TOTAL);
 #ifdef SHOW_RESULTS
