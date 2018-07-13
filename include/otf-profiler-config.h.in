@@ -14,6 +14,8 @@
 #cmakedefine HAVE_CUBE
 #cmakedefine HAVE_OPEN_TRACE_FORMAT
 #cmakedefine HAVE_OTF2
+#cmakedefine HAVE_JSON
+
 #cmakedefine OTFPROFILER_MPI
 
 #endif /* OTFPROFILER_CONFIG_H */

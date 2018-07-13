@@ -1,0 +1,18 @@
+if(RAPIDJSON_INCLUDE_DIRS)
+	set(RAPIDJSON_FIND_QUIETLY TRUE)
+endif(RAPIDJSON_INCLUDE_DIRS)
+
+find_path(RAPIDJSON_INCLUDE_DIRS NAMES rapidjson/rapidjson.h HINTS ${RAPIDJSON_INC_DIR})
+
+include(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(RAPIDJSON
+	FOUND_VAR RAPIDJSON_FOUND
+	REQUIRED_VARS RAPIDJSON_INCLUDE_DIRS
+)
+mark_as_advanced(RAPIDJSON_INCLUDE_DIRS)
+
+if(RAPIDJSON_FOUND)
+	message(STATUS "RAPIDJSON: rapidjson package found.")
+else()
+	message(STATUS "RAPIDJSON: rapidjson package not found.")
+endif()
