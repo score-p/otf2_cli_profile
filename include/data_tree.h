@@ -113,9 +113,9 @@ class tree_iter {
         tree_ptr = _rhs_it.tree_ptr;
     };
 
-    tree_node operator*() { return *node_ptr; };
+    tree_node& operator*() { return *node_ptr; };
 
-    tree_iter operator++() {
+    tree_iter& operator++() {
         assert((node_ptr != nullptr) || (tree_ptr != nullptr));
 
         if (!node_ptr->children.empty()) {
