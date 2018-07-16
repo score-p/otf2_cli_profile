@@ -11,6 +11,10 @@
 #include "create_cube.h"
 #endif /* HAVE_CUBE*/
 
+#ifdef HAVE_JSON
+#include "create_json.h"
+#endif /* HAVE_JSON */
+
 #ifdef OTFPROFILER_MPI
 #include <mpi.h>
 #include "reduce_data.h"
@@ -55,6 +59,7 @@ int main(int argc, char** argv) {
         alldata.tm.registerScope(ScopeID::COLLECT, "collection data process");
         alldata.tm.registerScope(ScopeID::REDUCE, "reduce data");
         alldata.tm.registerScope(ScopeID::CUBE, "Cube creation process");
+        alldata.tm.registerScope(ScopeID::JSON, "JSON creation process");
     }
 
     /* starts runtime measurement for total time */
@@ -102,6 +107,15 @@ int main(int argc, char** argv) {
         alldata.tm.start(ScopeID::CUBE);
         CreateCube(alldata);
         alldata.tm.stop(ScopeID::CUBE);
+    }
+#endif
+
+#ifdef HAVE_JSON
+    if (alldata.params.create_json) {
+        /* step 6.3: create CUBE output */
+        alldata.tm.start(ScopeID::JSON);
+        CreateJSON(alldata);
+        alldata.tm.stop(ScopeID::JSON);
     }
 #endif
 

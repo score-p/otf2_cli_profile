@@ -50,7 +50,15 @@ endif (USE_CUBE)
 
 # option (BUILD_MPI_VERSION "Build MPI parallel version of OTF-Profiler")
 
-
+option (USE_JSON "USE JSON outputter (via rapidjson library)" ON)
+if(USE_JSON)
+    find_package(rapidjson)
+    if(RAPIDJSON_FOUND)
+	set(HAVE_JSON true)
+    else()
+	unset(HAVE_JSON)
+    endif(RAPIDJSON_FOUND)
+endif(USE_JSON)
 
 set(SOURCE_FILES
     src/reader/tracereader.cpp
@@ -76,6 +84,11 @@ if (HAVE_CUBE AND USE_CUBE)
     list(APPEND SOURCE_FILES src/output/create_cube.cpp)
     list(APPEND EXTRA_LIBS "${CUBE_LIBRARIES}")
 endif (HAVE_CUBE AND USE_CUBE)
+
+if (HAVE_JSON AND USE_JSON)
+    include_directories("${RAPIDJSON_INCLUDE_DIRS}")
+    list(APPEND SOURCE_FILES src/output/create_json.cpp)
+endif (HAVE_JSON AND USE_JSON)
 
 if (HAVE_MPI AND BUILD_MPI_VERSION)
 
