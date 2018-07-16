@@ -22,7 +22,7 @@ struct ProfileEntry {
   template <typename Writer>
   void WriteProfile(Writer& w) const {
     w.StartObject();
-    for(auto kv : entries) {
+    for(const auto& kv : entries) {
       w.Key(StringRef(kv.first.c_str()));
       w.Uint64(kv.second);
     }
@@ -62,7 +62,7 @@ void WriteMapUnderKey(std::string key, const Map& m, Writer& w) {
   if(m.empty()) return;
   w.Key(StringRef(key.c_str()));
   w.StartObject();
-  for(auto kv : m) {
+  for(const auto& kv : m) {
     w.Key(StringRef(kv.first.c_str()));
     kv.second.WriteProfile(w);
   }
@@ -83,7 +83,7 @@ void WorkflowProfile::WriteProfile(Writer& w) const
   w.Uint(thread_count);
   w.Key("hardware counters");
   w.StartArray();
-  for(auto c : counters) {
+  for(const auto& c : counters) {
     w.Key(StringRef(c.first.c_str()));
     w.Uint64(c.second);
   }
@@ -105,7 +105,7 @@ bool CreateJSON(AllData& alldata) {
   WorkflowProfile profile;
   StringBuffer b;
   /*Pretty*/Writer<StringBuffer> w(b);
-  for(auto n : alldata.definitions.system_tree) {
+  for(const auto& n : alldata.definitions.system_tree) {
     switch(n.data.class_id) {
     case definitions::SystemClass::LOCATION:
       profile.thread_count++;
@@ -124,21 +124,22 @@ bool CreateJSON(AllData& alldata) {
   static std::string timestr("time");
   static std::string countstr("count");
   
-  for(auto call_node : alldata.call_path_tree) {
-    auto r = alldata.definitions.regions.get(call_node.function_id);
+  for(const auto& call_node : alldata.call_path_tree) {
+    const auto& r = alldata.definitions.regions.get(call_node.function_id);
     if(!r) {
       continue;
     }
-    auto p = alldata.definitions.paradigms.get(r->paradigm_id);
+
+    const auto& p = alldata.definitions.paradigms.get(r->paradigm_id);
     std::string paradigm = "Compiler";
     if(p) {
       paradigm = p->name;
     }
-    cout << r->name << ": " << paradigm << std::endl;
+
     profile.num_functions++;
     uint64_t excl_time = 0;
     
-    for(auto one_node_data : call_node.node_data) {
+    for(const auto& one_node_data : call_node.node_data) {
       profile.num_invocations += one_node_data.second.f_data.count;
       auto& entries_map = profile.functions_by_paradigm[paradigm].entries;
       entries_map[countstr] += one_node_data.second.f_data.count;
@@ -161,7 +162,7 @@ bool CreateJSON(AllData& alldata) {
 	profile.collops_by_paradigm[paradigm].entries[countstr] += one_node_data.second.c_data.count_send;
       if(one_node_data.second.c_data.count_recv)
 	profile.collops_by_paradigm[paradigm].entries[countstr] += one_node_data.second.c_data.count_recv;
-      for(auto metric : one_node_data.second.metrics) {
+      for(const auto& metric : one_node_data.second.metrics) {
 	cout << metric.first << ": " << alldata.metaData.metricIdToName[metric.first] << std::endl;
 	if(metric.second.type == MetricDataType::UINT64) {
 	  profile.counters[alldata.metaData.metricIdToName[metric.first]] += (uint64_t)metric.second.data_excl;
