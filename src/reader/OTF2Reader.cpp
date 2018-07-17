@@ -179,7 +179,6 @@ OTF2_CallbackCode OTF2Reader::handle_def_metric_class(void* userData, OTF2_Metri
             }
         }
     }
-
     return OTF2_CALLBACK_SUCCESS;
 }
 
@@ -377,13 +376,12 @@ OTF2_CallbackCode OTF2Reader::handle_metric(OTF2_LocationRef locationID, OTF2_Ti
     auto* alldata = static_cast<AllData*>(userData);
 
     auto class_mapping = alldata->metaData.metricClassToMetric.find(metric);
-
     if (class_mapping != alldata->metaData.metricClassToMetric.end()) {
         MetricDataType a_type;
 
         for (uint8_t i = 0; i < numberOfMetrics; i++) {
             auto metric_ref = class_mapping->second.find(i);
-            auto* metric_def = alldata->definitions.metrics.get(metric_ref->first);
+            auto* metric_def = alldata->definitions.metrics.get(metric_ref->second);
             if (metric_ref != class_mapping->second.end() && metric_def != nullptr &&
                 metric_def->allowed) {
                 MetricData md;
@@ -399,8 +397,10 @@ OTF2_CallbackCode OTF2Reader::handle_metric(OTF2_LocationRef locationID, OTF2_Ti
                           metricValues[i].floating_point};
                 }
 
-                tmp_metric.insert(make_pair(metric_ref->first, md));
-            }
+                tmp_metric.insert(make_pair(metric_ref->second, md));
+            } else {
+	      
+	    }
         }
     }
 

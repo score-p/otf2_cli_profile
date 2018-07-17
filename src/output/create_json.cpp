@@ -163,9 +163,9 @@ bool CreateJSON(AllData& alldata) {
       if(one_node_data.second.c_data.count_recv)
 	profile.collops_by_paradigm[paradigm].entries[countstr] += one_node_data.second.c_data.count_recv;
       for(const auto& metric : one_node_data.second.metrics) {
-	cout << metric.first << ": " << alldata.metaData.metricIdToName[metric.first] << std::endl;
 	if(metric.second.type == MetricDataType::UINT64) {
-	  profile.counters[alldata.metaData.metricIdToName[metric.first]] += (uint64_t)metric.second.data_excl;
+	  auto m = alldata.definitions.metrics.get(metric.first);
+	  if(m) profile.counters[m->name] += (uint64_t)metric.second.data_excl;
 	}
       }
     }
