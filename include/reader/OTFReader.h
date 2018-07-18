@@ -24,7 +24,7 @@ class OTFReader : public TraceReader {
 
    private:
     OTF_FileManager* _manager = nullptr;
-    OTF_Reader* _reader = nullptr;
+    OTF_Reader*      _reader  = nullptr;
 
    private:
     /* *** handlers *** */
@@ -92,8 +92,7 @@ class OTFReader : public TraceReader {
      *  @return                 OTF_RETURN_ABORT  for aborting the reading process immediately
      *                          OTF_RETURN_OK     for continue reading
      */
-    static int handle_def_timerres(void* userData, uint32_t stream, uint64_t ticksPerSecond,
-                                   OTF_KeyValueList* list);
+    static int handle_def_timerres(void* userData, uint32_t stream, uint64_t ticksPerSecond, OTF_KeyValueList* list);
 
     /** @brief Callback function for a process definition record.
      *
@@ -109,8 +108,8 @@ class OTFReader : public TraceReader {
      *  @return             OTF_RETURN_ABORT  for aborting the reading process immediately
      *                      OTF_RETURN_OK     for continue reading
      */
-    static int handle_def_process(void* userData, uint32_t stream, uint32_t process,
-                                  const char* name, uint32_t parent, OTF_KeyValueList* list);
+    static int handle_def_process(void* userData, uint32_t stream, uint32_t process, const char* name, uint32_t parent,
+                                  OTF_KeyValueList* list);
 
     /** @brief Callback function for a process group definition record.
      *
@@ -145,8 +144,8 @@ class OTFReader : public TraceReader {
      *  @return             OTF_RETURN_ABORT  for aborting the reading process immediately
      *                      OTF_RETURN_OK     for continue reading
      */
-    static int handle_def_functiongroup(void* userData, uint32_t stream, uint32_t funcGroup,
-                                        const char* name, OTF_KeyValueList* list);
+    static int handle_def_functiongroup(void* userData, uint32_t stream, uint32_t funcGroup, const char* name,
+                                        OTF_KeyValueList* list);
 
     /** @brief Callback function for a function definition record.
      *
@@ -167,8 +166,8 @@ class OTFReader : public TraceReader {
      *  @return                     OTF_RETURN_ABORT  for aborting the reading process immediately
      *                              OTF_RETURN_OK     for continue reading
      */
-    static int handle_def_function(void* userData, uint32_t stream, uint32_t func, const char* name,
-                                   uint32_t funcGroup, uint32_t source, OTF_KeyValueList* list);
+    static int handle_def_function(void* userData, uint32_t stream, uint32_t func, const char* name, uint32_t funcGroup,
+                                   uint32_t source, OTF_KeyValueList* list);
 
     /** @brief Callback function for a collective operation definition record.
      *
@@ -187,8 +186,8 @@ class OTFReader : public TraceReader {
      *  @return                     OTF_RETURN_ABORT  for aborting the reading process immediately
      *                              OTF_RETURN_OK     for continue reading
      */
-    static int handle_def_collop(void* userData, uint32_t stream, uint32_t collOp, const char* name,
-                                 uint32_t type, OTF_KeyValueList* list);
+    static int handle_def_collop(void* userData, uint32_t stream, uint32_t collOp, const char* name, uint32_t type,
+                                 OTF_KeyValueList* list);
 
     /** @brief Callback function for a counter definition record.
      *
@@ -206,9 +205,8 @@ class OTFReader : public TraceReader {
      *  @return                     OTF_RETURN_ABORT  for aborting the reading process immediately
      *                              OTF_RETURN_OK     for continue reading
      */
-    static int handle_def_counter(void* userData, uint32_t stream, uint32_t counter,
-                                  const char* name, uint32_t properties, uint32_t counterGroup,
-                                  const char* unit, OTF_KeyValueList* list);
+    static int handle_def_counter(void* userData, uint32_t stream, uint32_t counter, const char* name,
+                                  uint32_t properties, uint32_t counterGroup, const char* unit, OTF_KeyValueList* list);
 
     /** @brief Callback function for a KeyValue definition.
      *
@@ -244,8 +242,8 @@ class OTFReader : public TraceReader {
      *  @return                     OTF_RETURN_ABORT  for aborting the reading process immediately
      *                              OTF_RETURN_OK     for continue reading
      */
-    static int handle_enter(void* userData, uint64_t time, uint32_t function, uint32_t process,
-                            uint32_t source, OTF_KeyValueList* list);
+    static int handle_enter(void* userData, uint64_t time, uint32_t function, uint32_t process, uint32_t source,
+                            OTF_KeyValueList* list);
 
     /** @brief Callback function for a function leave event.
      *
@@ -262,8 +260,8 @@ class OTFReader : public TraceReader {
      *  @return                     OTF_RETURN_ABORT  for aborting the reading process immediately
      *                              OTF_RETURN_OK     for continue reading
      */
-    static int handle_leave(void* userData, uint64_t time, uint32_t function, uint32_t process,
-                            uint32_t source, OTF_KeyValueList* list);
+    static int handle_leave(void* userData, uint64_t time, uint32_t function, uint32_t process, uint32_t source,
+                            OTF_KeyValueList* list);
 
     /** @brief Callback function for a counter measurement event.
      *
@@ -278,8 +276,8 @@ class OTFReader : public TraceReader {
      *  @return                     OTF_RETURN_ABORT  for aborting the reading process immediately
      *                              OTF_RETURN_OK     for continue reading
      */
-    static int handle_counter(void* userData, uint64_t time, uint32_t process, uint32_t counter,
-                              uint64_t value, OTF_KeyValueList* list);
+    static int handle_counter(void* userData, uint64_t time, uint32_t process, uint32_t counter, uint64_t value,
+                              OTF_KeyValueList* list);
 
     /** @brief Callback function for a message send event.
      *
@@ -299,9 +297,8 @@ class OTFReader : public TraceReader {
      *  @return                     OTF_RETURN_ABORT  for aborting the reading process immediately
      *                              OTF_RETURN_OK     for continue reading
      */
-    static int handle_send(void* userData, uint64_t time, uint32_t sender, uint32_t receiver,
-                           uint32_t group, uint32_t type, uint32_t length, uint32_t source,
-                           OTF_KeyValueList* list);
+    static int handle_send(void* userData, uint64_t time, uint32_t sender, uint32_t receiver, uint32_t group,
+                           uint32_t type, uint32_t length, uint32_t source, OTF_KeyValueList* list);
 
     /** @brief Callback function for a message send event.
      *
@@ -321,9 +318,8 @@ class OTFReader : public TraceReader {
      *  @return                     OTF_RETURN_ABORT  for aborting the reading process immediately
      *                              OTF_RETURN_OK     for continue reading
      */
-    static int handle_recv(void* userData, uint64_t time, uint32_t recvProc, uint32_t sendProc,
-                           uint32_t group, uint32_t type, uint32_t length, uint32_t source,
-                           OTF_KeyValueList* list);
+    static int handle_recv(void* userData, uint64_t time, uint32_t recvProc, uint32_t sendProc, uint32_t group,
+                           uint32_t type, uint32_t length, uint32_t source, OTF_KeyValueList* list);
 
     /** @brief Callback function for a collective operation member event.
      *
@@ -344,9 +340,8 @@ class OTFReader : public TraceReader {
      *  @return                     OTF_RETURN_ABORT  for aborting the reading process immediately
      *                              OTF_RETURN_OK     for continue reading
      */
-    static int handle_collop(void* userData, uint64_t time, uint32_t process, uint32_t collOp,
-                             uint32_t procGroup, uint32_t rootProc, uint32_t sent,
-                             uint32_t received, uint64_t duration, uint32_t source,
+    static int handle_collop(void* userData, uint64_t time, uint32_t process, uint32_t collOp, uint32_t procGroup,
+                             uint32_t rootProc, uint32_t sent, uint32_t received, uint64_t duration, uint32_t source,
                              OTF_KeyValueList* list);
 
     /** @brief Provides a begin collective operation member event.
@@ -487,10 +482,10 @@ class OTFReader : public TraceReader {
      *  @return Returns OTF_RETURN_ABORT for aborting the reading process immediately,
      *          OTF_RETURN_OK for continue reading.
      */
-        /* TODO nicht verwendet
-    static int handleUnknownRecord(void* userData, uint64_t time, uint32_t process,
-                                   const char* record);
-    */
+    /* TODO nicht verwendet
+static int handleUnknownRecord(void* userData, uint64_t time, uint32_t process,
+                               const char* record);
+*/
 
     /** @brief Callback function for rma put records.
      *

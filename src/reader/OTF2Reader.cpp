@@ -18,11 +18,11 @@ using namespace std;
 // metric id (real), data
 static map<uint64_t, MetricData> tmp_metric;
 static std::vector<uint64_t> locationList;
-static StringIdentifier       string_id;
+static StringIdentifier      string_id;
 
-//TODO remove
-//static std::map<OTF2_StringRef, string> stringIdToString;
-static uint64_t               systemTreeNodeId;
+// TODO remove
+// static std::map<OTF2_StringRef, string> stringIdToString;
+static uint64_t              systemTreeNodeId;
 static std::deque<StackData> node_stack;
 
 string OTF2ParadigmToString(OTF2_Paradigm paradigm) {
@@ -114,8 +114,7 @@ void OTF2Reader::close() {
 /* ****************************************************************** */
 
 OTF2_CallbackCode OTF2Reader::handle_def_clock_properties(void* userData, uint64_t timerResolution,
-                                                          uint64_t globalOffset,
-                                                          uint64_t traceLength) {
+                                                          uint64_t globalOffset, uint64_t traceLength) {
     auto* alldata = static_cast<AllData*>(userData);
 
     alldata->metaData.timerResolution = timerResolution;
@@ -131,38 +130,42 @@ OTF2_CallbackCode OTF2Reader::handle_def_attribute(void* userData, OTF2_Attribut
 }
 */
 
-OTF2_CallbackCode OTF2Reader::handle_def_metrics(void* userData, OTF2_MetricMemberRef self,
-                                                 OTF2_StringRef name, OTF2_StringRef description,
-                                                 OTF2_MetricType metricType,
-                                                 OTF2_MetricMode metricMode, OTF2_Type valueType,
-                                                 OTF2_Base base, int64_t exponent,
-                                                 OTF2_StringRef unit) {
-  auto* alldata = static_cast<AllData*>(userData);
-  auto strings = string_id.get(name, description, unit);
+OTF2_CallbackCode OTF2Reader::handle_def_metrics(void* userData, OTF2_MetricMemberRef self, OTF2_StringRef name,
+                                                 OTF2_StringRef description, OTF2_MetricType metricType,
+                                                 OTF2_MetricMode metricMode, OTF2_Type valueType, OTF2_Base base,
+                                                 int64_t exponent, OTF2_StringRef unit) {
+    auto* alldata = static_cast<AllData*>(userData);
+    auto  strings = string_id.get(name, description, unit);
 
-  if (strings.second != OTF2_CALLBACK_SUCCESS)
-    return strings.second;
+    if (strings.second != OTF2_CALLBACK_SUCCESS)
+        return strings.second;
 
-  MetricDataType a_type;
+    MetricDataType a_type;
 
-  switch(valueType) {
-    case OTF2_TYPE_UINT64: a_type = MetricDataType::UINT64; break;
-    case OTF2_TYPE_INT64:  a_type = MetricDataType::INT64; break;
-    case OTF2_TYPE_DOUBLE: a_type = MetricDataType::DOUBLE; break;
-    default: return OTF2_CALLBACK_INTERRUPT;
-  }
+    switch (valueType) {
+        case OTF2_TYPE_UINT64:
+            a_type = MetricDataType::UINT64;
+            break;
+        case OTF2_TYPE_INT64:
+            a_type = MetricDataType::INT64;
+            break;
+        case OTF2_TYPE_DOUBLE:
+            a_type = MetricDataType::DOUBLE;
+            break;
+        default:
+            return OTF2_CALLBACK_INTERRUPT;
+    }
 
-  if (metricMode == OTF2_METRIC_ACCUMULATED_START) {
-    alldata->definitions.metrics.add(self, {*strings.first[0], *strings.first[1],
-        *strings.first[2], a_type, false});
-  }
+    if (metricMode == OTF2_METRIC_ACCUMULATED_START) {
+        alldata->definitions.metrics.add(self,
+                                         {*strings.first[0], *strings.first[1], *strings.first[2], a_type, false});
+    }
 
-  return OTF2_CALLBACK_SUCCESS;
+    return OTF2_CALLBACK_SUCCESS;
 }
 
 // for metrics -> narrowing the metrics to synchronous
-OTF2_CallbackCode OTF2Reader::handle_def_metric_class(void* userData, OTF2_MetricRef self,
-                                                      uint8_t                     numberOfMetrics,
+OTF2_CallbackCode OTF2Reader::handle_def_metric_class(void* userData, OTF2_MetricRef self, uint8_t numberOfMetrics,
                                                       const OTF2_MetricMemberRef* metricMembers,
                                                       OTF2_MetricOccurrence       metricOccurence,
                                                       OTF2_RecorderKind           recorderKind) {
@@ -173,51 +176,47 @@ OTF2_CallbackCode OTF2Reader::handle_def_metric_class(void* userData, OTF2_Metri
 
         for (int i = 0; i < numberOfMetrics; i++) {
             auto* def_ref = alldata->definitions.metrics.get(metricMembers[i]);
-            if(def_ref != nullptr) {
+            if (def_ref != nullptr) {
                 alldata->metaData.metricClassToMetric[self].insert(make_pair(i, metricMembers[i]));
-                const_cast<definitions::Metric*>(def_ref)->allowed = true; //allowed -> nur strict_sync, beschränkt aber nicht auf accumulated_start
+                const_cast<definitions::Metric*>(def_ref)->allowed =
+                    true;  // allowed -> nur strict_sync, beschränkt aber nicht auf accumulated_start
             }
         }
     }
     return OTF2_CALLBACK_SUCCESS;
 }
 
-OTF2_CallbackCode OTF2Reader::handle_def_location_group(void*                  userData,
-                                                        OTF2_LocationGroupRef  groupIdentifier,
-                                                        OTF2_StringRef         name,
-                                                        OTF2_LocationGroupType locationGroupType,
+OTF2_CallbackCode OTF2Reader::handle_def_location_group(void* userData, OTF2_LocationGroupRef groupIdentifier,
+                                                        OTF2_StringRef name, OTF2_LocationGroupType locationGroupType,
                                                         OTF2_SystemTreeNodeRef systemTreeParent) {
     auto* alldata = static_cast<AllData*>(userData);
 
     auto strings = string_id.get(name);
     if (strings.second != OTF2_CALLBACK_SUCCESS) {
-      return strings.second;
+        return strings.second;
     }
 
-    alldata->definitions.system_tree.insert_node(*strings.first[0], groupIdentifier, definitions::SystemClass::LOCATION_GROUP, systemTreeParent);
+    alldata->definitions.system_tree.insert_node(*strings.first[0], groupIdentifier,
+                                                 definitions::SystemClass::LOCATION_GROUP, systemTreeParent);
 
     return OTF2_CALLBACK_SUCCESS;
 }
 
-OTF2_CallbackCode OTF2Reader::handle_def_location(  void* userData,
-                                                    OTF2_LocationRef locationIdentifier,
-                                                    OTF2_StringRef name,
-                                                    OTF2_LocationType locationType,
-                                                    uint64_t numberOfEvents,
-                                                    OTF2_LocationGroupRef locationGroup) {
+OTF2_CallbackCode OTF2Reader::handle_def_location(void* userData, OTF2_LocationRef locationIdentifier,
+                                                  OTF2_StringRef name, OTF2_LocationType locationType,
+                                                  uint64_t numberOfEvents, OTF2_LocationGroupRef locationGroup) {
     auto* alldata = static_cast<AllData*>(userData);
 
     auto strings = string_id.get(name);
     if (strings.second != OTF2_CALLBACK_SUCCESS) {
-      return strings.second;
+        return strings.second;
     }
     auto& location_name = *strings.first[0];
 
     ostringstream os;
-    if ( location_name.length() == 0) {
+    if (location_name.length() == 0) {
         // fix for semi broken traces with no location name
-        switch( locationType ) {
-
+        switch (locationType) {
             case OTF2_LOCATION_TYPE_CPU_THREAD:
                 os << "Thread " << locationIdentifier;
                 break;
@@ -227,14 +226,15 @@ OTF2_CallbackCode OTF2Reader::handle_def_location(  void* userData,
                 break;
 
             default:
-                return OTF2_CALLBACK_SUCCESS; //nicht bekannt oder metric -> wird nicht in sysTree übernommen
+                return OTF2_CALLBACK_SUCCESS;  // nicht bekannt oder metric -> wird nicht in sysTree übernommen
         }
 
     } else {
         os << location_name;
     }
 
-    alldata->definitions.system_tree.insert_node(os.str(), locationIdentifier, definitions::SystemClass::LOCATION, locationGroup);
+    alldata->definitions.system_tree.insert_node(os.str(), locationIdentifier, definitions::SystemClass::LOCATION,
+                                                 locationGroup);
 
     if (locationType == OTF2_LOCATION_TYPE_CPU_THREAD || locationType == OTF2_LOCATION_TYPE_GPU) {
         locationList.push_back(locationIdentifier);
@@ -243,35 +243,32 @@ OTF2_CallbackCode OTF2Reader::handle_def_location(  void* userData,
     return OTF2_CALLBACK_SUCCESS;
 }
 
-OTF2_CallbackCode OTF2Reader::handle_def_group(void* userData, OTF2_GroupRef groupIdentifier,
-                                               OTF2_StringRef name, OTF2_GroupType groupType,
-                                               OTF2_Paradigm paradigm, OTF2_GroupFlag groupFlags,
-                                               uint32_t numberOfMembers, const uint64_t* members) {
-  auto* alldata = static_cast<AllData*>(userData);
+OTF2_CallbackCode OTF2Reader::handle_def_group(void* userData, OTF2_GroupRef groupIdentifier, OTF2_StringRef name,
+                                               OTF2_GroupType groupType, OTF2_Paradigm paradigm,
+                                               OTF2_GroupFlag groupFlags, uint32_t numberOfMembers,
+                                               const uint64_t* members) {
+    auto* alldata = static_cast<AllData*>(userData);
 
-  auto strings = string_id.get(name);
-  if (strings.second != OTF2_CALLBACK_SUCCESS) {
-    return strings.second;
-  }
+    auto strings = string_id.get(name);
+    if (strings.second != OTF2_CALLBACK_SUCCESS) {
+        return strings.second;
+    }
 
-  vector<uint64_t> members_vec(numberOfMembers);
+    vector<uint64_t> members_vec(numberOfMembers);
 
-  for (uint32_t i = 0; i < numberOfMembers; ++i)
-    members_vec[i] = members[i];
+    for (uint32_t i    = 0; i < numberOfMembers; ++i)
+        members_vec[i] = members[i];
 
-  alldata->definitions.groups.add(groupIdentifier,{*strings.first[0], groupType,
-      paradigm, std::move(members_vec)});
+    alldata->definitions.groups.add(groupIdentifier, {*strings.first[0], groupType, paradigm, std::move(members_vec)});
 
-  return OTF2_CALLBACK_SUCCESS;
+    return OTF2_CALLBACK_SUCCESS;
 }
 
-OTF2_CallbackCode OTF2Reader::handle_def_region(void* userData, OTF2_RegionRef regionIdentifier,
-                                                OTF2_StringRef name, OTF2_StringRef canonicalName,
-                                                OTF2_StringRef  description,
+OTF2_CallbackCode OTF2Reader::handle_def_region(void* userData, OTF2_RegionRef regionIdentifier, OTF2_StringRef name,
+                                                OTF2_StringRef canonicalName, OTF2_StringRef description,
                                                 OTF2_RegionRole regionRole, OTF2_Paradigm paradigm,
-                                                OTF2_RegionFlag regionFlags,
-                                                OTF2_StringRef sourceFile, uint32_t beginLineNumber,
-                                                uint32_t endLineNumber) {
+                                                OTF2_RegionFlag regionFlags, OTF2_StringRef sourceFile,
+                                                uint32_t beginLineNumber, uint32_t endLineNumber) {
     auto* alldata = static_cast<AllData*>(userData);
 
     auto strings = string_id.get(name, sourceFile);
@@ -280,16 +277,14 @@ OTF2_CallbackCode OTF2Reader::handle_def_region(void* userData, OTF2_RegionRef r
     }
 
     alldata->definitions.regions.add(regionIdentifier,
-        {*strings.first[0], paradigm, beginLineNumber, *strings.first[1]});
+                                     {*strings.first[0], paradigm, beginLineNumber, *strings.first[1]});
 
     return OTF2_CALLBACK_SUCCESS;
 }
 
-OTF2_CallbackCode OTF2Reader::handle_def_system_tree_node(  void* userData,
-                                                            OTF2_SystemTreeNodeRef systemTreeIdentifier,
-                                                            OTF2_StringRef name,
-                                                            OTF2_StringRef className,
-                                                            OTF2_SystemTreeNodeRef parent) {
+OTF2_CallbackCode OTF2Reader::handle_def_system_tree_node(void* userData, OTF2_SystemTreeNodeRef systemTreeIdentifier,
+                                                          OTF2_StringRef name, OTF2_StringRef className,
+                                                          OTF2_SystemTreeNodeRef parent) {
     auto* alldata = static_cast<AllData*>(userData);
 
     auto strings = string_id.get(name, className);
@@ -329,28 +324,24 @@ OTF2_CallbackCode OTF2Reader::handle_def_system_tree_node(  void* userData,
     return OTF2_CALLBACK_SUCCESS;
 }
 
-OTF2_CallbackCode OTF2Reader::handle_def_comm(void* userData, OTF2_CommRef self,
-                                              OTF2_StringRef name, OTF2_GroupRef group,
-                                              OTF2_CommRef parent) {
-    auto* alldata                      = static_cast<AllData*>(userData);
+OTF2_CallbackCode OTF2Reader::handle_def_comm(void* userData, OTF2_CommRef self, OTF2_StringRef name,
+                                              OTF2_GroupRef group, OTF2_CommRef parent) {
+    auto* alldata                         = static_cast<AllData*>(userData);
     alldata->metaData.communicators[self] = group;
 
     return OTF2_CALLBACK_SUCCESS;
 }
 
-OTF2_CallbackCode OTF2Reader::handle_def_string(void* userData, OTF2_StringRef stringIdentifier,
-                                                const char* string) {
+OTF2_CallbackCode OTF2Reader::handle_def_string(void* userData, OTF2_StringRef stringIdentifier, const char* string) {
     string_id.add(stringIdentifier, string);
 
     return OTF2_CALLBACK_SUCCESS;
 }
 
-OTF2_CallbackCode OTF2Reader::handle_def_paradigm(void*              userData,
-                                                  OTF2_Paradigm      paradigm,
-                                                  OTF2_StringRef     name,
+OTF2_CallbackCode OTF2Reader::handle_def_paradigm(void* userData, OTF2_Paradigm paradigm, OTF2_StringRef name,
                                                   OTF2_ParadigmClass paradigmClass) {
     auto* alldata = static_cast<AllData*>(userData);
-    auto strings = string_id.get(name);
+    auto  strings = string_id.get(name);
 
     if (strings.second != OTF2_CALLBACK_SUCCESS) {
         return strings.second;
@@ -367,11 +358,9 @@ OTF2_CallbackCode OTF2Reader::handle_def_paradigm(void*              userData,
 /*                                                                    */
 /* ****************************************************************** */
 
-OTF2_CallbackCode OTF2Reader::handle_metric(OTF2_LocationRef locationID, OTF2_TimeStamp time,
-                                            uint64_t eventPosition, void* userData,
-                                            OTF2_AttributeList* attributeList,
-                                            OTF2_MetricRef metric, uint8_t numberOfMetrics,
-                                            const OTF2_Type*        typeIDs,
+OTF2_CallbackCode OTF2Reader::handle_metric(OTF2_LocationRef locationID, OTF2_TimeStamp time, uint64_t eventPosition,
+                                            void* userData, OTF2_AttributeList* attributeList, OTF2_MetricRef metric,
+                                            uint8_t numberOfMetrics, const OTF2_Type* typeIDs,
                                             const OTF2_MetricValue* metricValues) {
     auto* alldata = static_cast<AllData*>(userData);
 
@@ -380,43 +369,35 @@ OTF2_CallbackCode OTF2Reader::handle_metric(OTF2_LocationRef locationID, OTF2_Ti
         MetricDataType a_type;
 
         for (uint8_t i = 0; i < numberOfMetrics; i++) {
-            auto metric_ref = class_mapping->second.find(i);
+            auto  metric_ref = class_mapping->second.find(i);
             auto* metric_def = alldata->definitions.metrics.get(metric_ref->second);
-            if (metric_ref != class_mapping->second.end() && metric_def != nullptr &&
-                metric_def->allowed) {
+            if (metric_ref != class_mapping->second.end() && metric_def != nullptr && metric_def->allowed) {
                 MetricData md;
 
                 if (typeIDs[i] == OTF2_TYPE_UINT64) {
-                    md = {MetricDataType::UINT64, metricValues[i].unsigned_int,
-                          metricValues[i].unsigned_int};
+                    md = {MetricDataType::UINT64, metricValues[i].unsigned_int, metricValues[i].unsigned_int};
                 } else if (typeIDs[i] == OTF2_TYPE_INT64) {
-                    md = {MetricDataType::INT64, metricValues[i].signed_int,
-                          metricValues[i].signed_int};
+                    md = {MetricDataType::INT64, metricValues[i].signed_int, metricValues[i].signed_int};
                 } else if (typeIDs[i] == OTF2_TYPE_DOUBLE) {
-                    md = {MetricDataType::DOUBLE, metricValues[i].floating_point,
-                          metricValues[i].floating_point};
+                    md = {MetricDataType::DOUBLE, metricValues[i].floating_point, metricValues[i].floating_point};
                 }
 
                 tmp_metric.insert(make_pair(metric_ref->second, md));
-            } else {
-	      
-	    }
+            }
         }
     }
 
     return OTF2_CALLBACK_SUCCESS;
 }
 
-OTF2_CallbackCode OTF2Reader::handle_enter(OTF2_LocationRef locationID, OTF2_TimeStamp time,
-                                           uint64_t eventPosition, void* userData,
-                                           OTF2_AttributeList* attributeList, OTF2_RegionRef region)
+OTF2_CallbackCode OTF2Reader::handle_enter(OTF2_LocationRef locationID, OTF2_TimeStamp time, uint64_t eventPosition,
+                                           void* userData, OTF2_AttributeList* attributeList, OTF2_RegionRef region)
 
 {
-    auto* alldata = static_cast<AllData*>(userData);
+    auto*      alldata = static_cast<AllData*>(userData);
     tree_node* tmp_node;
 
     if (!node_stack.empty()) {
-
         auto tmp = node_stack.front().node_p;
 
         auto tmp_child = tmp->children.find(region);
@@ -427,7 +408,6 @@ OTF2_CallbackCode OTF2Reader::handle_enter(OTF2_LocationRef locationID, OTF2_Tim
         }
 
     } else {
-
         auto root_node = alldata->call_path_tree.root_nodes.find(region);
 
         if (root_node == alldata->call_path_tree.root_nodes.end()) {
@@ -435,19 +415,17 @@ OTF2_CallbackCode OTF2Reader::handle_enter(OTF2_LocationRef locationID, OTF2_Tim
         } else {
             tmp_node = root_node->second.get();
         }
-
     }
 
     tmp_node->add_data(locationID, FunctionData{0, 0, 0});
     auto& node_metrics = tmp_node->last_data->metrics;
 
     if (!tmp_metric.empty()) {
-        for( auto it : tmp_metric ) {
+        for (auto it : tmp_metric) {
             auto metric_ref = node_metrics.find(it.first);
 
             if (metric_ref == node_metrics.end()) {
-                metric_ref =
-                    node_metrics.insert(make_pair(it.first, MetricData{it.second.type})).first;
+                metric_ref = node_metrics.insert(make_pair(it.first, MetricData{it.second.type})).first;
             }
 
             metric_ref->second -= it.second;
@@ -466,17 +444,15 @@ OTF2_CallbackCode OTF2Reader::handle_enter(OTF2_LocationRef locationID, OTF2_Tim
     return OTF2_CALLBACK_SUCCESS;
 }
 
-OTF2_CallbackCode OTF2Reader::handle_leave(OTF2_LocationRef locationID, OTF2_TimeStamp time,
-                                           uint64_t eventPosition, void* userData,
-                                           OTF2_AttributeList* attributeList,
-                                           OTF2_RegionRef      region) {
+OTF2_CallbackCode OTF2Reader::handle_leave(OTF2_LocationRef locationID, OTF2_TimeStamp time, uint64_t eventPosition,
+                                           void* userData, OTF2_AttributeList* attributeList, OTF2_RegionRef region) {
     auto* alldata = static_cast<AllData*>(userData);
 
-    auto& tmp = node_stack.front();
+    auto&    tmp       = node_stack.front();
     uint64_t incl_time = time - tmp.time;
     tmp.node_p->add_data(locationID, FunctionData{1, incl_time, incl_time - tmp.child_incl});
 
-    //ugly metric stuff
+    // ugly metric stuff
     auto* tmp_node(tmp.node_p);
     auto& node_metrics = tmp_node->last_data->metrics;
     if (!tmp_metric.empty()) {
@@ -484,8 +460,7 @@ OTF2_CallbackCode OTF2Reader::handle_leave(OTF2_LocationRef locationID, OTF2_Tim
             auto metric_ref = node_metrics.find(it->first);
 
             if (metric_ref == node_metrics.end()) {
-                metric_ref =
-                    node_metrics.insert(make_pair(it->first, MetricData{it->second.type})).first;
+                metric_ref = node_metrics.insert(make_pair(it->first, MetricData{it->second.type})).first;
             }
 
             metric_ref->second += it->second;
@@ -505,46 +480,41 @@ OTF2_CallbackCode OTF2Reader::handle_leave(OTF2_LocationRef locationID, OTF2_Tim
     return OTF2_CALLBACK_SUCCESS;
 }
 
-OTF2_CallbackCode OTF2Reader::handle_mpi_send(OTF2_LocationRef locationID, OTF2_TimeStamp time,
-                                              uint64_t eventPosition, void* userData,
-                                              OTF2_AttributeList* attributeList, uint32_t receiver,
-                                              OTF2_CommRef communicator, uint32_t msgTag,
-                                              uint64_t msgLength) {
+OTF2_CallbackCode OTF2Reader::handle_mpi_send(OTF2_LocationRef locationID, OTF2_TimeStamp time, uint64_t eventPosition,
+                                              void* userData, OTF2_AttributeList* attributeList, uint32_t receiver,
+                                              OTF2_CommRef communicator, uint32_t msgTag, uint64_t msgLength) {
     auto* alldata = static_cast<AllData*>(userData);
 
     auto& tmp = node_stack.front();
     tmp.node_p->add_data(locationID, MessageData{1, 0, msgLength, 0});
-//TODO workaround
+    // TODO workaround
     tmp.node_p->has_p2p = true;
 
     return OTF2_CALLBACK_SUCCESS;
 }
 
-OTF2_CallbackCode OTF2Reader::handle_mpi_recv(OTF2_LocationRef locationID, OTF2_TimeStamp time,
-                                              uint64_t eventPosition, void* userData,
-                                              OTF2_AttributeList* attributeList, uint32_t sender,
-                                              OTF2_CommRef communicator, uint32_t msgTag,
-                                              uint64_t msgLength) {
+OTF2_CallbackCode OTF2Reader::handle_mpi_recv(OTF2_LocationRef locationID, OTF2_TimeStamp time, uint64_t eventPosition,
+                                              void* userData, OTF2_AttributeList* attributeList, uint32_t sender,
+                                              OTF2_CommRef communicator, uint32_t msgTag, uint64_t msgLength) {
     auto* alldata = static_cast<AllData*>(userData);
 
     auto& tmp = node_stack.front();
     tmp.node_p->add_data(locationID, MessageData{0, 1, 0, msgLength});
-//TODO workaround
+    // TODO workaround
     tmp.node_p->has_p2p = true;
 
     return OTF2_CALLBACK_SUCCESS;
 }
 
-OTF2_CallbackCode OTF2Reader::handle_mpi_isend(OTF2_LocationRef locationID, OTF2_TimeStamp time,
-                                               uint64_t eventPosition, void* userData,
-                                               OTF2_AttributeList* attributeList, uint32_t receiver,
-                                               OTF2_CommRef communicator, uint32_t msgTag,
-                                               uint64_t msgLength, uint64_t requestID) {
+OTF2_CallbackCode OTF2Reader::handle_mpi_isend(OTF2_LocationRef locationID, OTF2_TimeStamp time, uint64_t eventPosition,
+                                               void* userData, OTF2_AttributeList* attributeList, uint32_t receiver,
+                                               OTF2_CommRef communicator, uint32_t msgTag, uint64_t msgLength,
+                                               uint64_t requestID) {
     auto* alldata = static_cast<AllData*>(userData);
 
     auto& tmp = node_stack.front();
     tmp.node_p->add_data(locationID, MessageData{1, 0, msgLength, 0});
-//TODO workaround
+    // TODO workaround
     tmp.node_p->has_p2p = true;
 
     return OTF2_CALLBACK_SUCCESS;
@@ -566,21 +536,20 @@ OTF2_CallbackCode OTF2Reader::handle_mpi_irecv_request(OTF2_LocationRef location
     return OTF2_CALLBACK_SUCCESS;
 }
 */
-OTF2_CallbackCode OTF2Reader::handle_mpi_irecv(OTF2_LocationRef locationID, OTF2_TimeStamp time,
-                                               uint64_t eventPosition, void* userData,
-                                               OTF2_AttributeList* attributeList, uint32_t sender,
-                                               OTF2_CommRef communicator, uint32_t msgTag,
-                                               uint64_t msgLength, uint64_t requestID) {
+OTF2_CallbackCode OTF2Reader::handle_mpi_irecv(OTF2_LocationRef locationID, OTF2_TimeStamp time, uint64_t eventPosition,
+                                               void* userData, OTF2_AttributeList* attributeList, uint32_t sender,
+                                               OTF2_CommRef communicator, uint32_t msgTag, uint64_t msgLength,
+                                               uint64_t requestID) {
     auto* alldata = static_cast<AllData*>(userData);
 
     auto& tmp = node_stack.front();
     tmp.node_p->add_data(locationID, MessageData{0, 1, 0, msgLength});
-//TODO workaround
+    // TODO workaround
     tmp.node_p->has_p2p = true;
 
     return OTF2_CALLBACK_SUCCESS;
 }
-//TODO evtl nützlich aber nicht verwendet
+// TODO evtl nützlich aber nicht verwendet
 /*
 OTF2_CallbackCode OTF2Reader::handle_buffer_flush(OTF2_LocationRef locationID, OTF2_TimeStamp time,
                                                   void* userData, OTF2_AttributeList* attributeList,
@@ -605,10 +574,11 @@ OTF2_CallbackCode OTF2Reader::handle_mpi_collective_begin(OTF2_LocationRef locat
     return OTF2_CALLBACK_SUCCESS;
 }
 */
-OTF2_CallbackCode OTF2Reader::handle_mpi_collective_end(
-    OTF2_LocationRef locationID, OTF2_TimeStamp time, uint64_t eventPosition, void* userData,
-    OTF2_AttributeList* attributeList, OTF2_CollectiveOp type, OTF2_CommRef communicator,
-    uint32_t root, uint64_t sizeSent, uint64_t sizeReceived) {
+OTF2_CallbackCode OTF2Reader::handle_mpi_collective_end(OTF2_LocationRef locationID, OTF2_TimeStamp time,
+                                                        uint64_t eventPosition, void* userData,
+                                                        OTF2_AttributeList* attributeList, OTF2_CollectiveOp type,
+                                                        OTF2_CommRef communicator, uint32_t root, uint64_t sizeSent,
+                                                        uint64_t sizeReceived) {
     if (type == OTF2_COLLECTIVE_OP_BARRIER)
         return OTF2_CALLBACK_SUCCESS;
 
@@ -623,7 +593,7 @@ OTF2_CallbackCode OTF2Reader::handle_mpi_collective_end(
     if (sizeReceived > 0) {
         tmp.node_p->add_data(locationID, CollopData{0, 1, 0, sizeReceived});
     }
-//TODO workaround
+    // TODO workaround
     tmp.node_p->has_collop = true;
 
     return OTF2_CALLBACK_SUCCESS;
@@ -713,20 +683,17 @@ bool OTF2Reader::readDefinitions(AllData& alldata) {
     if (NULL == glob_def_callbacks)
         return false;
 
-    status = OTF2_GlobalDefReaderCallbacks_SetClockPropertiesCallback(glob_def_callbacks,
-                                                                      handle_def_clock_properties);
+    status = OTF2_GlobalDefReaderCallbacks_SetClockPropertiesCallback(glob_def_callbacks, handle_def_clock_properties);
 
     if (OTF2_SUCCESS != status)
         return false;
 
-    status = OTF2_GlobalDefReaderCallbacks_SetLocationGroupCallback(glob_def_callbacks,
-                                                                    handle_def_location_group);
+    status = OTF2_GlobalDefReaderCallbacks_SetLocationGroupCallback(glob_def_callbacks, handle_def_location_group);
 
     if (OTF2_SUCCESS != status)
         return false;
 
-    status =
-        OTF2_GlobalDefReaderCallbacks_SetLocationCallback(glob_def_callbacks, handle_def_location);
+    status = OTF2_GlobalDefReaderCallbacks_SetLocationCallback(glob_def_callbacks, handle_def_location);
 
     if (OTF2_SUCCESS != status)
         return false;
@@ -740,27 +707,24 @@ bool OTF2Reader::readDefinitions(AllData& alldata) {
 
     if (OTF2_SUCCESS != status)
         return false;
-/* TODO nicht verwendet
-    status = OTF2_GlobalDefReaderCallbacks_SetAttributeCallback(glob_def_callbacks,
-                                                                handle_def_attribute);
+    /* TODO nicht verwendet
+        status = OTF2_GlobalDefReaderCallbacks_SetAttributeCallback(glob_def_callbacks,
+                                                                    handle_def_attribute);
 
-    if (OTF2_SUCCESS != status)
-        return false;
-*/
+        if (OTF2_SUCCESS != status)
+            return false;
+    */
     if (alldata.params.read_metrics) {
-        status = OTF2_GlobalDefReaderCallbacks_SetMetricMemberCallback(glob_def_callbacks,
-                                                                       handle_def_metrics);
+        status = OTF2_GlobalDefReaderCallbacks_SetMetricMemberCallback(glob_def_callbacks, handle_def_metrics);
         if (OTF2_SUCCESS != status)
             return false;
 
-        status = OTF2_GlobalDefReaderCallbacks_SetMetricClassCallback(glob_def_callbacks,
-                                                                      handle_def_metric_class);
+        status = OTF2_GlobalDefReaderCallbacks_SetMetricClassCallback(glob_def_callbacks, handle_def_metric_class);
         if (OTF2_SUCCESS != status)
             return false;
     }
 
-    status = OTF2_GlobalDefReaderCallbacks_SetSystemTreeNodeCallback(glob_def_callbacks,
-                                                                     handle_def_system_tree_node);
+    status = OTF2_GlobalDefReaderCallbacks_SetSystemTreeNodeCallback(glob_def_callbacks, handle_def_system_tree_node);
     if (OTF2_SUCCESS != status)
         return false;
 
@@ -776,13 +740,12 @@ bool OTF2Reader::readDefinitions(AllData& alldata) {
     if (OTF2_SUCCESS != status)
         return false;
 
-    status = OTF2_Reader_RegisterGlobalDefCallbacks(_reader, glob_def_reader, glob_def_callbacks,
-                                                    &alldata);
+    status = OTF2_Reader_RegisterGlobalDefCallbacks(_reader, glob_def_reader, glob_def_callbacks, &alldata);
     if (OTF2_SUCCESS != status)
         return false;
 
     uint64_t definitions_read = 0;
-    status = OTF2_Reader_ReadAllGlobalDefinitions(_reader, glob_def_reader, &definitions_read);
+    status                    = OTF2_Reader_ReadAllGlobalDefinitions(_reader, glob_def_reader, &definitions_read);
     if (OTF2_SUCCESS != status) {
         std::cerr << "ERROR: Could not read definitions from OTF2 trace." << std::endl;
         return false;
@@ -814,13 +777,14 @@ bool OTF2Reader::readEvents(AllData& alldata) {
 
     OTF2_EvtReaderCallbacks_SetMpiSendCallback(evt_callbacks, handle_mpi_send);
     OTF2_EvtReaderCallbacks_SetMpiIsendCallback(evt_callbacks, handle_mpi_isend);
-    //OTF2_EvtReaderCallbacks_SetMpiIsendCompleteCallback(evt_callbacks, handle_mpi_isend_complete); TODO nicht verwendet
+    // OTF2_EvtReaderCallbacks_SetMpiIsendCompleteCallback(evt_callbacks, handle_mpi_isend_complete); TODO nicht
+    // verwendet
 
-    //OTF2_EvtReaderCallbacks_SetMpiIrecvRequestCallback(evt_callbacks, handle_mpi_irecv_request); TODO nicht verwendet
+    // OTF2_EvtReaderCallbacks_SetMpiIrecvRequestCallback(evt_callbacks, handle_mpi_irecv_request); TODO nicht verwendet
     OTF2_EvtReaderCallbacks_SetMpiRecvCallback(evt_callbacks, handle_mpi_recv);
     OTF2_EvtReaderCallbacks_SetMpiIrecvCallback(evt_callbacks, handle_mpi_irecv);
 
-    //OTF2_EvtReaderCallbacks_SetMpiRequestTestCallback(evt_callbacks, handle_mpi_request_test); TODO nicht verwendet
+    // OTF2_EvtReaderCallbacks_SetMpiRequestTestCallback(evt_callbacks, handle_mpi_request_test); TODO nicht verwendet
 
     /*TODO nicht verwendet
     OTF2_EvtReaderCallbacks_SetMpiCollectiveBeginCallback(evt_callbacks,
@@ -835,11 +799,10 @@ bool OTF2Reader::readEvents(AllData& alldata) {
     OTF2_DefReader* local_def_reader;
 
     for (const auto location : locationList) {
-
-        local_def_reader = OTF2_Reader_GetDefReader( _reader, location );
+        local_def_reader = OTF2_Reader_GetDefReader(_reader, location);
         uint64_t definitions_read;
-        status = OTF2_Reader_ReadAllLocalDefinitions( _reader, local_def_reader, &definitions_read );
-        if (OTF2_SUCCESS != status ) {
+        status = OTF2_Reader_ReadAllLocalDefinitions(_reader, local_def_reader, &definitions_read);
+        if (OTF2_SUCCESS != status) {
             std::cerr << "ERROR: Could not read local definitions from OTF2 trace." << std::endl;
             return false;
         }
@@ -849,8 +812,7 @@ bool OTF2Reader::readEvents(AllData& alldata) {
         if (NULL == local_evt_reader)
             return false;
 
-        status =
-            OTF2_Reader_RegisterEvtCallbacks(_reader, local_evt_reader, evt_callbacks, &alldata);
+        status = OTF2_Reader_RegisterEvtCallbacks(_reader, local_evt_reader, evt_callbacks, &alldata);
         status = OTF2_Reader_ReadLocalEvents(_reader, local_evt_reader, otf2_STEP, &events_read);
         node_stack.clear();
 
@@ -871,8 +833,7 @@ bool OTF2Reader::readEvents(AllData& alldata) {
     uint64_t result;
 
     if (alldata.metaData.myRank == 0) {
-        MPI_Win_allocate(sizeof(uint64_t), sizeof(uint64_t), MPI_INFO_NULL, MPI_COMM_WORLD, &val_p,
-                         &shared_space);
+        MPI_Win_allocate(sizeof(uint64_t), sizeof(uint64_t), MPI_INFO_NULL, MPI_COMM_WORLD, &val_p, &shared_space);
         MPI_Win_lock(MPI_LOCK_EXCLUSIVE, 0, 0, shared_space);
         MPI_Put(&initial, 1, MPI_LONG_LONG_INT, 0, 0, 1, MPI_LONG_LONG_INT, shared_space);
         MPI_Win_unlock(0, shared_space);
@@ -892,28 +853,26 @@ bool OTF2Reader::readEvents(AllData& alldata) {
              * ->necessary and !NOT! mandatory
              */
             OTF2_DefReader* local_def_reader;
-            local_def_reader = OTF2_Reader_GetDefReader( _reader, locationList[to_read] );
+            local_def_reader = OTF2_Reader_GetDefReader(_reader, locationList[to_read]);
             uint64_t definitions_read;
-            status = OTF2_Reader_ReadAllLocalDefinitions( _reader, local_def_reader, &definitions_read );
-            if (OTF2_SUCCESS != status ) {
+            status = OTF2_Reader_ReadAllLocalDefinitions(_reader, local_def_reader, &definitions_read);
+            if (OTF2_SUCCESS != status) {
                 std::cerr << "ERROR: Could not read local definitions from OTF2 trace." << std::endl;
                 return false;
             }
 
-            status = OTF2_Reader_CloseDefReader( _reader, local_def_reader );
-            if (OTF2_SUCCESS != status ) {
+            status = OTF2_Reader_CloseDefReader(_reader, local_def_reader);
+            if (OTF2_SUCCESS != status) {
                 return false;
             }
-            //end local def reading
+            // end local def reading
 
             local_evt_reader = OTF2_Reader_GetEvtReader(_reader, locationList[to_read]);
             if (NULL == local_evt_reader)
                 return false;
 
-            status = OTF2_Reader_RegisterEvtCallbacks(_reader, local_evt_reader, evt_callbacks,
-                                                      &alldata);
-            status =
-                OTF2_Reader_ReadLocalEvents(_reader, local_evt_reader, otf2_STEP, &events_read);
+            status = OTF2_Reader_RegisterEvtCallbacks(_reader, local_evt_reader, evt_callbacks, &alldata);
+            status = OTF2_Reader_ReadLocalEvents(_reader, local_evt_reader, otf2_STEP, &events_read);
 
             if (OTF2_SUCCESS != status) {
                 std::cerr << "Error while reading events from OTF2 trace." << std::endl;
@@ -961,5 +920,5 @@ bool OTF2Reader::readEvents(AllData& alldata) {
 
     return true;
 }
-//TODO nicht verwendet im moment
+// TODO nicht verwendet im moment
 bool OTF2Reader::readStatistics(AllData& alldata) { return true; }
