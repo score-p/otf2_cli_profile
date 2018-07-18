@@ -3,7 +3,6 @@
  Authors: Maximillian Neumann, Denis Hünich, Jens Doleschal
 */
 
-
 #ifndef MAIN_STRUCTS_H
 #define MAIN_STRUCTS_H
 
@@ -21,7 +20,8 @@ enum class MetricDataType : uint8_t {
 //  --> benötigt wird noch eine sinnvolle strategie wie man mit verschiedenen Arten von Metriken umgehen kann
 //      --> problematisch dabei ist OTF da die Einschränkung im Sinne von Synchronität etc. nicht gibt
 //  --> die metric-callbacks sind Fehlerintollerant was oft zu segmentation faults oder falschen Daten führen kann
-//  --> für nicht synchrone metrics w#re ex möglich zusätzliche Conatainer zu erstellen => Nutzung abhängig von Ausgabe (gleiches gilt für andere asynchrone Daten z.B. rma)
+//  --> für nicht synchrone metrics w#re ex möglich zusätzliche Conatainer zu erstellen => Nutzung abhängig von Ausgabe
+//  (gleiches gilt für andere asynchrone Daten z.B. rma)
 
 struct MetricData {
     MetricDataType type;
@@ -181,11 +181,14 @@ struct FunctionData {
     }
 };
 
-//TODO MessageData und CollopData sind prinzipiell ziemlich ähnlich
+// TODO MessageData und CollopData sind prinzipiell ziemlich ähnlich
 // unterschiedlich können sie erst werden wenn eine Art Messagematching implementiert wird.
 //  -> selbst dann kann ein struct beides abbilden sofern man die Matchinginformationen nicht anbindet
-//  ==> eine Art MessageSummary-Container wäre denkbar in dem abgelegt wird welches Prozess mit wem wie viel kommuniziert hat
-//      -> für collop wäre der Aufwand höher (zumindest in OTF2) da die Kommunikatoren berücksichtigt werden müssen, während man bei den P2P-Daten die Kommunikatoren ignorieren kann (so lang man nicht genau Kommunikatoren basierende Daten angelegen will)
+//  ==> eine Art MessageSummary-Container wäre denkbar in dem abgelegt wird welches Prozess mit wem wie viel
+//  kommuniziert hat
+//      -> für collop wäre der Aufwand höher (zumindest in OTF2) da die Kommunikatoren berücksichtigt werden müssen,
+//      während man bei den P2P-Daten die Kommunikatoren ignorieren kann (so lang man nicht genau Kommunikatoren
+//      basierende Daten angelegen will)
 
 struct MessageData {
     uint64_t count_send;
@@ -218,7 +221,7 @@ struct CollopData {
         return *this;
     }
 };
-//TODO momentan ungenutzt --> sehr ähnlich zu message und collop
+// TODO momentan ungenutzt --> sehr ähnlich zu message und collop
 struct RmaData {
     uint64_t rma_put_cnt;
     uint64_t rma_get_cnt;

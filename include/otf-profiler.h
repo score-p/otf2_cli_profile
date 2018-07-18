@@ -8,8 +8,8 @@
 
 #include <string>
 
-#include "otf-profiler-config.h" 
 #include "all_data.h"
+#include "otf-profiler-config.h"
 
 /* name of program executable */
 extern const std::string ExeName;

@@ -3,9 +3,9 @@
  Authors: Maximillian Neumann, Denis Hünich, Jens Doleschal
 */
 
+#include <mpi.h>
 #include <cmath>
 #include <sstream>
-#include <mpi.h>
 
 #include "reduce_data.h"
 
@@ -95,12 +95,9 @@ static char* pack_worker_data(AllData& alldata, uint32_t sizes[PACK_NUM_PACKS]) 
     /* pack mapping (three) */
     {
         for (auto it = mapping.begin(); it != mapping.end(); it++) {
-            MPI_Pack((void*)&it->first, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
-            MPI_Pack((void*)&it->second.first, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
-            MPI_Pack((void*)&it->second.second, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
+            MPI_Pack((void*)&it->first, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+            MPI_Pack((void*)&it->second.first, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+            MPI_Pack((void*)&it->second.second, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
         }
     }
 
@@ -111,17 +108,12 @@ static char* pack_worker_data(AllData& alldata, uint32_t sizes[PACK_NUM_PACKS]) 
     {
         for (auto it = f_data.begin(); it != f_data.end(); it++) {
             FunctionData tmp = *get<2>(*it);
-            MPI_Pack((void*)&get<0>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
+            MPI_Pack((void*)&get<0>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
 
-            MPI_Pack((void*)&get<1>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
-            MPI_Pack((void*)&tmp.count, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
-            MPI_Pack((void*)&tmp.incl_time, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
-            MPI_Pack((void*)&tmp.excl_time, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
+            MPI_Pack((void*)&get<1>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+            MPI_Pack((void*)&tmp.count, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+            MPI_Pack((void*)&tmp.incl_time, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+            MPI_Pack((void*)&tmp.excl_time, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
         }
     }
 
@@ -133,19 +125,13 @@ static char* pack_worker_data(AllData& alldata, uint32_t sizes[PACK_NUM_PACKS]) 
         for (auto it = m_data.begin(); it != m_data.end(); it++) {
             MessageData tmp = *get<2>(*it);
 
-            MPI_Pack((void*)&get<0>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
+            MPI_Pack((void*)&get<0>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
 
-            MPI_Pack((void*)&get<1>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
-            MPI_Pack((void*)&tmp.count_send, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
-            MPI_Pack((void*)&tmp.count_recv, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
-            MPI_Pack((void*)&tmp.bytes_send, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
-            MPI_Pack((void*)&tmp.bytes_recv, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
+            MPI_Pack((void*)&get<1>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+            MPI_Pack((void*)&tmp.count_send, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+            MPI_Pack((void*)&tmp.count_recv, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+            MPI_Pack((void*)&tmp.bytes_send, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+            MPI_Pack((void*)&tmp.bytes_recv, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
         }
     }
 
@@ -157,19 +143,13 @@ static char* pack_worker_data(AllData& alldata, uint32_t sizes[PACK_NUM_PACKS]) 
         for (auto it = c_data.begin(); it != c_data.end(); it++) {
             CollopData tmp = *get<2>(*it);
 
-            MPI_Pack((void*)&get<0>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
-            MPI_Pack((void*)&get<1>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
+            MPI_Pack((void*)&get<0>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+            MPI_Pack((void*)&get<1>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
 
-            MPI_Pack((void*)&tmp.count_send, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
-            MPI_Pack((void*)&tmp.count_recv, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
-            MPI_Pack((void*)&tmp.bytes_send, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
-            MPI_Pack((void*)&tmp.bytes_recv, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
+            MPI_Pack((void*)&tmp.count_send, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+            MPI_Pack((void*)&tmp.count_recv, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+            MPI_Pack((void*)&tmp.bytes_send, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+            MPI_Pack((void*)&tmp.bytes_recv, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
         }
     }
 
@@ -181,34 +161,24 @@ static char* pack_worker_data(AllData& alldata, uint32_t sizes[PACK_NUM_PACKS]) 
         for (auto it = met_data.begin(); it != met_data.end(); it++) {
             MetricData tmp = *get<3>(*it);
 
-            MPI_Pack((void*)&get<0>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
-            MPI_Pack((void*)&get<1>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
-            MPI_Pack((void*)&get<2>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
+            MPI_Pack((void*)&get<0>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+            MPI_Pack((void*)&get<1>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+            MPI_Pack((void*)&get<2>(*it), 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
 
-            MPI_Pack((void*)&tmp.type, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position,
-                     MPI_COMM_WORLD);
+            MPI_Pack((void*)&tmp.type, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
 
             switch (tmp.type) {
                 case MetricDataType::UINT64:
-                    MPI_Pack((void*)&tmp.data_incl, 1, MPI_LONG_LONG_INT, buffer, bytesize,
-                             &position, MPI_COMM_WORLD);
-                    MPI_Pack((void*)&tmp.data_excl, 1, MPI_LONG_LONG_INT, buffer, bytesize,
-                             &position, MPI_COMM_WORLD);
+                    MPI_Pack((void*)&tmp.data_incl, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+                    MPI_Pack((void*)&tmp.data_excl, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
                     break;
                 case MetricDataType::INT64:
-                    MPI_Pack((void*)&tmp.data_incl, 1, MPI_LONG_LONG_INT, buffer, bytesize,
-                             &position, MPI_COMM_WORLD);
-                    MPI_Pack((void*)&tmp.data_excl, 1, MPI_LONG_LONG_INT, buffer, bytesize,
-                             &position, MPI_COMM_WORLD);
+                    MPI_Pack((void*)&tmp.data_incl, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
+                    MPI_Pack((void*)&tmp.data_excl, 1, MPI_LONG_LONG_INT, buffer, bytesize, &position, MPI_COMM_WORLD);
                     break;
                 case MetricDataType::DOUBLE:
-                    MPI_Pack((void*)&tmp.data_incl, 1, MPI_DOUBLE, buffer, bytesize, &position,
-                             MPI_COMM_WORLD);
-                    MPI_Pack((void*)&tmp.data_excl, 1, MPI_DOUBLE, buffer, bytesize, &position,
-                             MPI_COMM_WORLD);
+                    MPI_Pack((void*)&tmp.data_incl, 1, MPI_DOUBLE, buffer, bytesize, &position, MPI_COMM_WORLD);
+                    MPI_Pack((void*)&tmp.data_excl, 1, MPI_DOUBLE, buffer, bytesize, &position, MPI_COMM_WORLD);
                     break;
             }
         }
@@ -241,8 +211,7 @@ static void unpack_worker_data(AllData& alldata, uint32_t sizes[PACK_NUM_PACKS])
 
     /* extra check that doesn't cost too much */
     fence = 0;
-    MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &fence, 1, MPI_LONG_LONG_INT,
-               MPI_COMM_WORLD);
+    MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &fence, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
     assert(FENCE == fence);
 
     /* unpack mapping -> generate temporary tree */
@@ -250,15 +219,11 @@ static void unpack_worker_data(AllData& alldata, uint32_t sizes[PACK_NUM_PACKS])
         for (uint64_t i = 0; i < sizes[PACK_MAPPING]; i++) {
             uint64_t id, function_id, parent_id;
 
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &id, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &function_id, 1,
-                       MPI_LONG_LONG_INT, MPI_COMM_WORLD);
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &parent_id, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &id, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &function_id, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &parent_id, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
 
-            tmp_map.insert(
-                make_pair(id, make_tuple(function_id, parent_id, shared_ptr<tree_node>(nullptr))));
+            tmp_map.insert(make_pair(id, make_tuple(function_id, parent_id, shared_ptr<tree_node>(nullptr))));
         }
 
         // generate tree out of mapping AND add pointer to the respective node to the mapping
@@ -266,8 +231,7 @@ static void unpack_worker_data(AllData& alldata, uint32_t sizes[PACK_NUM_PACKS])
 
         /* extra check that doesn't cost too much */
         fence = 0;
-        MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &fence, 1, MPI_LONG_LONG_INT,
-                   MPI_COMM_WORLD);
+        MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &fence, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
         assert(FENCE == fence);
     }
 
@@ -276,17 +240,12 @@ static void unpack_worker_data(AllData& alldata, uint32_t sizes[PACK_NUM_PACKS])
         for (uint64_t i = 0; i < sizes[PACK_FUNCTION_DATA]; i++) {
             uint64_t id, rank, count, incl, excl;
 
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &id, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &id, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
 
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &rank, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &count, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &incl, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &excl, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &rank, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &count, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &incl, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &excl, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
 
             /*  IMPORTANT: tmp_map.find( id ) --- find node in mapping
              *  ->second --- get pointer to node in tree
@@ -298,14 +257,12 @@ static void unpack_worker_data(AllData& alldata, uint32_t sizes[PACK_NUM_PACKS])
              *  rank 4-n is safe without testing for the existence of data
              */
 
-            get<2>(tmp_map.find(id)->second)
-                ->node_data.insert(make_pair(rank, FunctionData{count, incl, excl}));
+            get<2>(tmp_map.find(id)->second)->node_data.insert(make_pair(rank, FunctionData{count, incl, excl}));
         }
 
         /* extra check that doesn't cost too much */
         fence = 0;
-        MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &fence, 1, MPI_LONG_LONG_INT,
-                   MPI_COMM_WORLD);
+        MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &fence, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
         assert(FENCE == fence);
     }
 
@@ -314,19 +271,13 @@ static void unpack_worker_data(AllData& alldata, uint32_t sizes[PACK_NUM_PACKS])
         for (uint64_t i = 0; i < sizes[PACK_MESSAGE_DATA]; i++) {
             uint64_t id, rank, count_send, count_recv, bytes_send, bytes_recv;
 
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &id, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &id, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
 
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &rank, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &count_send, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &count_recv, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &bytes_send, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &bytes_recv, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &rank, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &count_send, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &count_recv, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &bytes_send, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &bytes_recv, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
 
             // analogous to unpack function data
             get<2>(tmp_map.find(id)->second)
@@ -335,8 +286,7 @@ static void unpack_worker_data(AllData& alldata, uint32_t sizes[PACK_NUM_PACKS])
 
         /* extra check that doesn't cost too much */
         fence = 0;
-        MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &fence, 1, MPI_LONG_LONG_INT,
-                   MPI_COMM_WORLD);
+        MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &fence, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
         assert(FENCE == fence);
     }
 
@@ -345,19 +295,13 @@ static void unpack_worker_data(AllData& alldata, uint32_t sizes[PACK_NUM_PACKS])
         for (uint64_t i = 0; i < sizes[PACK_COLLOP_DATA]; i++) {
             uint64_t id, rank, count_send, count_recv, bytes_send, bytes_recv;
 
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &id, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &id, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
 
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &rank, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &count_send, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &count_recv, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &bytes_send, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &bytes_recv, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &rank, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &count_send, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &count_recv, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &bytes_send, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &bytes_recv, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
 
             // analogous to unpack function data
             get<2>(tmp_map.find(id)->second)
@@ -366,8 +310,7 @@ static void unpack_worker_data(AllData& alldata, uint32_t sizes[PACK_NUM_PACKS])
 
         /* extra check that doesn't cost too much */
         fence = 0;
-        MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &fence, 1, MPI_LONG_LONG_INT,
-                   MPI_COMM_WORLD);
+        MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &fence, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
         assert(FENCE == fence);
     }
 
@@ -378,44 +321,38 @@ static void unpack_worker_data(AllData& alldata, uint32_t sizes[PACK_NUM_PACKS])
             uint64_t       id, rank, metric_id;
             MetricDataType type;
 
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &id, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &id, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
 
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &rank, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &metric_id, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &rank, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &metric_id, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
 
-            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &type, 1, MPI_LONG_LONG_INT,
-                       MPI_COMM_WORLD);
+            MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &type, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
 
             switch (type) {
                 case MetricDataType::UINT64: {
                     uint64_t value_incl, value_excl;
-                    MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &value_incl, 1,
-                               MPI_LONG_LONG_INT, MPI_COMM_WORLD);
-                    MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &value_excl, 1,
-                               MPI_LONG_LONG_INT, MPI_COMM_WORLD);
+                    MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &value_incl, 1, MPI_LONG_LONG_INT,
+                               MPI_COMM_WORLD);
+                    MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &value_excl, 1, MPI_LONG_LONG_INT,
+                               MPI_COMM_WORLD);
                     get<2>(tmp_map.find(id)->second)
                         ->add_data(rank, metric_id, MetricData{type, value_incl, value_excl});
                     break;
                 }
                 case MetricDataType::DOUBLE: {
                     double value_incl, value_excl;
-                    MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &value_incl, 1,
-                               MPI_DOUBLE, MPI_COMM_WORLD);
-                    MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &value_excl, 1,
-                               MPI_DOUBLE, MPI_COMM_WORLD);
+                    MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &value_incl, 1, MPI_DOUBLE, MPI_COMM_WORLD);
+                    MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &value_excl, 1, MPI_DOUBLE, MPI_COMM_WORLD);
                     get<2>(tmp_map.find(id)->second)
                         ->add_data(rank, metric_id, MetricData{type, value_incl, value_excl});
                     break;
                 }
                 case MetricDataType::INT64: {
                     int64_t value_incl, value_excl;
-                    MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &value_incl, 1,
-                               MPI_LONG_LONG_INT, MPI_COMM_WORLD);
-                    MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &value_excl, 1,
-                               MPI_LONG_LONG_INT, MPI_COMM_WORLD);
+                    MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &value_incl, 1, MPI_LONG_LONG_INT,
+                               MPI_COMM_WORLD);
+                    MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &value_excl, 1, MPI_LONG_LONG_INT,
+                               MPI_COMM_WORLD);
                     get<2>(tmp_map.find(id)->second)
                         ->add_data(rank, metric_id, MetricData{type, value_incl, value_excl});
                     break;
@@ -425,8 +362,7 @@ static void unpack_worker_data(AllData& alldata, uint32_t sizes[PACK_NUM_PACKS])
 
         /* extra check that doesn't cost too much */
         fence = 0;
-        MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &fence, 1, MPI_LONG_LONG_INT,
-                   MPI_COMM_WORLD);
+        MPI_Unpack(buffer, sizes[PACK_TOTAL_SIZE], &position, &fence, 1, MPI_LONG_LONG_INT, MPI_COMM_WORLD);
         assert(FENCE == fence);
     }
 
