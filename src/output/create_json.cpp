@@ -38,6 +38,7 @@ struct WorkflowProfile {
     std::map<std::string, ProfileEntry> functions_by_paradigm;
     std::map<std::string, ProfileEntry> messages_by_paradigm;
     std::map<std::string, ProfileEntry> collops_by_paradigm;
+    std::map<std::string, ProfileEntry> io_ops_by_paradigm;
     uint64_t parallel_region_time;
     uint64_t serial_time;
     uint64_t num_functions;
@@ -89,6 +90,7 @@ void WorkflowProfile::WriteProfile(Writer& w) const {
     WriteMapUnderKey("functions", functions_by_paradigm, w);
     WriteMapUnderKey("messages", messages_by_paradigm, w);
     WriteMapUnderKey("collective operations", collops_by_paradigm, w);
+    WriteMapUnderKey("i/o operations", io_ops_by_paradigm, w);
     w.Key("parallel region time");
     w.Uint64(parallel_region_time);
     w.Key("serial time");
@@ -176,6 +178,15 @@ bool CreateJSON(AllData& alldata) {
             profile.parallel_region_time += excl_time;
         }
         profile.functions_by_paradigm[paradigm].entries[timestr] += excl_time;
+    }
+    static std::string meta_time = "meta operation time";
+    for (auto io_entry : alldata.io_data) {
+        std::string paradigm_name = alldata.definitions.paradigms.get(io_entry.first)->name;
+        cout << "Summarizing io for " << paradigm_name << std::endl;
+        profile.io_ops_by_paradigm[paradigm_name].entries[bytestr] += io_entry.second.num_bytes;
+        profile.io_ops_by_paradigm[paradigm_name].entries[countstr] += io_entry.second.num_operations;
+        profile.io_ops_by_paradigm[paradigm_name].entries[timestr] += io_entry.second.transfer_time;
+        profile.io_ops_by_paradigm[paradigm_name].entries[meta_time] += io_entry.second.nontransfer_time;
     }
     profile.WriteProfile(w);
     string        fname = alldata.params.output_file_prefix + ".json";

@@ -242,8 +242,8 @@ struct NodeData {
     FunctionData f_data;
     MessageData  m_data;
     CollopData   c_data;
-    std::map<uint64_t, MetricData> metrics;
 
+    std::map<uint64_t, MetricData> metrics;
     NodeData() : f_data(), m_data(), c_data() {}
 
     NodeData(const FunctionData& _f_data) : f_data(_f_data), m_data(), c_data() {}
@@ -251,6 +251,14 @@ struct NodeData {
     NodeData(const MessageData& _m_data) : f_data(), m_data(_m_data), c_data() {}
 
     NodeData(const CollopData& _c_data) : f_data(), m_data(), c_data(_c_data) {}
+};
+
+struct IoData {
+    uint64_t num_operations;
+    uint64_t num_bytes;
+    uint64_t transfer_time;
+    uint64_t nontransfer_time;
+    IoData() : num_operations(0), num_bytes(0), transfer_time(0), nontransfer_time(0) {}
 };
 
 #endif

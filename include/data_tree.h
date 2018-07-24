@@ -81,7 +81,7 @@ class tree_node {
     std::map<uint64_t, NodeData> node_data;
 
     std::map<uint64_t, MessageData*> have_message;  // TODO raus damit -> sinnlos und fehleranfällig
-    std::map<uint64_t, CollopData*> have_collop;    // TODO raus damit -> sinnlos und fehleranfällig
+    std::map<uint64_t, CollopData*>  have_collop;   // TODO raus damit -> sinnlos und fehleranfällig
     // TODO workaround
     //--->TODO funktion implementieren die aus node_data heraus findet ob collop bzw p2p da ist -> umständlich
     bool has_p2p    = false;

@@ -17,9 +17,9 @@ using namespace std;
 /** OTF2 reader handle */
 // metric id (real), data
 static map<uint64_t, MetricData> tmp_metric;
-static std::vector<uint64_t> locationList;
-static StringIdentifier      string_id;
-
+static std::vector<uint64_t>            locationList;
+static StringIdentifier<OTF2_StringRef> string_id;
+static StringIdentifier<OTF2_IoFileRef> filesystem_entries;
 // TODO remove
 // static std::map<OTF2_StringRef, string> stringIdToString;
 static uint64_t              systemTreeNodeId;
@@ -112,6 +112,40 @@ void OTF2Reader::close() {
 /*                            DEFINITIONS                             */
 /*                                                                    */
 /* ****************************************************************** */
+
+OTF2_CallbackCode OTF2Reader::handle_def_io_handle(void* userData, OTF2_IoHandleRef self, OTF2_StringRef name,
+                                                   OTF2_IoFileRef file, OTF2_IoParadigmRef ioParadigm,
+                                                   OTF2_IoHandleFlag ioHandleFlags, OTF2_CommRef comm,
+                                                   OTF2_IoHandleRef parent) {
+    auto* alldata = static_cast<AllData*>(userData);
+    if (file != OTF2_UNDEFINED_IO_FILE) {
+        auto strings = filesystem_entries.get(file);
+        if (strings.second != OTF2_CALLBACK_SUCCESS)
+            return strings.second;
+        cout << "Adding io handle: " << self << ", " << name << " -> " << *strings.first[0] << ", " << file << ", "
+             << parent << endl;
+        alldata->definitions.iohandles.add(self, {*strings.first[0], ioParadigm, file, parent});
+        return OTF2_CALLBACK_SUCCESS;
+    } else {
+        auto strings = string_id.get(name);
+        if (strings.second != OTF2_CALLBACK_SUCCESS)
+            return strings.second;
+        cout << "Adding io handle: " << self << ", " << name << " -> " << *strings.first[0] << ", " << file << ", "
+             << parent << endl;
+        alldata->definitions.iohandles.add(self, {*strings.first[0], ioParadigm, file, parent});
+    }
+    return OTF2_CALLBACK_SUCCESS;
+}
+
+OTF2_CallbackCode OTF2Reader::handle_def_io_fs_entry(void* userData, OTF2_IoFileRef self, OTF2_StringRef name,
+                                                     OTF2_SystemTreeNodeRef scope) {
+    auto strings = string_id.get(name);
+    if (strings.second != OTF2_CALLBACK_SUCCESS)
+        return strings.second;
+    cout << "Adding fs entry: " << self << " -> " << name << " -> " << *strings.first[0] << endl;
+    filesystem_entries.add(self, strings.first[0]->c_str());
+    return OTF2_CALLBACK_SUCCESS;
+}
 
 OTF2_CallbackCode OTF2Reader::handle_def_clock_properties(void* userData, uint64_t timerResolution,
                                                           uint64_t globalOffset, uint64_t traceLength) {
@@ -352,11 +386,66 @@ OTF2_CallbackCode OTF2Reader::handle_def_paradigm(void* userData, OTF2_Paradigm 
     return OTF2_CALLBACK_SUCCESS;
 }
 
+OTF2_CallbackCode OTF2Reader::handle_def_io_paradigm(void* userData, OTF2_IoParadigmRef paradigm, OTF2_StringRef id,
+                                                     OTF2_StringRef name, OTF2_IoParadigmClass paradigmClass,
+                                                     OTF2_IoParadigmFlag flags, uint8_t numProperties,
+                                                     const OTF2_IoParadigmProperty* properties, const OTF2_Type* types,
+                                                     const OTF2_AttributeValue* values) {
+    auto* alldata = static_cast<AllData*>(userData);
+    auto  strings = string_id.get(name);
+
+    if (strings.second != OTF2_CALLBACK_SUCCESS) {
+        return strings.second;
+    }
+
+    alldata->definitions.paradigms.add(paradigm, {*strings.first[0]});
+
+    return OTF2_CALLBACK_SUCCESS;
+}
+
 /* ****************************************************************** */
 /*                                                                    */
 /*                               EVENTS                               */
 /*                                                                    */
 /* ****************************************************************** */
+
+struct PendingIoEvt {
+    OTF2_TimeStamp begin_time;
+    uint64_t       bytes_request;
+};
+
+static std::map<uint64_t, PendingIoEvt> open_io_events;
+
+OTF2_CallbackCode OTF2Reader::handle_io_begin(OTF2_LocationRef locationID, OTF2_TimeStamp time, uint64_t eventPosition,
+                                              void* userData, OTF2_AttributeList* attributeList,
+                                              OTF2_IoHandleRef handle, OTF2_IoOperationMode mode,
+                                              OTF2_IoOperationFlag flag, uint64_t bytesRequest, uint64_t matchingId) {
+    open_io_events[matchingId] = {time, bytesRequest};
+    return OTF2_CALLBACK_SUCCESS;
+}
+OTF2_CallbackCode OTF2Reader::handle_io_end(OTF2_LocationRef locationID, OTF2_TimeStamp time, uint64_t eventPosition,
+                                            void* userData, OTF2_AttributeList* attributeList, OTF2_IoHandleRef handle,
+                                            uint64_t bytesResult, uint64_t matchingId) {
+    auto* alldata     = static_cast<AllData*>(userData);
+    auto  found_start = open_io_events.find(matchingId);
+    if (found_start != open_io_events.end()) {
+        auto duration  = time - found_start->second.begin_time;
+        auto bytes_req = found_start->second.bytes_request;
+        open_io_events.erase(found_start);
+        auto h = alldata->definitions.iohandles.get(handle);
+        if (!h)
+            return OTF2_CALLBACK_ERROR;  // event on undefined IO handle
+        uint64_t p = h->io_paradigm;
+        alldata->io_data[p].num_operations++;
+        if (bytesResult != OTF2_UNDEFINED_UINT64) {
+            alldata->io_data[p].num_bytes += bytesResult;
+            alldata->io_data[p].transfer_time += duration;
+        } else {
+            alldata->io_data[p].nontransfer_time += duration;
+        }
+    }
+    return OTF2_CALLBACK_SUCCESS;
+}
 
 OTF2_CallbackCode OTF2Reader::handle_metric(OTF2_LocationRef locationID, OTF2_TimeStamp time, uint64_t eventPosition,
                                             void* userData, OTF2_AttributeList* attributeList, OTF2_MetricRef metric,
@@ -704,6 +793,19 @@ bool OTF2Reader::readDefinitions(AllData& alldata) {
         return false;
 
     status = OTF2_GlobalDefReaderCallbacks_SetRegionCallback(glob_def_callbacks, handle_def_region);
+    if (OTF2_SUCCESS != status)
+        return false;
+
+    status = OTF2_GlobalDefReaderCallbacks_SetIoRegularFileCallback(glob_def_callbacks, handle_def_io_fs_entry);
+    if (OTF2_SUCCESS != status)
+        return false;
+
+    status = OTF2_GlobalDefReaderCallbacks_SetIoDirectoryCallback(glob_def_callbacks, handle_def_io_fs_entry);
+
+    if (OTF2_SUCCESS != status)
+        return false;
+
+    status = OTF2_GlobalDefReaderCallbacks_SetIoParadigmCallback(glob_def_callbacks, handle_def_io_paradigm);
 
     if (OTF2_SUCCESS != status)
         return false;
@@ -737,6 +839,10 @@ bool OTF2Reader::readDefinitions(AllData& alldata) {
         return false;
 
     status = OTF2_GlobalDefReaderCallbacks_SetParadigmCallback(glob_def_callbacks, handle_def_paradigm);
+    if (OTF2_SUCCESS != status)
+        return false;
+
+    status = OTF2_GlobalDefReaderCallbacks_SetIoHandleCallback(glob_def_callbacks, handle_def_io_handle);
     if (OTF2_SUCCESS != status)
         return false;
 
@@ -793,7 +899,8 @@ bool OTF2Reader::readEvents(AllData& alldata) {
     OTF2_EvtReaderCallbacks_SetMpiCollectiveEndCallback(evt_callbacks, handle_mpi_collective_end);
 
     OTF2_EvtReaderCallbacks_SetMetricCallback(evt_callbacks, handle_metric);
-
+    OTF2_EvtReaderCallbacks_SetIoOperationBeginCallback(evt_callbacks, handle_io_begin);
+    OTF2_EvtReaderCallbacks_SetIoOperationCompleteCallback(evt_callbacks, handle_io_end);
 #ifndef OTFPROFILE_MPI
 
     OTF2_DefReader* local_def_reader;
