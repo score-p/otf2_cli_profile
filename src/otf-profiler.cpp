@@ -20,6 +20,12 @@
 #include "reduce_data.h"
 #endif /* OTFPROFILER_MPI */
 
+#ifdef HAVE_JSON
+#include "create_json.h"
+#endif /* HAVE_JSON */
+
+#include "create_dot.h"
+
 using namespace std;
 
 int error() {
@@ -60,6 +66,7 @@ int main(int argc, char** argv) {
         alldata.tm.registerScope(ScopeID::REDUCE, "reduce data");
         alldata.tm.registerScope(ScopeID::CUBE, "Cube creation process");
         alldata.tm.registerScope(ScopeID::JSON, "JSON creation process");
+        alldata.tm.registerScope(ScopeID::DOT, "DOT creation process");
     }
 
     /* starts runtime measurement for total time */
@@ -117,6 +124,13 @@ int main(int argc, char** argv) {
         alldata.tm.stop(ScopeID::JSON);
     }
 #endif
+    
+// DOT
+if (alldata.params.create_dot) {
+    alldata.tm.start(ScopeID::DOT);
+    CreateDot(alldata);
+    alldata.tm.stop(ScopeID::DOT);
+}
 
     alldata.tm.stop(ScopeID::TOTAL);
 #ifdef SHOW_RESULTS
