@@ -67,19 +67,33 @@ Data read_data(AllData& alldata){
 
 void write_dot(Data data) {
 
+	// temporary stack for saving parent nodes call_id
 	std::stack<uint32_t> tmp;
 	int call_id = 0;
 
 	std::ofstream result_file;
 	result_file.open ("result.dot");
 
+	// find min and max value for excl time
+	double min_sum = std::numeric_limits<uint64_t>::max();
+	double max_sum = 0;
+	for (auto& region : data){
+		if(region.sum_excl_time < min_sum)
+			min_sum = region.sum_excl_time;
+		if(region.sum_excl_time > max_sum)
+			max_sum = region.sum_excl_time;
+	}
+	double range = max_sum-min_sum;
+
+	// head of graph file
 	result_file 
 		<< "digraph call_tree {\n"
 		<< "graph [splines=ortho];\n"
-		<< "node [shape = record];\n"
+		<< "node [shape = record, colorscheme=spectral9];\n"
 		<< "edge [];\n"
 	<< std::endl;
 
+	// node
 	for ( auto& region : data ){
 		result_file 
 			<< "\"" << call_id << "\" [\n"
@@ -96,12 +110,27 @@ void write_dot(Data data) {
 			<< "max: " << region.max_excl_time << "\\l\n"
 			<< "sum: " << region.sum_excl_time << "\\l\n"
 			<< "avg: " << region.sum_excl_time / region.invocations << "\\l\n"
-			<< "\"\n"
+			<< "\"\n";
+		
+		// colorize node, 9 colors
+		int color_code = 9;
+		for (int i = 1; i < 9; ++i){
+			std::cout << region.sum_excl_time << std::endl;
+			std::cout << range/9*i+min_sum << std::endl;
+			if(region.sum_excl_time >= range/9*i+min_sum){
+				color_code = 10-i;
+		};
+		result_file
+			<< "fillcolor=" << color_code << ",\n"
+			<< "style=filled";
+
+		// close node
+		result_file
 			<< "];"
 		<< std::endl;
-		
-		// if parent set connection
-		if( call_id != 1){
+
+		// set edge to parent
+		if( call_id != 0){
 			result_file 
 				<< tmp.top()
 				<< " -> "
@@ -111,7 +140,7 @@ void write_dot(Data data) {
 			tmp.pop();
 		}
 
-		// trick to remember parents
+		// push node "num_children" times on stack
 		for (int i = 0; i < region.num_children; ++i)
 			tmp.push(call_id);
 
