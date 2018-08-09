@@ -115,9 +115,7 @@ void write_dot(Data data) {
 		// colorize node, 9 colors
 		int color_code = 9;
 		for (int i = 1; i < 9; ++i){
-			std::cout << region.sum_excl_time << std::endl;
-			std::cout << range/9*i+min_sum << std::endl;
-			if(region.sum_excl_time >= range/9*i+min_sum){
+			if(region.sum_excl_time >= range/9*i+min_sum)
 				color_code = 10-i;
 		};
 		result_file
