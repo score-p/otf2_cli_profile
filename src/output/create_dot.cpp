@@ -75,15 +75,15 @@ void write_dot(Data data) {
 	result_file.open ("result.dot");
 
 	// find min and max value for excl time
-	double min_sum = std::numeric_limits<uint64_t>::max();
-	double max_sum = 0;
+	double min_time = std::numeric_limits<uint64_t>::max();
+	double max_time = 0;
 	for (auto& region : data){
-		if(region.sum_excl_time < min_sum)
-			min_sum = region.sum_excl_time;
-		if(region.sum_excl_time > max_sum)
-			max_sum = region.sum_excl_time;
+		if(region.sum_excl_time < min_time)
+			min_time = region.sum_excl_time;
+		if(region.sum_excl_time > max_time)
+			max_time = region.sum_excl_time;
 	}
-	double range = max_sum-min_sum;
+	double timerange = max_time-min_time;
 
 	// head of graph file
 	result_file 
@@ -114,9 +114,9 @@ void write_dot(Data data) {
 		
 		// colorize node, 9 colors
 		int color_code = 9;
-		for (int i = 1; i < 9; ++i){
-			if(region.sum_excl_time >= range/9*i+min_sum)
-				color_code = 10-i;
+		for (int i = 0; i < 9; ++i){
+			if(region.sum_excl_time >= timerange/9*i+min_time)
+				color_code = 9-i;
 		};
 		result_file
 			<< "fillcolor=" << color_code << ",\n"
