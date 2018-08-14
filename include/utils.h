@@ -126,8 +126,8 @@ struct Params {
                           << "   options:" << std::endl
                           << "      -h, --help          show this help message" << std::endl
                           << std::endl
-                          << "      --cube              generate CUBE xml profile" << std::endl
-                          << "      --xlsx              generate XLSX ouptut file" << std::endl
+                          << "      --cube              generates CUBE xml profile" << std::endl
+                          << "      --json              generates json ouptut file" << std::endl
                           << std::endl
                           << "                          (default: 50)" << std::endl
                           << "      -b <size>           set buffersize of the reader in Byte" << std::endl
