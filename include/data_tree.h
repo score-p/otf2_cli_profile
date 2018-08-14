@@ -19,8 +19,7 @@ class data_tree {
    public:
     data_tree();
 
-    data_tree(
-        std::map<uint64_t, std::tuple<uint64_t, uint64_t, std::shared_ptr<tree_node>>>& mapping);
+    data_tree(std::map<uint64_t, std::tuple<uint64_t, uint64_t, std::shared_ptr<tree_node>>>& mapping);
 
     tree_node* insert_node(uint64_t function_id, tree_node* parent);
     std::shared_ptr<tree_node> insert_node(uint64_t function_id, std::shared_ptr<tree_node> parent);
@@ -30,12 +29,11 @@ class data_tree {
     void insert_sub_tree(std::shared_ptr<tree_node>& parent, std::shared_ptr<tree_node>& n_node);
 
     /* map< node,parent > */  // mapping darf !NICHT! unordered sein -> Reihenfolge ist wichtig!
-    void serialize_data(
-        std::map<uint64_t, std::pair<uint64_t, uint64_t>>&         mapping,
-        std::deque<std::tuple<uint64_t, uint64_t, FunctionData*>>& f_data,
-        std::deque<std::tuple<uint64_t, uint64_t, MessageData*>>&  m_data,
-        std::deque<std::tuple<uint64_t, uint64_t, CollopData*>>&   c_data,
-        std::deque<std::tuple<uint64_t, uint64_t, uint64_t, MetricData*>>& met_data);
+    void serialize_data(std::map<uint64_t, std::pair<uint64_t, uint64_t>>&         mapping,
+                        std::deque<std::tuple<uint64_t, uint64_t, FunctionData*>>& f_data,
+                        std::deque<std::tuple<uint64_t, uint64_t, MessageData*>>&  m_data,
+                        std::deque<std::tuple<uint64_t, uint64_t, CollopData*>>&   c_data,
+                        std::deque<std::tuple<uint64_t, uint64_t, uint64_t, MetricData*>>& met_data);
 
     /* functionId , node* */
     std::map<uint64_t, std::shared_ptr<tree_node>> root_nodes;
@@ -60,8 +58,7 @@ class tree_node {
    public:
     tree_node(const uint64_t _function_id, tree_node* _parent);
     tree_node(const uint64_t _function_id, const std::shared_ptr<tree_node>& _parent);
-    tree_node(const uint64_t _function_id, const std::shared_ptr<tree_node>& _parent,
-              const uint64_t process_num);
+    tree_node(const uint64_t _function_id, const std::shared_ptr<tree_node>& _parent, const uint64_t process_num);
     tree_node(const uint64_t _function_id);
 
     ~tree_node();
@@ -71,7 +68,7 @@ class tree_node {
     void add_data(const uint64_t location_id, const CollopData& cdata);
     void add_data(const uint64_t location_id, const uint64_t metric_id, const MetricData& metdata);
 
-    //std::shared_ptr<tree_node> parent;
+    // std::shared_ptr<tree_node> parent;
     tree_node* parent;
 
     uint64_t function_id;
@@ -83,11 +80,11 @@ class tree_node {
     /* maps with location id as key -> value = NodeData -> function, p2p or collop */
     std::map<uint64_t, NodeData> node_data;
 
-    std::map<uint64_t, MessageData*> have_message;//TODO raus damit -> sinnlos und fehleranfällig
-    std::map<uint64_t, CollopData*>  have_collop;//TODO raus damit -> sinnlos und fehleranfällig
-//TODO workaround
-        //--->TODO funktion implementieren die aus node_data heraus findet ob collop bzw p2p da ist -> umständlich
-    bool has_p2p = false;
+    std::map<uint64_t, MessageData*> have_message;  // TODO raus damit -> sinnlos und fehleranfällig
+    std::map<uint64_t, CollopData*> have_collop;    // TODO raus damit -> sinnlos und fehleranfällig
+    // TODO workaround
+    //--->TODO funktion implementieren die aus node_data heraus findet ob collop bzw p2p da ist -> umständlich
+    bool has_p2p    = false;
     bool has_collop = false;
 
     uint64_t  last_loc;
@@ -101,8 +98,7 @@ class tree_iter {
         tree_ptr = &_tree;
     };
 
-    tree_iter(tree_node* _rhs_node, data_tree* _rhs_tree)
-        : node_ptr(_rhs_node), tree_ptr(_rhs_tree){};
+    tree_iter(tree_node* _rhs_node, data_tree* _rhs_tree) : node_ptr(_rhs_node), tree_ptr(_rhs_tree){};
 
     tree_iter(const tree_iter& _rhs_it) : node_ptr(_rhs_it.node_ptr), tree_ptr(_rhs_it.tree_ptr){};
 

@@ -76,8 +76,7 @@ int main(int argc, char** argv) {
     if (reader == nullptr)
         return error();
 
-    if (!reader->initialize(alldata) || !reader->readDefinitions(alldata) ||
-        !reader->readEvents(alldata))
+    if (!reader->initialize(alldata) || !reader->readDefinitions(alldata) || !reader->readEvents(alldata))
         return error();
 
     reader.reset(nullptr);

@@ -21,7 +21,7 @@ class TraceReader {
 
 std::unique_ptr<TraceReader> getTraceReader(AllData& alldata);
 
-//data stack for function data -> enter/leave callbacks etc.
+// data stack for function data -> enter/leave callbacks etc.
 struct StackData {
     tree_node* node_p;
 

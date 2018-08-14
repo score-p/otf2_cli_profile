@@ -37,8 +37,7 @@ unique_ptr<TraceReader> getTraceReader(AllData& alldata) {
     } else if (filetype == "otf2") {
 #ifndef HAVE_OTF2
         cerr << "ERROR: Can't process OTF2 files!" << endl
-             << "otfprofile was not installed with access to the OTF2 header files/library."
-             << endl;
+             << "otfprofile was not installed with access to the OTF2 header files/library." << endl;
         return nullptr;
 #else
         return unique_ptr<OTF2Reader>(new OTF2Reader);

@@ -33,9 +33,7 @@ class TimeMeasurement {
    public:
     TimeMeasurement() = default;
 
-    void registerScope(ScopeID scope_id, std::string desc) {
-        scopes.insert(std::make_pair(scope_id, Scope(desc)));
-    }
+    void registerScope(ScopeID scope_id, std::string desc) { scopes.insert(std::make_pair(scope_id, Scope(desc))); }
 
     bool isRegistered(ScopeID scope_id) {
         if (scopes.find(scope_id) == scopes.end())
@@ -82,8 +80,8 @@ class TimeMeasurement {
             if (scope.start_time == TimePoint() || scope.stop_time == TimePoint())
                 return os;
 
-            os << scope.desc << ": "
-               << std::chrono::duration<double>(scope.stop_time - scope.start_time).count() << "s";
+            os << scope.desc << ": " << std::chrono::duration<double>(scope.stop_time - scope.start_time).count()
+               << "s";
 
             return os;
         }
@@ -94,12 +92,12 @@ class TimeMeasurement {
 };
 
 struct Params {
-    uint32_t    max_file_handles   = 50; //TODO sinn/unsinn?
-    uint32_t    buffer_size        = 1024 * 1024; //TODO sinn/unsinn?
-    //uint32_t    max_groups         = 16;
-    //bool        logaxis            = true;
-    uint8_t     verbose_level      = 0;
-    //bool        read_from_stats    = false;
+    uint32_t max_file_handles = 50;           // TODO sinn/unsinn?
+    uint32_t buffer_size      = 1024 * 1024;  // TODO sinn/unsinn?
+    // uint32_t    max_groups         = 16;
+    // bool        logaxis            = true;
+    uint8_t verbose_level = 0;
+    // bool        read_from_stats    = false;
     bool        read_metrics       = true;  // counter
     bool        create_cube        = false;
     bool        create_json        = false;
@@ -114,12 +112,10 @@ struct Params {
         arguments.assign(argv + 1, argv + argc);
 
         for (auto i = 0; i < arguments.size(); ++i) {
-            if (arguments[i] == "--help" || arguments[i] == "-h")
-            {
+            if (arguments[i] == "--help" || arguments[i] == "-h") {
                 std::cout << std::endl
                           << " " << argv[0] << " - Generates a profile of an OTF or OTF2 trace in CUBE and/or other"
-                          <<  "formats."
-                          << std::endl
+                          << "formats." << std::endl
                           << std::endl
                           << " Syntax: " << argv[0] << " -i <input file name> [options]" << std::endl
                           << std::endl
@@ -135,7 +131,7 @@ struct Params {
                           << "      -f <n>              max. number of filehandles available per rank" << std::endl
                           << "      -i <file>           specify the input tracefile name" << std::endl
                           << "      -nm, --no-metrics   neglect metric events" << std::endl
-                          << "      -o <prefix>         specify the prefix of output file(s)"<< std::endl
+                          << "      -o <prefix>         specify the prefix of output file(s)" << std::endl
                           << "                          (default: result)" << std::endl
                           << "      -v <level>          set verbosity level" << std::endl
                           << "      --version           prints version information" << std::endl;
@@ -149,10 +145,8 @@ struct Params {
                 verbose_level = value;
                 ++i;
             } else if (arguments[i] == "--version") {
-                std::cout << "OTF-Profiler version "
-                          << OTFPROFILER_VERSION_MAJOR << "."
-                          << OTFPROFILER_VERSION_MINOR << "."
-                          << OTFPROFILER_VERSION_PATCH << std::endl;
+                std::cout << "OTF-Profiler version " << OTFPROFILER_VERSION_MAJOR << "." << OTFPROFILER_VERSION_MINOR
+                          << "." << OTFPROFILER_VERSION_PATCH << std::endl;
                 return false;
             } else if (arguments[i] == "--summarize" || arguments[i] == "-s") {
                 summarize_it = true;
@@ -185,14 +179,14 @@ struct Params {
                     return false;
 
                 output_file_prefix = arguments[++i];
-            //TODO testen ob das arg was bringt -- für OTF ist es momentan wichtig da einige counter seg-faults verursachen (nicht strikt synchrone)
-            } else if (arguments[i] == "-nm" || arguments[i] == "--no-metrics" ) {
+                // TODO testen ob das arg was bringt -- für OTF ist es momentan wichtig da einige counter seg-faults
+                // verursachen (nicht strikt synchrone)
+            } else if (arguments[i] == "-nm" || arguments[i] == "--no-metrics") {
                 read_metrics = false;
             }
         }
 
-        if ( input_file_name == "" )
-        {
+        if (input_file_name == "") {
             std::cerr << "ERROR: No input tracefile name given. See --help | -h for further information." << std::endl;
             return false;
         }
@@ -201,7 +195,7 @@ struct Params {
     }
 
    private:
-    //TODO tuts nicht -> -o mitten drin, dann nimmts das nächste
+    // TODO tuts nicht -> -o mitten drin, dann nimmts das nächste
     bool checkNext(std::vector<std::string> args, int pos) {
         if (pos + 1 >= args.size()) {
             std::cerr << "ERROR: Missing argument for option '" << args[pos] << "'" << std::endl;

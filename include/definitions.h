@@ -6,13 +6,13 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
+#include <cassert>
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <unordered_set>
 #include <vector>
-#include <memory>
-#include <cassert>
 
 #include "main_structs.h"
 
@@ -21,35 +21,35 @@ namespace definitions {
 using paradigm_id_t = uint32_t;
 
 struct Region {
-  std::string   name;
-  paradigm_id_t paradigm_id;
-  uint32_t      source_line;
-  std::string   file_name;
+    std::string   name;
+    paradigm_id_t paradigm_id;
+    uint32_t      source_line;
+    std::string   file_name;
 };
 
 struct Metric {
-  std::string    name;
-  std::string    description;
-  std::string    unit;
-  MetricDataType type; /*OTF2_TYPE_UINT64*/
-  bool           allowed;
+    std::string    name;
+    std::string    description;
+    std::string    unit;
+    MetricDataType type; /*OTF2_TYPE_UINT64*/
+    bool           allowed;
 };
 
 struct Paradigm {
-  std::string    name;
-  // TODO  paradigm class
+    std::string name;
+    // TODO  paradigm class
 };
 
 struct Group {
-  std::string           name;
-  uint16_t              type;
-  paradigm_id_t         paradigm_id;
-  std::vector<uint64_t> members;
+    std::string           name;
+    uint16_t              type;
+    paradigm_id_t         paradigm_id;
+    std::vector<uint64_t> members;
 };
 
-template<typename Id, typename TypeProperties>
+template <typename Id, typename TypeProperties>
 class DefinitionType {
-  public:
+   public:
     using ContainerTypeProps_t = std::map<Id, TypeProperties>;
     using TypeProperties_t     = TypeProperties;
 
@@ -57,25 +57,21 @@ class DefinitionType {
 
     DefinitionType(const ContainerTypeProps_t& props) : all_properties(props) {}
 
-    void add(Id id, const TypeProperties_t& props) {
-      all_properties[id] = props;
-    }
+    void add(Id id, const TypeProperties_t& props) { all_properties[id] = props; }
 
     const TypeProperties_t* get(Id id) const {
-      const auto props_it = all_properties.find(id);
+        const auto props_it = all_properties.find(id);
 
-      if(props_it == all_properties.end())
-        //TODO Error handling
-        return nullptr;
+        if (props_it == all_properties.end())
+            // TODO Error handling
+            return nullptr;
 
-      return &(props_it->second);
+        return &(props_it->second);
     }
 
-    const ContainerTypeProps_t& get_all() const {
-      return all_properties;
-    }
+    const ContainerTypeProps_t& get_all() const { return all_properties; }
 
-  private:
+   private:
     ContainerTypeProps_t all_properties;
 };
 
@@ -96,251 +92,240 @@ enum class SystemClass : uint8_t {
 class SystemIterator;
 
 class SystemTree {
-private:
-  struct SystemData {
-    uint32_t node_id; //TODO ist traceid
-    std::string name;
-    SystemClass class_id;
-    //test
-    uint64_t location_id;
-    uint32_t level;
-  };
+   private:
+    struct SystemData {
+        uint32_t    node_id;  // TODO ist traceid
+        std::string name;
+        SystemClass class_id;
+        // test
+        uint64_t location_id;
+        uint32_t level;
+    };
 
-  struct SystemNode {
-    using Children_t = std::map<uint32_t, std::shared_ptr<SystemNode>>;
+    struct SystemNode {
+        using Children_t = std::map<uint32_t, std::shared_ptr<SystemNode>>;
 
-    SystemNode* parent;
-    Children_t  children; //TODO muss über eigene ids gehen
-    SystemData  data;
+        SystemNode* parent;
+        Children_t  children;  // TODO muss über eigene ids gehen
+        SystemData  data;
 
-    SystemNode(SystemNode* _parent, const Children_t& _children, const SystemData& _data)
-      : parent(_parent), children(_children), data(_data) {}
-  };
+        SystemNode(SystemNode* _parent, const Children_t& _children, const SystemData& _data)
+            : parent(_parent), children(_children), data(_data) {}
+    };
 
-public:
-  using SystemData_t = SystemData;
-  using SystemNode_t = SystemNode;
-  using iterator = SystemIterator;
+   public:
+    using SystemData_t = SystemData;
+    using SystemNode_t = SystemNode;
+    using iterator     = SystemIterator;
 
-  SystemTree() = default;
+    SystemTree() = default;
 
-  void insert_node(const SystemNode_t& node) {
-    auto* parent = node.parent;
+    void insert_node(const SystemNode_t& node) {
+        auto* parent = node.parent;
 
-    if( parent != nullptr )
-      insert_node(node.data.name, node.data.location_id, node.data.class_id,
-          node.parent->data.location_id);
-    else
-      insert_node(node.data.name, node.data.location_id, node.data.class_id,
-          static_cast<uint32_t>(-1));
-  }
-  //void insert_node(SystemTreeNode* aNode);
-  const std::shared_ptr<SystemNode_t> insert_node(std::string name, uint64_t id,
-      SystemClass class_id, uint64_t parent_id) {
-
-    SystemNode* parent = nullptr;
-    if(class_id == SystemClass::LOCATION)
-      parent = location_grps[parent_id];
-    else if(parent_id != static_cast<uint32_t>(-1))
-      parent = system_nodes[parent_id];
-
-    auto new_node = std::make_shared<SystemNode_t>(SystemNode_t(parent, {},{_size, name, class_id, id}));
-
-    if(parent != nullptr) {
-      parent->children.insert(std::make_pair(_size, new_node));
-      new_node->data.level = parent->data.level + 1;
-
-      if(num_nodes_per_level.size() <= new_node->data.level)
-        ++num_nodes_per_level[new_node->data.level];
-      else
-        num_nodes_per_level.push_back(1);
-    } else {
-      new_node->data.level = 0;
-      num_nodes_per_level.push_back(1);
-      root = new_node;
+        if (parent != nullptr)
+            insert_node(node.data.name, node.data.location_id, node.data.class_id, node.parent->data.location_id);
+        else
+            insert_node(node.data.name, node.data.location_id, node.data.class_id, static_cast<uint32_t>(-1));
     }
+    // void insert_node(SystemTreeNode* aNode);
+    const std::shared_ptr<SystemNode_t> insert_node(std::string name, uint64_t id, SystemClass class_id,
+                                                    uint64_t parent_id) {
+        SystemNode* parent = nullptr;
+        if (class_id == SystemClass::LOCATION)
+            parent = location_grps[parent_id];
+        else if (parent_id != static_cast<uint32_t>(-1))
+            parent = system_nodes[parent_id];
 
-    ++_size;
+        auto new_node = std::make_shared<SystemNode_t>(SystemNode_t(parent, {}, {_size, name, class_id, id}));
 
-    if(class_id == SystemClass::LOCATION) {
-      locations.insert(std::make_pair(id, new_node.get()));
-      return new_node;
-    }
+        if (parent != nullptr) {
+            parent->children.insert(std::make_pair(_size, new_node));
+            new_node->data.level = parent->data.level + 1;
 
-    if(class_id == SystemClass::LOCATION_GROUP)
-      location_grps.push_back(new_node.get());
-    else
-      system_nodes.push_back(new_node.get());
-
-    return new_node;
-  }
-
-
-  std::pair<uint8_t, std::unique_ptr<SystemTree>> summarize(const SystemTree& sys_tree,
-    uint64_t limit) {
-
-    //find the level where the count of nodes is bigger then the set limit
-    bool do_it = false;
-    size_t level = 0;
-    for( level = 0; level < num_nodes_per_level.size(); ++level ) {
-      if(num_nodes_per_level[level] > limit){
-        if( level > 1 ) {
-          if( num_nodes_per_level[level-1] > 1 ) {
-            do_it = true;
-            break;
-          }
+            if (num_nodes_per_level.size() <= new_node->data.level)
+                ++num_nodes_per_level[new_node->data.level];
+            else
+                num_nodes_per_level.push_back(1);
+        } else {
+            new_node->data.level = 0;
+            num_nodes_per_level.push_back(1);
+            root = new_node;
         }
-        //TODO überspringt effektiv den fall wenn (level - 2) > 1 ist, etc.
-        //summarize can't be done -> (level - 1) has < 2 elements
-        return std::make_pair(2,nullptr);
-      }
+
+        ++_size;
+
+        if (class_id == SystemClass::LOCATION) {
+            locations.insert(std::make_pair(id, new_node.get()));
+            return new_node;
+        }
+
+        if (class_id == SystemClass::LOCATION_GROUP)
+            location_grps.push_back(new_node.get());
+        else
+            system_nodes.push_back(new_node.get());
+
+        return new_node;
     }
-    if(do_it)
-      return std::make_pair(1, std::unique_ptr<SystemTree>(copy_reduced(sys_tree, level)));
 
-    return std::make_pair(0,nullptr);
-  }
+    std::pair<uint8_t, std::unique_ptr<SystemTree>> summarize(const SystemTree& sys_tree, uint64_t limit) {
+        // find the level where the count of nodes is bigger then the set limit
+        bool   do_it = false;
+        size_t level = 0;
+        for (level = 0; level < num_nodes_per_level.size(); ++level) {
+            if (num_nodes_per_level[level] > limit) {
+                if (level > 1) {
+                    if (num_nodes_per_level[level - 1] > 1) {
+                        do_it = true;
+                        break;
+                    }
+                }
+                // TODO überspringt effektiv den fall wenn (level - 2) > 1 ist, etc.
+                // summarize can't be done -> (level - 1) has < 2 elements
+                return std::make_pair(2, nullptr);
+            }
+        }
+        if (do_it)
+            return std::make_pair(1, std::unique_ptr<SystemTree>(copy_reduced(sys_tree, level)));
 
-  const std::shared_ptr<SystemNode_t> get_root() const { return root;}
+        return std::make_pair(0, nullptr);
+    }
 
-  const size_t num_level() const { return num_nodes_per_level.size(); }
+    const std::shared_ptr<SystemNode_t> get_root() const { return root; }
 
-  const std::vector<uint32_t>&  all_level() const { return num_nodes_per_level; }
+    const size_t num_level() const { return num_nodes_per_level.size(); }
 
-  const uint32_t size() const {return _size;}
+    const std::vector<uint32_t>& all_level() const { return num_nodes_per_level; }
 
-  SystemNode_t* location(size_t location_id) {
-    auto it = locations.find(location_id);
-    if(it != locations.end())
-      return it->second;
+    const uint32_t size() const { return _size; }
 
-    return nullptr;
-  }
+    SystemNode_t* location(size_t location_id) {
+        auto it = locations.find(location_id);
+        if (it != locations.end())
+            return it->second;
 
-  iterator begin() const;
+        return nullptr;
+    }
 
-  iterator end() const;
+    iterator begin() const;
 
-private:
-  SystemTree* copy_reduced(const SystemTree& sys_tree, uint32_t level );
+    iterator end() const;
 
-private:
-  std::shared_ptr<SystemNode_t>     root;
-  std::vector<SystemNode_t*>        system_nodes{};
-  std::vector<SystemNode_t*>        location_grps{};
-  std::map<uint64_t, SystemNode_t*> locations{};
-  uint32_t                          _size = 0;
-  //test
-  std::vector<uint32_t>             num_nodes_per_level;
+   private:
+    SystemTree* copy_reduced(const SystemTree& sys_tree, uint32_t level);
+
+   private:
+    std::shared_ptr<SystemNode_t> root;
+    std::vector<SystemNode_t*>    system_nodes{};
+    std::vector<SystemNode_t*>    location_grps{};
+    std::map<uint64_t, SystemNode_t*> locations{};
+    uint32_t _size = 0;
+    // test
+    std::vector<uint32_t> num_nodes_per_level;
 };
 
-//TODO iterator traits
+// TODO iterator traits
 class SystemIterator {
-private:
-  using SystemData_t = typename SystemTree::SystemData_t;
-  using SystemNode_t = typename SystemTree::SystemNode_t;
+   private:
+    using SystemData_t = typename SystemTree::SystemData_t;
+    using SystemNode_t = typename SystemTree::SystemNode_t;
 
-public:
-  SystemIterator(const std::shared_ptr<SystemNode_t>& root)
-    : current_ptr(root.get()), root_ptr(root) {
-    assert(root.get() != nullptr);
-  }
-
-  SystemIterator(const std::shared_ptr<SystemNode_t>& root, SystemNode_t* node)
-    : current_ptr(node), root_ptr(root) {
-    assert(root.get() != nullptr);
-  }
-
-  SystemIterator() = default;
-
-  SystemIterator(const SystemIterator& rhs_iter) = default;
-
-  SystemIterator& operator= (const SystemIterator& rhs_iter) {
-    current_ptr = rhs_iter.current_ptr;
-    root_ptr = rhs_iter.root_ptr;
-
-    return *this;
-  }
-
-  SystemNode_t& operator*() {
-    assert(current_ptr != nullptr );
-    return *current_ptr;
-  }
-
-  SystemNode_t* operator->() {
-    assert(current_ptr != nullptr );
-    return current_ptr;
-  }
-
-  SystemIterator& operator++() {
-    assert(current_ptr != nullptr );
-
-    if(!current_ptr->children.empty())
-      current_ptr = current_ptr->children.begin()->second.get();
-    else {
-      while(true) {
-        if(current_ptr->parent != nullptr) {
-          auto child_it = current_ptr->parent->children.find(current_ptr->data.node_id);
-          ++child_it;
-
-          if(child_it == current_ptr->parent->children.end()){
-            current_ptr = current_ptr->parent;
-            continue;
-          }
-
-          current_ptr = child_it->second.get();
-
-          return *this;
-        }
-
-        //got back to root -> end of iteration
-        current_ptr = nullptr;
-        break;
-      }
+   public:
+    SystemIterator(const std::shared_ptr<SystemNode_t>& root) : current_ptr(root.get()), root_ptr(root) {
+        assert(root.get() != nullptr);
     }
 
-    return *this;
-  }
+    SystemIterator(const std::shared_ptr<SystemNode_t>& root, SystemNode_t* node) : current_ptr(node), root_ptr(root) {
+        assert(root.get() != nullptr);
+    }
 
-  SystemIterator operator++(int) {
-    SystemIterator it(*this);
-    ++*this;
+    SystemIterator() = default;
 
-    return it;
-  }
+    SystemIterator(const SystemIterator& rhs_iter) = default;
 
-  bool operator==(const SystemIterator& rhs_it) {
-    return ((current_ptr == rhs_it.current_ptr) && (root_ptr == rhs_it.root_ptr));
-  }
-  bool operator!=(const SystemIterator& rhs_it){
-    return ((current_ptr != rhs_it.current_ptr) || (root_ptr != rhs_it.root_ptr));
-  }
+    SystemIterator& operator=(const SystemIterator& rhs_iter) {
+        current_ptr = rhs_iter.current_ptr;
+        root_ptr    = rhs_iter.root_ptr;
 
-private:
-  SystemNode_t*                 current_ptr;
-  std::shared_ptr<SystemNode_t> root_ptr;
+        return *this;
+    }
 
+    SystemNode_t& operator*() {
+        assert(current_ptr != nullptr);
+        return *current_ptr;
+    }
+
+    SystemNode_t* operator->() {
+        assert(current_ptr != nullptr);
+        return current_ptr;
+    }
+
+    SystemIterator& operator++() {
+        assert(current_ptr != nullptr);
+
+        if (!current_ptr->children.empty())
+            current_ptr = current_ptr->children.begin()->second.get();
+        else {
+            while (true) {
+                if (current_ptr->parent != nullptr) {
+                    auto child_it = current_ptr->parent->children.find(current_ptr->data.node_id);
+                    ++child_it;
+
+                    if (child_it == current_ptr->parent->children.end()) {
+                        current_ptr = current_ptr->parent;
+                        continue;
+                    }
+
+                    current_ptr = child_it->second.get();
+
+                    return *this;
+                }
+
+                // got back to root -> end of iteration
+                current_ptr = nullptr;
+                break;
+            }
+        }
+
+        return *this;
+    }
+
+    SystemIterator operator++(int) {
+        SystemIterator it(*this);
+        ++*this;
+
+        return it;
+    }
+
+    bool operator==(const SystemIterator& rhs_it) {
+        return ((current_ptr == rhs_it.current_ptr) && (root_ptr == rhs_it.root_ptr));
+    }
+    bool operator!=(const SystemIterator& rhs_it) {
+        return ((current_ptr != rhs_it.current_ptr) || (root_ptr != rhs_it.root_ptr));
+    }
+
+   private:
+    SystemNode_t*                 current_ptr;
+    std::shared_ptr<SystemNode_t> root_ptr;
 };
 
 struct Definitions {
-  DefinitionType<uint64_t, Region>            regions;
-  DefinitionType<uint64_t, Metric>            metrics;
-  DefinitionType<paradigm_id_t, Paradigm>     paradigms;
-  DefinitionType<uint64_t, Group>             groups;
-  SystemTree                                  system_tree{};
+    DefinitionType<uint64_t, Region>        regions;
+    DefinitionType<uint64_t, Metric>        metrics;
+    DefinitionType<paradigm_id_t, Paradigm> paradigms;
+    DefinitionType<uint64_t, Group>         groups;
+    SystemTree system_tree{};
 };
-} // namespace definitions
-
+}  // namespace definitions
 
 struct meta_data {
-    std::map<uint64_t, uint64_t>              communicators;
+    std::map<uint64_t, uint64_t> communicators;
 
     std::map<uint64_t, std::string> processIdToName;
 
     std::map<uint64_t, std::string> metricIdToName;
 
-
-    //std::map<uint64_t, metric_definition> metricIdToDef;
+    // std::map<uint64_t, metric_definition> metricIdToDef;
 
     // class_id, pair< number_in_class, metric_id >
     std::map<uint64_t, std::map<uint64_t, uint64_t>> metricClassToMetric;
@@ -356,8 +341,7 @@ struct meta_data {
 
 #endif
 
-    meta_data(uint32_t my_rank = 0, uint32_t num_ranks = 1)
-        : myRank(my_rank), numRanks(num_ranks), timerResolution(0) {
+    meta_data(uint32_t my_rank = 0, uint32_t num_ranks = 1) : myRank(my_rank), numRanks(num_ranks), timerResolution(0) {
 #ifdef OTFPROFILE_MPI
 
         packBufferSize = 0;
@@ -369,7 +353,7 @@ struct meta_data {
     ~meta_data() {
 #ifdef OTFPROFILE_MPI
 
-       freePackBuffer();
+        freePackBuffer();
 
 #endif
     }
@@ -398,4 +382,4 @@ struct meta_data {
 #endif /* OTFPROFILE_MPI */
 };
 
-#endif // DEFINITIONS_H
+#endif  // DEFINITIONS_H
