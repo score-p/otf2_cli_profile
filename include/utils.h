@@ -98,6 +98,8 @@ struct Params {
     // bool        logaxis            = true;
     uint8_t verbose_level = 0;
     // bool        read_from_stats    = false;
+    double      node_min_ratio     = 0;
+    uint32_t    top_nodes          = 0;
     bool        read_metrics       = true;  // counter
     bool        create_cube        = false;
     bool        create_json        = false;

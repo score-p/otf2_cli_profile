@@ -10,6 +10,8 @@ struct Node {
 	
 	std::string region;
 	uint32_t invocations = 0;
+
+	Node* parent = nullptr;
 	uint32_t num_children = 0;
 	
 	double min_incl_time = std::numeric_limits<uint64_t>::max();
@@ -23,54 +25,80 @@ struct Node {
 
 typedef std::vector<Node> Data;
 
+		// // push node "num_children" times on stack
+		// for (int i = 0; i < region.num_children; ++i)
+		// 	tmp.push(call_id);
 
+		// ++call_id; 
 
 Data read_data(AllData& alldata){
 	
 	Data data;
+	std::stack<Node*> parents;
+	int call_id = 0;
+
 	
-	for (auto& region : alldata.call_path_tree) {
-		Node node;
+	for ( auto& region : alldata.call_path_tree ) {
+		
+		Node* node = new Node;
 
 		std::string region_name = alldata.definitions.regions.get(region.function_id)->name;
-		
-		node.region = region_name;
-		
-		node.num_children = region.children.size();
+		node->region = region_name;
 
+		node->num_children = region.children.size();
+
+		node->call_id = call_id;
+		++call_id;
+		
 		double timerResolution = (double)alldata.metaData.timerResolution;
-		// acumulate data over all locations
-		for (auto& location : region.node_data) {	
 
-			node.invocations += location.second.f_data.count;
+		// acumulate data over all locations
+		for ( auto& location : region.node_data) {	
+
+			node->invocations += location.second.f_data.count;
 
 			double incl_time = location.second.f_data.incl_time / timerResolution;
-			if (node.min_incl_time > incl_time)
-				node.min_incl_time = incl_time;
-			if (node.max_incl_time < incl_time)
-				node.max_incl_time = incl_time;
-			node.sum_incl_time += incl_time;
+			if (node->min_incl_time > incl_time)
+				node->min_incl_time = incl_time;
+			if (node->max_incl_time < incl_time)
+				node->max_incl_time = incl_time;
+			node->sum_incl_time += incl_time;
 
 			double excl_time = location.second.f_data.excl_time / timerResolution;
-			if (node.min_excl_time > excl_time)
-				node.min_excl_time = excl_time;
-			if (node.max_excl_time < excl_time)
-				node.max_excl_time = excl_time;
-			node.sum_excl_time += excl_time;			
+			if (node->min_excl_time > excl_time)
+				node->min_excl_time = excl_time;
+			if (node->max_excl_time < excl_time)
+				node->max_excl_time = excl_time;
+			node->sum_excl_time += excl_time;			
+		}
+		
+		if ( parents.size() != 0){
+			node->parent = parents.top();
+			std::cout << parents.top()->call_id<< std::endl;
+			std::cout << "pop" << std::endl;
+			parents.pop();
 		}
 
-		data.push_back(node);
+		std::cout << node->call_id << std::endl;
+		if(node->parent != 0)
+			std::cout << node->parent->call_id << std::endl;
+
+		for ( int i = 0; i < region.children.size(); ++i ){
+			std::cout << "push" << std::endl;
+			parents.push(node);
+		}
+
+		data.push_back(*node);
 	}
 	return data;
 
 };
 
-void write_dot(Data data) {
+void print_dot(Data data) {
 
 	// temporary stack for saving parent nodes call_id
 	std::stack<uint32_t> tmp;
-	int call_id = 0;
-
+	
 	std::ofstream result_file;
 	result_file.open ("result.dot");
 
@@ -85,7 +113,7 @@ void write_dot(Data data) {
 	}
 	double timerange = max_time-min_time;
 
-	// head of graph file
+	// print head of graph file
 	result_file 
 		<< "digraph call_tree {\n"
 		<< "graph [splines=ortho];\n"
@@ -93,23 +121,26 @@ void write_dot(Data data) {
 		<< "edge [];\n"
 	<< std::endl;
 
-	// node
+	// print node
 	for ( auto& region : data ){
 		result_file 
-			<< "\"" << call_id << "\" [\n"
+			<< "\"" << region.call_id << "\" [\n"
 			<< "label = \"" 
-			<< "" << region.region << "\\l\n"
-			<< "invocations:" << region.invocations << "\\l\n"
+			<< "" << region.region << "\\l\n";
+		if(region.parent)
+			result_file << "parent" << region.parent->call_id << "\\l\n";
+		result_file
+			<< "invocations: " << region.invocations << "\\l\n"
 			<< "include time:" << "\\l\n"
-			<< "min: " << region.min_incl_time << "\\l\n"
-			<< "max: " << region.max_incl_time << "\\l\n"
-			<< "sum: " << region.sum_incl_time << "\\l\n"
-			<< "avg: " << region.sum_incl_time / region.invocations << "\\l\n"
+			<< " min: " << region.min_incl_time << "\\l\n"
+			<< " max: " << region.max_incl_time << "\\l\n"
+			<< " sum: " << region.sum_incl_time << "\\l\n"
+			<< " avg: " << region.sum_incl_time / region.invocations << "\\l\n"
 			<< "exclude time:" << "\\l\n"
-			<< "min: " << region.min_excl_time << "\\l\n"
-			<< "max: " << region.max_excl_time << "\\l\n"
-			<< "sum: " << region.sum_excl_time << "\\l\n"
-			<< "avg: " << region.sum_excl_time / region.invocations << "\\l\n"
+			<< " min: " << region.min_excl_time << "\\l\n"
+			<< " max: " << region.max_excl_time << "\\l\n"
+			<< " sum: " << region.sum_excl_time << "\\l\n"
+			<< " avg: " << region.sum_excl_time / region.invocations << "\\l\n"
 			<< "\"\n";
 		
 		// colorize node, 9 colors
@@ -122,27 +153,20 @@ void write_dot(Data data) {
 			<< "fillcolor=" << color_code << ",\n"
 			<< "style=filled";
 
-		// close node
+		// closing tag
 		result_file
 			<< "];"
 		<< std::endl;
 
-		// set edge to parent
-		if( call_id != 0){
+		// set edge netween node and parent
+		if( region.parent){
 			result_file 
-				<< tmp.top()
+				<< region.parent->call_id
 				<< " -> "
-				<< call_id
+				<< region.call_id
 				<< ";"
 			<< std::endl;
-			tmp.pop();
 		}
-
-		// push node "num_children" times on stack
-		for (int i = 0; i < region.num_children; ++i)
-			tmp.push(call_id);
-
-		++call_id; 
 	}
 
 	result_file << "}" << std::endl;
@@ -153,6 +177,6 @@ void write_dot(Data data) {
 bool CreateDot(AllData& alldata){
 	alldata.verbosePrint(1, true, "producing dot output");
 	Data data = read_data(alldata);
-	write_dot(data);
+	print_dot(data);
 	return true;
 };
