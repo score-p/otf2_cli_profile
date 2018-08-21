@@ -23,12 +23,13 @@ struct Node {
 	double sum_excl_time = 0;
 };
 
-typedef std::vector<Node> Data;
+typedef std::vector<Node*> Data;
 
 Data read_data(AllData& alldata){
 	
 	Data data;
 	std::stack<Node*> parents;
+	
 	int call_id = 0;
 
 	
@@ -69,7 +70,6 @@ Data read_data(AllData& alldata){
 			node->sum_excl_time += excl_time;			
 		}
 		
-
 		//set parent
 		if ( parents.size() != 0){
 			node->parent = parents.top();
@@ -80,16 +80,12 @@ Data read_data(AllData& alldata){
 		for ( int i = 0; i < region.children.size(); ++i )
 			parents.push(node);
 
-		data.push_back(*node);
+		data.push_back(node);
 	}
 	return data;
-
 };
 
 void print_dot(Data data) {
-
-	// temporary stack for saving parent nodes call_id
-	std::stack<uint32_t> tmp;
 	
 	std::ofstream result_file;
 	result_file.open ("result.dot");
@@ -98,17 +94,17 @@ void print_dot(Data data) {
 	double min_time = std::numeric_limits<uint64_t>::max();
 	double max_time = 0;
 	for (auto& region : data){
-		if(region.sum_excl_time < min_time)
-			min_time = region.sum_excl_time;
-		if(region.sum_excl_time > max_time)
-			max_time = region.sum_excl_time;
+		if(region->sum_excl_time < min_time)
+			min_time = region->sum_excl_time;
+		if(region->sum_excl_time > max_time)
+			max_time = region->sum_excl_time;
 	}
 	double timerange = max_time-min_time;
 
-	// print head of graph file
+	// print header of graph file
 	result_file 
 		<< "digraph call_tree {\n"
-		<< "graph [splines=ortho];\n"
+		<< "graph [splines=ortho, ranksep=1.5];\n"
 		<< "node [shape = record, colorscheme=spectral9];\n"
 		<< "edge [];\n"
 	<< std::endl;
@@ -116,54 +112,52 @@ void print_dot(Data data) {
 	// print node
 	for ( auto& region : data ){
 		result_file 
-			<< "\"" << region.call_id << "\" [\n"
+			<< "\"" << region->call_id << "\" [\n"
 			<< "label = \"" 
-			<< "" << region.region << "\\l\n";
-		if(region.parent)
-			result_file << "parent" << region.parent->call_id << "\\l\n";
+			<< "" << region->region << "\\l\n";
+
+		if(region->parent)
+			result_file << "parent" << region->parent->call_id << "\\l\n";
+
 		result_file
-			<< "invocations: " << region.invocations << "\\l\n"
+			<< "invocations: " << region->invocations << "\\l\n"
 			<< "include time:" << "\\l\n"
-			<< " min: " << region.min_incl_time << "\\l\n"
-			<< " max: " << region.max_incl_time << "\\l\n"
-			<< " sum: " << region.sum_incl_time << "\\l\n"
-			<< " avg: " << region.sum_incl_time / region.invocations << "\\l\n"
+			<< " min: " << region->min_incl_time << "\\l\n"
+			<< " max: " << region->max_incl_time << "\\l\n"
+			<< " sum: " << region->sum_incl_time << "\\l\n"
+			<< " avg: " << region->sum_incl_time / region->invocations << "\\l\n"
 			<< "exclude time:" << "\\l\n"
-			<< " min: " << region.min_excl_time << "\\l\n"
-			<< " max: " << region.max_excl_time << "\\l\n"
-			<< " sum: " << region.sum_excl_time << "\\l\n"
-			<< " avg: " << region.sum_excl_time / region.invocations << "\\l\n"
+			<< " min: " << region->min_excl_time << "\\l\n"
+			<< " max: " << region->max_excl_time << "\\l\n"
+			<< " sum: " << region->sum_excl_time << "\\l\n"
+			<< " avg: " << region->sum_excl_time / region->invocations << "\\l\n"
 			<< "\"\n";
 		
 		// colorize node, 9 colors
 		int color_code = 9;
-		for (int i = 0; i < 9; ++i){
-			if(region.sum_excl_time >= timerange/9*i+min_time)
+		for (int i = 0; i < 9; ++i)
+			if(region->sum_excl_time >= timerange/9*i+min_time)
 				color_code = 9-i;
-		};
+
 		result_file
 			<< "fillcolor=" << color_code << ",\n"
 			<< "style=filled";
 
 		// closing tag
-		result_file
-			<< "];"
-		<< std::endl;
+		result_file	<< "];"	<< std::endl;
 
 		// set edge netween node and parent
-		if( region.parent){
+		if( region->parent){
 			result_file 
-				<< region.parent->call_id
+				<< region->parent->call_id
 				<< " -> "
-				<< region.call_id
+				<< region->call_id
 				<< ";"
 			<< std::endl;
 		}
 	}
 
 	result_file << "}" << std::endl;
-
-
 };
 
 bool CreateDot(AllData& alldata){
