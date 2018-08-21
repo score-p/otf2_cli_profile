@@ -25,12 +25,6 @@ struct Node {
 
 typedef std::vector<Node> Data;
 
-		// // push node "num_children" times on stack
-		// for (int i = 0; i < region.num_children; ++i)
-		// 	tmp.push(call_id);
-
-		// ++call_id; 
-
 Data read_data(AllData& alldata){
 	
 	Data data;
@@ -42,13 +36,16 @@ Data read_data(AllData& alldata){
 		
 		Node* node = new Node;
 
-		std::string region_name = alldata.definitions.regions.get(region.function_id)->name;
-		node->region = region_name;
-
-		node->num_children = region.children.size();
-
+		//call_id
 		node->call_id = call_id;
 		++call_id;
+
+		//regionname
+		std::string region_name = alldata.definitions.regions.get(region.function_id)->name;
+		node->region = region_name;
+		
+		node->num_children = region.children.size();
+		
 		
 		double timerResolution = (double)alldata.metaData.timerResolution;
 
@@ -72,21 +69,16 @@ Data read_data(AllData& alldata){
 			node->sum_excl_time += excl_time;			
 		}
 		
+
+		//set parent
 		if ( parents.size() != 0){
 			node->parent = parents.top();
-			std::cout << parents.top()->call_id<< std::endl;
-			std::cout << "pop" << std::endl;
 			parents.pop();
 		}
 
-		std::cout << node->call_id << std::endl;
-		if(node->parent != 0)
-			std::cout << node->parent->call_id << std::endl;
-
-		for ( int i = 0; i < region.children.size(); ++i ){
-			std::cout << "push" << std::endl;
+		//save this node for parent children relation
+		for ( int i = 0; i < region.children.size(); ++i )
 			parents.push(node);
-		}
 
 		data.push_back(*node);
 	}
