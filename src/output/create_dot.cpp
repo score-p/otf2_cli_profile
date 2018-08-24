@@ -25,13 +25,13 @@ struct Node {
 
 typedef std::vector<Node*> Data;
 
-Data read_data(AllData& alldata){
+Data read_data(AllData& alldata) {
 	
 	Data data;
 	std::stack<Node*> parents;
 	
 	int call_id = 0;
-
+	// uint64_t total_time = alldata[0]. 
 	
 	for ( auto& region : alldata.call_path_tree ) {
 		
@@ -69,7 +69,6 @@ Data read_data(AllData& alldata){
 				node->max_excl_time = excl_time;
 			node->sum_excl_time += excl_time;			
 		}
-		
 		//set parent
 		if ( parents.size() != 0){
 			node->parent = parents.top();
@@ -79,13 +78,12 @@ Data read_data(AllData& alldata){
 		//save this node for parent children relation
 		for ( int i = 0; i < region.children.size(); ++i )
 			parents.push(node);
-
 		data.push_back(node);
 	}
 	return data;
 };
 
-void print_dot(Data data) {
+void print_dot(const Data& data, int node_min_ratio = 0) {
 	
 	std::ofstream result_file;
 	result_file.open ("result.dot");
@@ -115,34 +113,39 @@ void print_dot(Data data) {
 			<< "\"" << region->call_id << "\" [\n"
 			<< "label = \"" 
 			<< "" << region->region << "\\l\n";
+		// Filter, this way only for testing	
+		// replace with node_min_ratio	
+		if(region->sum_excl_time > node_min_ratio){
 
-		if(region->parent)
-			result_file << "parent" << region->parent->call_id << "\\l\n";
+			if(region->parent)
+				result_file << "parent" << region->parent->call_id << "\\l\n";
 
-		result_file
-			<< "invocations: " << region->invocations << "\\l\n"
-			<< "include time:" << "\\l\n"
-			<< " min: " << region->min_incl_time << "\\l\n"
-			<< " max: " << region->max_incl_time << "\\l\n"
-			<< " sum: " << region->sum_incl_time << "\\l\n"
-			<< " avg: " << region->sum_incl_time / region->invocations << "\\l\n"
-			<< "exclude time:" << "\\l\n"
-			<< " min: " << region->min_excl_time << "\\l\n"
-			<< " max: " << region->max_excl_time << "\\l\n"
-			<< " sum: " << region->sum_excl_time << "\\l\n"
-			<< " avg: " << region->sum_excl_time / region->invocations << "\\l\n"
-			<< "\"\n";
-		
-		// colorize node, 9 colors
-		int color_code = 9;
-		for (int i = 0; i < 9; ++i)
-			if(region->sum_excl_time >= timerange/9*i+min_time)
-				color_code = 9-i;
+			result_file
+				<< "invocations: " << region->invocations << "\\l\n"
+				<< "include time:" << "\\l\n"
+				<< " min: " << region->min_incl_time << "\\l\n"
+				<< " max: " << region->max_incl_time << "\\l\n"
+				<< " sum: " << region->sum_incl_time << "\\l\n"
+				<< " avg: " << region->sum_incl_time / region->invocations << "\\l\n"
+				<< "exclude time:" << "\\l\n"
+				<< " min: " << region->min_excl_time << "\\l\n"
+				<< " max: " << region->max_excl_time << "\\l\n"
+				<< " sum: " << region->sum_excl_time << "\\l\n"
+				<< " avg: " << region->sum_excl_time / region->invocations << "\\l\n"
+				<< "\"\n";
+			
+			// colorize node, 9 colors
+			int color_code = 9;
+			for (int i = 0; i < 9; ++i)
+				if(region->sum_excl_time >= timerange/9*i+min_time)
+					color_code = 9-i;
 
-		result_file
-			<< "fillcolor=" << color_code << ",\n"
-			<< "style=filled";
-
+			result_file
+				<< "fillcolor=" << color_code << ",\n"
+				<< "style=filled";
+		} else {
+			result_file << "\"\n";
+		}
 		// closing tag
 		result_file	<< "];"	<< std::endl;
 
@@ -160,9 +163,9 @@ void print_dot(Data data) {
 	result_file << "}" << std::endl;
 };
 
-bool CreateDot(AllData& alldata){
+bool CreateDot(AllData& alldata) {
 	alldata.verbosePrint(1, true, "producing dot output");
 	Data data = read_data(alldata);
-	print_dot(data);
+	print_dot(data, alldata.params.node_min_ratio);
 	return true;
 };

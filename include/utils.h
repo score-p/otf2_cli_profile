@@ -128,6 +128,8 @@ struct Params {
                           << "      --cube              generate CUBE xml profile" << std::endl
                           << "      --xlsx              generate XLSX ouptut file" << std::endl
                           << "      --dot               generate dot file for drawing graphs" << std::endl
+                          << "        -filter <percent> only show path, where nodes took at least num \% of total time" << std::endl
+                          << "        -top <num>        only show top num nodes" << std::endl
                           << std::endl
                           << "                          (default: 50)" << std::endl
                           << "      -b <size>           set buffersize of the reader in Byte" << std::endl
@@ -158,8 +160,28 @@ struct Params {
                 create_cube = true;
             } else if (arguments[i] == "--json") {
                 create_json = true;
+            
+            } else if (arguments[i] == "--dot-filter") {
+                auto value = checkNextValue(arguments, i);
+
+                if (value < 0 || value > 100)
+                    return false;
+
+                node_min_ratio = value;
+                ++i;
+                create_dot = true;
+            } else if (arguments[i] == "--dot -top=") {
+                auto value = checkNextValue(arguments, i);
+
+                if (value < 0)
+                    return false;
+
+                top_nodes = value;
+                ++i;
+
             } else if (arguments[i] == "--dot") {
                 create_dot = true;
+            
             } else if (arguments[i] == "-i") {
                 if (!checkNext(arguments, i))
                     return false;
