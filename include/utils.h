@@ -98,7 +98,8 @@ struct Params {
     // bool        logaxis            = true;
     uint8_t verbose_level = 0;
     // bool        read_from_stats    = false;
-    double      node_min_ratio     = 0;
+    float       node_min_ratio     = 0;
+    int32_t     rank               = -1;
     uint32_t    top_nodes          = 0;
     bool        read_metrics       = true;  // counter
     bool        create_cube        = false;
@@ -130,6 +131,7 @@ struct Params {
                           << "      --dot               generate dot file for drawing graphs" << std::endl
                           << "        -filter <percent> only show path, where nodes took at least num \% of total time" << std::endl
                           << "        -top <num>        only show top num nodes" << std::endl
+                          << "        -rank             only show specific rank" << std::endl
                           << std::endl
                           << "                          (default: 50)" << std::endl
                           << "      -b <size>           set buffersize of the reader in Byte" << std::endl
@@ -161,7 +163,7 @@ struct Params {
             } else if (arguments[i] == "--json") {
                 create_json = true;
             
-            } else if (arguments[i] == "--dot-filter") {
+            } else if (arguments[i] == "-filter") {
                 auto value = checkNextValue(arguments, i);
 
                 if (value < 0 || value > 100)
@@ -170,13 +172,13 @@ struct Params {
                 node_min_ratio = value;
                 ++i;
                 create_dot = true;
-            } else if (arguments[i] == "--dot -top=") {
+            } else if (arguments[i] == "-rank") {
                 auto value = checkNextValue(arguments, i);
 
                 if (value < 0)
                     return false;
 
-                top_nodes = value;
+                rank = value;
                 ++i;
 
             } else if (arguments[i] == "--dot") {
