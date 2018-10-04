@@ -19,10 +19,13 @@ struct Node {
     double min_incl_time = std::numeric_limits<uint64_t>::max();
     double max_incl_time = 0;
     double sum_incl_time = 0;
+    double avg_incl_time = 0;
 
     double min_excl_time = std::numeric_limits<uint64_t>::max();
     double max_excl_time = 0;
     double sum_excl_time = 0;
+    double avg_excl_time = 0;
+
 };
 
 typedef std::vector<Node*> Data;
@@ -79,6 +82,11 @@ Data read_data(AllData& alldata) {
                 node->max_excl_time = excl_time;
             node->sum_excl_time += excl_time;
         }
+
+        // average time
+        node->avg_incl_time = node->sum_incl_time / region.node_data.size();
+        node->avg_excl_time = node->sum_excl_time / region.node_data.size();
+
 
         if(parent_nodes.size() != 0){
             
@@ -151,21 +159,18 @@ void print_dot(const Data& data, const Params& params) {
             // Populate Node only when filter not apply
             if( region->sum_excl_time > params.node_min_ratio ){
 
-                if( region->parent )
-                    result_file << "parent" << region->parent->call_id << "\\l\n";
-
                 result_file
                     << "invocations: " << region->invocations << "\\l\n"
                     << "include time:" << "\\l\n"
                     << " min: " << region->min_incl_time << "\\l\n"
                     << " max: " << region->max_incl_time << "\\l\n"
                     << " sum: " << region->sum_incl_time << "\\l\n"
-                    << " avg: " << region->sum_incl_time / region->invocations << "\\l\n"
+                    << " avg: " << region->avg_incl_time << "\\l\n"
                     << "exclude time:" << "\\l\n"
                     << " min: " << region->min_excl_time << "\\l\n"
                     << " max: " << region->max_excl_time << "\\l\n"
                     << " sum: " << region->sum_excl_time << "\\l\n"
-                    << " avg: " << region->sum_excl_time / region->invocations << "\\l\n"
+                    << " avg: " << region->avg_excl_time << "\\l\n"
                     << "\"\n";
                 
                 // colorize node, 9 colors
