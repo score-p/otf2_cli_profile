@@ -30,9 +30,6 @@ struct Node {
 
 typedef std::vector<Node*> Data;
 
-bool filter_rank(Params& params){
-
-}
 
 Data read_data(AllData& alldata) {
     
@@ -57,30 +54,30 @@ Data read_data(AllData& alldata) {
         // number of children
         node->num_children = region.children.size();
         
-        
+        // mpi time resolution
         double timerResolution = (double)alldata.metaData.timerResolution;
 
         // acumulate data over all locations
+        for (const auto& location : region.node_data) {
+            // filter per rank
+            if(alldata.params.rank == -1 || alldata.params.rank == location.first){
+                
+                node->invocations += location.second.f_data.count;
 
-        for (const auto& location : region.node_data) {  
-            if(alldata.params.rank != -1 && alldata.params.rank != location.first){
-                continue;
+                double incl_time = location.second.f_data.incl_time / timerResolution;
+                if (node->min_incl_time > incl_time)
+                    node->min_incl_time = incl_time;
+                if (node->max_incl_time < incl_time)
+                    node->max_incl_time = incl_time;
+                node->sum_incl_time += incl_time;
+
+                double excl_time = location.second.f_data.excl_time / timerResolution;
+                if (node->min_excl_time > excl_time)
+                    node->min_excl_time = excl_time;
+                if (node->max_excl_time < excl_time)
+                    node->max_excl_time = excl_time;
+                node->sum_excl_time += excl_time;
             }
-            node->invocations += location.second.f_data.count;
-
-            double incl_time = location.second.f_data.incl_time / timerResolution;
-            if (node->min_incl_time > incl_time)
-                node->min_incl_time = incl_time;
-            if (node->max_incl_time < incl_time)
-                node->max_incl_time = incl_time;
-            node->sum_incl_time += incl_time;
-
-            double excl_time = location.second.f_data.excl_time / timerResolution;
-            if (node->min_excl_time > excl_time)
-                node->min_excl_time = excl_time;
-            if (node->max_excl_time < excl_time)
-                node->max_excl_time = excl_time;
-            node->sum_excl_time += excl_time;
         }
 
         // average time
@@ -94,7 +91,7 @@ Data read_data(AllData& alldata) {
             // add this node to their children
             parent_nodes.top()->children.push_back(node);
 
-            // add parent
+            // add parent to this node
             node->parent = parent_nodes.top();
             parent_nodes.pop();
 
@@ -131,6 +128,7 @@ void print_dot(const Data& data, const Params& params) {
     // find min and max value for excl time
     double min_time = std::numeric_limits<uint64_t>::max();
     double max_time = 0;
+
     for( const auto& region : data ){
         if( region->sum_excl_time < min_time )
             min_time = region->sum_excl_time;
@@ -150,6 +148,7 @@ void print_dot(const Data& data, const Params& params) {
 
     // print node
     for( const auto& region : data ){
+        // filter nodes
         if( filter_min_ratio( region, params ) == true){
             result_file 
                 << "\"" << region->call_id << "\" [\n"
