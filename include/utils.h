@@ -163,27 +163,31 @@ struct Params {
             } else if (arguments[i] == "--json") {
                 create_json = true;
             
+            } else if (arguments[i] == "--dot") {
+                create_dot = true;
+
             } else if (arguments[i] == "-filter") {
                 auto value = checkNextValue(arguments, i);
-
                 if (value < 0 || value > 100)
                     return false;
 
                 node_min_ratio = value;
                 ++i;
-                create_dot = true;
             } else if (arguments[i] == "-rank") {
                 auto value = checkNextValue(arguments, i);
-
                 if (value < 0)
                     return false;
 
                 rank = value;
                 ++i;
+            } else if (arguments[i] == "-top") {
+            auto value = checkNextValue(arguments, i);
+            if (value < 0)
+                return false;
 
-            } else if (arguments[i] == "--dot") {
-                create_dot = true;
-            
+            top_nodes = value;
+            ++i;
+            create_dot = true;
             } else if (arguments[i] == "-i") {
                 if (!checkNext(arguments, i))
                     return false;
