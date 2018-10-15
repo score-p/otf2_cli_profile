@@ -126,20 +126,6 @@ private:
     std::string shape = "record";
     std::string colorscheme = "spectral9";
 public:
-    void print(){
-        for( const auto& region : data ){
-            if(params.node_min_ratio == 0 || params.node_min_ratio == 100){
-                print_node(region);
-            }
-            else
-            {
-                if(region->sum_excl_time > params.node_min_ratio)
-                    print_node(region);
-                else if( filter_min_ratio(region) )
-                    print_node_partial(region);
-            }
-        }
-    }
 
     bool open(std::string filename = "result.dot"){
         result_file.open(filename);
@@ -177,16 +163,33 @@ public:
         timerange = max_time - min_time;
     }
 
-    // go through all nodes, returns true when filter apply to any descendent
-    bool filter_min_ratio(const Node* node){
-        for(const auto& child : node->children){
-            if(filter_min_ratio(child) == true)
-                return true;
+    void print(){
+        
+        for( const auto& region : data ){
+            if(params.node_min_ratio == 0 || params.node_min_ratio == 100){
+                print_node(*region);
+            }
+            else {
+                if(region->sum_excl_time > params.node_min_ratio){
+                    print_node(*region);
+                    print_predecessor(*region);
+                }
+            }
         }
-        if(node->sum_excl_time > params.node_min_ratio)
-            return true;
+    }
 
-        return false;
+
+    // draw all predessor
+    void print_predecessor( Node& region){
+        Node* curr = &region;
+        while( curr->parent != nullptr){
+            curr = region.parent;
+            // draw if parent node hasn't been drawn yet else break
+            if(printed_nodes.find(curr->call_id) == printed_nodes.end())
+                print_node_partial(*curr);
+            else
+                break;
+        }
     }
 
     void print_node_partial(Node* region){
@@ -217,6 +220,8 @@ public:
                 << ";"
             << std::endl;
         }
+
+        printed_nodes[region.call_id] = &region;
     }
 
     void print_node(Node* region){
