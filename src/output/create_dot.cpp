@@ -121,10 +121,11 @@ private:
     std::map<uint32_t, Node*> printed_nodes;
 
     // graph parameter
-    std::string splines = "ortho";
-    float ranksep = 1.5;
-    std::string shape = "record";
-    std::string colorscheme = "spectral9";
+    const std::string splines = "ortho";
+    const float ranksep = 1.5;
+    const std::string shape = "record";
+    const std::string colorscheme = "spectral9";
+    const int num_colors = 9;
 public:
 
     bool open(std::string filename = "result.dot"){
@@ -194,9 +195,10 @@ public:
 
     void print_node_partial(Node* region){
         result_file 
-                << "\"" << region->call_id << "\" ["
+                << "\"" << region.call_id << "\" ["
                 << "label = \"" 
-                << region->region << "\"" << std::endl;
+                << region.region << "\"" << std::endl;
+        
         // colorize node, 9 colors
         int num_colors = 9;
         int color_code = num_colors;
@@ -212,11 +214,11 @@ public:
         result_file << "];\n" << std::endl;
 
         // set edge netween node and parent
-        if( region->parent){
+        if( region.parent){
             result_file 
-                << region->parent->call_id
+                << region.parent->call_id
                 << " -> "
-                << region->call_id
+                << region.call_id
                 << ";"
             << std::endl;
         }
@@ -224,23 +226,23 @@ public:
         printed_nodes[region.call_id] = &region;
     }
 
-    void print_node(Node* region){
+    void print_node(Node& region){
         // filter nodes
         result_file 
-            << "\"" << region->call_id << "\" [\n"
+            << "\"" << region.call_id << "\" [\n"
             << " label = \"" 
-            << region->region << "\\l\n"
-            << " invocations: " << region->invocations << "\\l\n"
+            << region.region << "\\l\n"
+            << " invocations: " << region.invocations << "\\l\n"
             << " include time:" << "\\l\n"
-            << "  min: " << region->min_incl_time << "\\l\n"
-            << "  max: " << region->max_incl_time << "\\l\n"
-            << "  sum: " << region->sum_incl_time << "\\l\n"
-            << "  avg: " << region->avg_incl_time << "\\l\n"
+            << "  min: " << region.min_incl_time << "\\l\n"
+            << "  max: " << region.max_incl_time << "\\l\n"
+            << "  sum: " << region.sum_incl_time << "\\l\n"
+            << "  avg: " << region.avg_incl_time << "\\l\n"
             << " exclude time:" << "\\l\n"
-            << "  min: " << region->min_excl_time << "\\l\n"
-            << "  max: " << region->max_excl_time << "\\l\n"
-            << "  sum: " << region->sum_excl_time << "\\l\n"
-            << "  avg: " << region->avg_excl_time << "\\l\n"
+            << "  min: " << region.min_excl_time << "\\l\n"
+            << "  max: " << region.max_excl_time << "\\l\n"
+            << "  sum: " << region.sum_excl_time << "\\l\n"
+            << "  avg: " << region.avg_excl_time << "\\l\n"
             << " \"\n";
         
         // colorize node, 9 colors
@@ -258,11 +260,11 @@ public:
         result_file << "];\n" << std::endl;
 
         // set edge netween node and parent
-        if( region->parent){
+        if( region.parent){
             result_file 
-                << region->parent->call_id
+                << region.parent->call_id
                 << " -> "
-                << region->call_id
+                << region.call_id
                 << ";"
             << std::endl;
         }
