@@ -130,8 +130,8 @@ struct Params {
                           << "      --xlsx              generate XLSX ouptut file" << std::endl
                           << "      --dot               generate dot file for drawing graphs" << std::endl
                           << "        -filter <percent> only show path, where nodes took at least num \% of total time" << std::endl
-                          << "        -top <num>        only show top num nodes" << std::endl
-                          << "        -rank             only show specific rank" << std::endl
+                          << "        -top <n>          only show top num nodes" << std::endl
+                          << "        -rank <n>         only show specific rank" << std::endl
                           << std::endl
                           << "                          (default: 50)" << std::endl
                           << "      -b <size>           set buffersize of the reader in Byte" << std::endl
