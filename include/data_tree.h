@@ -104,9 +104,10 @@ class tree_iter {
 
     tree_node* get() { return node_ptr; }
 
-    tree_iter operator=(tree_iter& _rhs_it) {
+    tree_iter& operator=(tree_iter& _rhs_it) {
         node_ptr = _rhs_it.node_ptr;
         tree_ptr = _rhs_it.tree_ptr;
+        return *this;
     };
 
     tree_node& operator*() { return *node_ptr; };
