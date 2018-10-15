@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <stack>
+#include <algorithm>
 
 #include "create_dot.h"
 struct Node {
@@ -193,22 +194,33 @@ public:
         }
     }
 
-    void print_node_partial(Node* region){
+
+
+    void top_nodes(){
+        int num = params.top_nodes;
+        std::sort(data.begin(), data.end(), [](Node* a, Node* b){
+            return a->sum_excl_time > b->sum_excl_time;
+        });
+
+        for( auto it = data.begin(); it != data.begin()+num; ++it ){
+            if(*it == nullptr)
+                break;
+
+            print_node(**it);
+            print_predecessor(**it);
+        }
+    }
+
+    void print_node_partial(Node& region){
         result_file 
                 << "\"" << region.call_id << "\" ["
                 << "label = \"" 
                 << region.region << "\"" << std::endl;
         
         // colorize node, 9 colors
-        int num_colors = 9;
-        int color_code = num_colors;
-        for( int i = 0; i < num_colors; ++i ){
-            if( region->sum_excl_time >= timerange/num_colors*i+min_time )
-                color_code = num_colors-i;
-        }
         result_file
-            << "fillcolor=" << color_code << ",\n"
-            << "style=filled\n";
+            << " fillcolor=" << node_color(region.sum_excl_time) << ",\n"
+            << " style=filled\n";
 
         // closing tag
         result_file << "];\n" << std::endl;
@@ -246,14 +258,8 @@ public:
             << " \"\n";
         
         // colorize node, 9 colors
-        int num_colors = 9;
-        int color_code = num_colors;
-        for( int i = 0; i < num_colors; ++i ){
-            if( region->sum_excl_time >= timerange/num_colors*i+min_time )
-                color_code = num_colors-i;
-        }
         result_file
-            << " fillcolor=" << color_code << ",\n"
+            << " fillcolor=" << node_color(region.sum_excl_time) << ",\n"
             << " style=filled\n";
 
         // closing tag
@@ -268,6 +274,17 @@ public:
                 << ";"
             << std::endl;
         }
+
+        printed_nodes[region.call_id] = &region;
+    }
+
+    int node_color(const double time){
+        int color_code = num_colors;
+        for( int i = 0; i < num_colors; ++i ){
+            if( time >= timerange/num_colors*i+min_time )
+                color_code = num_colors-i;
+        }
+        return color_code;
     }
 };
 
@@ -276,6 +293,7 @@ bool CreateDot(AllData& alldata) {
     Data* data = read_data(alldata);
     Dot_writer writer(*data, alldata.params);
     writer.open("res.dot");
+    // writer.top_nodes();
     writer.print();
     writer.close();
     return true;
