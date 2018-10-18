@@ -30,7 +30,7 @@ struct Node {
 
 typedef std::vector<Node*> Data;
 
-Data* read_data( AllData& alldata) {
+Data& read_data( AllData& alldata) {
     
     Data* data = new Data;
     std::stack<Node*> parent_nodes;
@@ -103,7 +103,7 @@ Data* read_data( AllData& alldata) {
         //finish
         data->push_back(node);
     }
-    return data;
+    return *data;
 }
 
 class Dot_writer{
@@ -154,6 +154,29 @@ public:
         result_file.close();
     }
 
+
+    void print(){
+        //top_nodes!!!
+        if(params.top_nodes != 0){
+            top_nodes();
+            return;
+        }
+        if(params.node_min_ratio == 0 || params.node_min_ratio == 100){
+            for( const auto& region : data ){
+                print_node(*region);
+            }
+            return;
+        }
+        else {
+            for(const auto& region : data){
+                if(region->sum_excl_time > params.node_min_ratio){
+                    print_node(*region);
+                    print_predecessor(*region);
+                }
+            }
+        }
+    }
+private:
     void getMeta(){
         
         for( const auto& region : data ){
@@ -164,22 +187,6 @@ public:
         }
         timerange = max_time - min_time;
     }
-
-    void print(){
-        
-        for( const auto& region : data ){
-            if(params.node_min_ratio == 0 || params.node_min_ratio == 100){
-                print_node(*region);
-            }
-            else {
-                if(region->sum_excl_time > params.node_min_ratio){
-                    print_node(*region);
-                    print_predecessor(*region);
-                }
-            }
-        }
-    }
-
 
     // draw all predessor
     void print_predecessor( Node& region){
@@ -194,16 +201,15 @@ public:
         }
     }
 
-
-
     void top_nodes(){
         int num = params.top_nodes;
         std::sort(data.begin(), data.end(), [](Node* a, Node* b){
             return a->sum_excl_time > b->sum_excl_time;
         });
 
-        for( auto it = data.begin(); it != data.begin()+num; ++it ){
-            if(*it == nullptr)
+
+        for( auto it = data.begin(); it != data.begin()+num-1; ++it ){
+            if(it == data.end())
                 break;
 
             print_node(**it);
@@ -290,11 +296,12 @@ public:
 
 bool CreateDot(AllData& alldata) {
     alldata.verbosePrint(1, true, "producing dot output");
-    Data* data = read_data(alldata);
-    Dot_writer writer(*data, alldata.params);
+    Data data = read_data(alldata);
+    Dot_writer writer(data, alldata.params);
     writer.open("res.dot");
-    // writer.top_nodes();
     writer.print();
     writer.close();
     return true;
 }
+
+
