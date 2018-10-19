@@ -91,6 +91,8 @@ if (HAVE_JSON AND USE_JSON)
 endif (HAVE_JSON AND USE_JSON)
 
 list(APPEND SOURCE_FILES src/output/create_dot.cpp)
+list(APPEND SOURCE_FILES src/output/dot_writer.cpp)
+
 
 
 if (HAVE_MPI AND BUILD_MPI_VERSION)

@@ -1,0 +1,2304 @@
+digraph call_tree {
+graph [splines=ortho, ranksep=1.5];
+node [shape = record, colorscheme=spectral9];
+edge [];
+
+"0" [
+ label = "MAIN__\l
+ invocations: 1\l
+ include time:\l
+  min: 82.4923\l
+  max: 82.4923\l
+  sum: 82.4923\l
+  avg: 10.3115\l
+ exclude time:\l
+  min: 0.0148048\l
+  max: 0.0148048\l
+  sum: 0.0148048\l
+  avg: 0.0018506\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+"1" [
+ label = "module_wrf_top_mp_wrf_init_\l
+ invocations: 1\l
+ include time:\l
+  min: 11.6085\l
+  max: 11.6085\l
+  sum: 11.6085\l
+  avg: 1.45107\l
+ exclude time:\l
+  min: 7.94152\l
+  max: 7.94152\l
+  sum: 7.94152\l
+  avg: 0.99269\l
+ "
+ fillcolor=4,
+ style=filled
+];
+
+0 -> 1;
+"2" [
+ label = "MPI_Bcast\l
+ invocations: 252\l
+ include time:\l
+  min: 0.0129898\l
+  max: 0.0129898\l
+  sum: 0.0129898\l
+  avg: 0.00162373\l
+ exclude time:\l
+  min: 0.0129898\l
+  max: 0.0129898\l
+  sum: 0.0129898\l
+  avg: 0.00162373\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+1 -> 2;
+"3" [
+ label = "MPI_Gather\l
+ invocations: 142\l
+ include time:\l
+  min: 0.0047695\l
+  max: 0.0047695\l
+  sum: 0.0047695\l
+  avg: 0.000596188\l
+ exclude time:\l
+  min: 0.0047695\l
+  max: 0.0047695\l
+  sum: 0.0047695\l
+  avg: 0.000596188\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+1 -> 3;
+"4" [
+ label = "MPI_Gatherv\l
+ invocations: 71\l
+ include time:\l
+  min: 0.00222711\l
+  max: 0.00222711\l
+  sum: 0.00222711\l
+  avg: 0.000278389\l
+ exclude time:\l
+  min: 0.00222711\l
+  max: 0.00222711\l
+  sum: 0.00222711\l
+  avg: 0.000278389\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+1 -> 4;
+"5" [
+ label = "MPI_Init\l
+ invocations: 1\l
+ include time:\l
+  min: 2.86117\l
+  max: 2.86117\l
+  sum: 2.86117\l
+  avg: 0.357647\l
+ exclude time:\l
+  min: 2.86117\l
+  max: 2.86117\l
+  sum: 2.86117\l
+  avg: 0.357647\l
+ "
+ fillcolor=7,
+ style=filled
+];
+
+1 -> 5;
+"6" [
+ label = "MPI_Initialized\l
+ invocations: 3\l
+ include time:\l
+  min: 0.000119483\l
+  max: 0.000119483\l
+  sum: 0.000119483\l
+  avg: 1.49354e-05\l
+ exclude time:\l
+  min: 0.000119483\l
+  max: 0.000119483\l
+  sum: 0.000119483\l
+  avg: 1.49354e-05\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+1 -> 6;
+"7" [
+ label = "MPI_Scatterv\l
+ invocations: 71\l
+ include time:\l
+  min: 0.0107412\l
+  max: 0.0107412\l
+  sum: 0.0107412\l
+  avg: 0.00134265\l
+ exclude time:\l
+  min: 0.0107412\l
+  max: 0.0107412\l
+  sum: 0.0107412\l
+  avg: 0.00134265\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+1 -> 7;
+"8" [
+ label = "init_modules_em_\l
+ invocations: 1\l
+ include time:\l
+  min: 4.66171e-05\l
+  max: 4.66171e-05\l
+  sum: 4.66171e-05\l
+  avg: 5.82714e-06\l
+ exclude time:\l
+  min: 4.66171e-05\l
+  max: 4.66171e-05\l
+  sum: 4.66171e-05\l
+  avg: 5.82714e-06\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+1 -> 8;
+"9" [
+ label = "module_wrf_top_mp_set_derived_rconfigs_\l
+ invocations: 1\l
+ include time:\l
+  min: 5.78171e-05\l
+  max: 5.78171e-05\l
+  sum: 5.78171e-05\l
+  avg: 7.22714e-06\l
+ exclude time:\l
+  min: 5.78171e-05\l
+  max: 5.78171e-05\l
+  sum: 5.78171e-05\l
+  avg: 7.22714e-06\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+1 -> 9;
+"10" [
+ label = "start_domain_em_\l
+ invocations: 1\l
+ include time:\l
+  min: 0.774891\l
+  max: 0.774891\l
+  sum: 0.774891\l
+  avg: 0.0968614\l
+ exclude time:\l
+  min: 0.555912\l
+  max: 0.555912\l
+  sum: 0.555912\l
+  avg: 0.069489\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+1 -> 10;
+"11" [
+ label = "MPI_Allreduce\l
+ invocations: 2\l
+ include time:\l
+  min: 0.000187951\l
+  max: 0.000187951\l
+  sum: 0.000187951\l
+  avg: 2.34939e-05\l
+ exclude time:\l
+  min: 0.000187951\l
+  max: 0.000187951\l
+  sum: 0.000187951\l
+  avg: 2.34939e-05\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+10 -> 11;
+"12" [
+ label = "MPI_Irecv\l
+ invocations: 30\l
+ include time:\l
+  min: 0.0166077\l
+  max: 0.0166077\l
+  sum: 0.0166077\l
+  avg: 0.00207597\l
+ exclude time:\l
+  min: 0.0166077\l
+  max: 0.0166077\l
+  sum: 0.0166077\l
+  avg: 0.00207597\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+10 -> 12;
+"13" [
+ label = "MPI_Isend\l
+ invocations: 30\l
+ include time:\l
+  min: 0.0016851\l
+  max: 0.0016851\l
+  sum: 0.0016851\l
+  avg: 0.000210638\l
+ exclude time:\l
+  min: 0.0016851\l
+  max: 0.0016851\l
+  sum: 0.0016851\l
+  avg: 0.000210638\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+10 -> 13;
+"14" [
+ label = "MPI_Wait\l
+ invocations: 60\l
+ include time:\l
+  min: 0.0321333\l
+  max: 0.0321333\l
+  sum: 0.0321333\l
+  avg: 0.00401667\l
+ exclude time:\l
+  min: 0.0321333\l
+  max: 0.0321333\l
+  sum: 0.0321333\l
+  avg: 0.00401667\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+10 -> 14;
+"15" [
+ label = "module_bc_em_mp_lbc_fcx_gcx_\l
+ invocations: 1\l
+ include time:\l
+  min: 4.93371e-05\l
+  max: 4.93371e-05\l
+  sum: 4.93371e-05\l
+  avg: 6.16714e-06\l
+ exclude time:\l
+  min: 4.93371e-05\l
+  max: 4.93371e-05\l
+  sum: 4.93371e-05\l
+  avg: 6.16714e-06\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+10 -> 15;
+"16" [
+ label = "module_physics_init_mp_phy_init_\l
+ invocations: 1\l
+ include time:\l
+  min: 0.168008\l
+  max: 0.168008\l
+  sum: 0.168008\l
+  avg: 0.021001\l
+ exclude time:\l
+  min: 0.156365\l
+  max: 0.156365\l
+  sum: 0.156365\l
+  avg: 0.0195456\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+10 -> 16;
+"17" [
+ label = "module_wind_generic_mp_init_module_wind_generic_\l
+ invocations: 1\l
+ include time:\l
+  min: 0.000124057\l
+  max: 0.000124057\l
+  sum: 0.000124057\l
+  avg: 1.55071e-05\l
+ exclude time:\l
+  min: 8.53971e-05\l
+  max: 8.53971e-05\l
+  sum: 8.53971e-05\l
+  avg: 1.06746e-05\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+16 -> 17;
+"18" [
+ label = "module_wind_generic_mp_read_windturbines_in_\l
+ invocations: 1\l
+ include time:\l
+  min: 3.866e-05\l
+  max: 3.866e-05\l
+  sum: 3.866e-05\l
+  avg: 4.8325e-06\l
+ exclude time:\l
+  min: 3.866e-05\l
+  max: 3.866e-05\l
+  sum: 3.866e-05\l
+  avg: 4.8325e-06\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+17 -> 18;
+"19" [
+ label = "module_wind_fitch_mp_init_module_wind_fitch_\l
+ invocations: 1\l
+ include time:\l
+  min: 3.58371e-05\l
+  max: 3.58371e-05\l
+  sum: 3.58371e-05\l
+  avg: 4.47964e-06\l
+ exclude time:\l
+  min: 3.58371e-05\l
+  max: 3.58371e-05\l
+  sum: 3.58371e-05\l
+  avg: 4.47964e-06\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+16 -> 19;
+"20" [
+ label = "module_physics_init_mp_z2sigma_\l
+ invocations: 1\l
+ include time:\l
+  min: 0.000160369\l
+  max: 0.000160369\l
+  sum: 0.000160369\l
+  avg: 2.00461e-05\l
+ exclude time:\l
+  min: 0.000160369\l
+  max: 0.000160369\l
+  sum: 0.000160369\l
+  avg: 2.00461e-05\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+16 -> 20;
+"21" [
+ label = "module_physics_init_mp_ra_init_\l
+ invocations: 1\l
+ include time:\l
+  min: 0.00861812\l
+  max: 0.00861812\l
+  sum: 0.00861812\l
+  avg: 0.00107727\l
+ exclude time:\l
+  min: 0.00861812\l
+  max: 0.00861812\l
+  sum: 0.00861812\l
+  avg: 0.00107727\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+16 -> 21;
+"22" [
+ label = "module_physics_init_mp_bl_init_\l
+ invocations: 1\l
+ include time:\l
+  min: 0.00192462\l
+  max: 0.00192462\l
+  sum: 0.00192462\l
+  avg: 0.000240578\l
+ exclude time:\l
+  min: 0.00192462\l
+  max: 0.00192462\l
+  sum: 0.00192462\l
+  avg: 0.000240578\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+16 -> 22;
+"23" [
+ label = "module_physics_init_mp_cu_init_\l
+ invocations: 1\l
+ include time:\l
+  min: 0.000326734\l
+  max: 0.000326734\l
+  sum: 0.000326734\l
+  avg: 4.08418e-05\l
+ exclude time:\l
+  min: 0.000326734\l
+  max: 0.000326734\l
+  sum: 0.000326734\l
+  avg: 4.08418e-05\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+16 -> 23;
+"24" [
+ label = "module_physics_init_mp_shcu_init_\l
+ invocations: 1\l
+ include time:\l
+  min: 0.000329977\l
+  max: 0.000329977\l
+  sum: 0.000329977\l
+  avg: 4.12471e-05\l
+ exclude time:\l
+  min: 0.000329977\l
+  max: 0.000329977\l
+  sum: 0.000329977\l
+  avg: 4.12471e-05\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+16 -> 24;
+"25" [
+ label = "module_physics_init_mp_mp_init_\l
+ invocations: 1\l
+ include time:\l
+  min: 6.87629e-05\l
+  max: 6.87629e-05\l
+  sum: 6.87629e-05\l
+  avg: 8.59536e-06\l
+ exclude time:\l
+  min: 6.87629e-05\l
+  max: 6.87629e-05\l
+  sum: 6.87629e-05\l
+  avg: 8.59536e-06\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+16 -> 25;
+"26" [
+ label = "module_physics_init_mp_fg_init_\l
+ invocations: 1\l
+ include time:\l
+  min: 2.70914e-05\l
+  max: 2.70914e-05\l
+  sum: 2.70914e-05\l
+  avg: 3.38643e-06\l
+ exclude time:\l
+  min: 2.70914e-05\l
+  max: 2.70914e-05\l
+  sum: 2.70914e-05\l
+  avg: 3.38643e-06\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+16 -> 26;
+"27" [
+ label = "module_physics_init_mp_fdob_init_\l
+ invocations: 1\l
+ include time:\l
+  min: 2.77257e-05\l
+  max: 2.77257e-05\l
+  sum: 2.77257e-05\l
+  avg: 3.46571e-06\l
+ exclude time:\l
+  min: 2.77257e-05\l
+  max: 2.77257e-05\l
+  sum: 2.77257e-05\l
+  avg: 3.46571e-06\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+16 -> 27;
+"28" [
+ label = "module_bc_em_mp_set_w_surface_\l
+ invocations: 2\l
+ include time:\l
+  min: 0.000307537\l
+  max: 0.000307537\l
+  sum: 0.000307537\l
+  avg: 3.84421e-05\l
+ exclude time:\l
+  min: 0.000307537\l
+  max: 0.000307537\l
+  sum: 0.000307537\l
+  avg: 3.84421e-05\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+10 -> 28;
+"29" [
+ label = "module_wrf_top_mp_wrf_dfi_\l
+ invocations: 1\l
+ include time:\l
+  min: 4.06114e-05\l
+  max: 4.06114e-05\l
+  sum: 4.06114e-05\l
+  avg: 5.07643e-06\l
+ exclude time:\l
+  min: 4.06114e-05\l
+  max: 4.06114e-05\l
+  sum: 4.06114e-05\l
+  avg: 5.07643e-06\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+0 -> 29;
+"30" [
+ label = "module_wrf_top_mp_wrf_run_\l
+ invocations: 1\l
+ include time:\l
+  min: 70.8545\l
+  max: 70.8545\l
+  sum: 70.8545\l
+  avg: 8.85681\l
+ exclude time:\l
+  min: 6.25359\l
+  max: 6.25359\l
+  sum: 6.25359\l
+  avg: 0.781699\l
+ "
+ fillcolor=5,
+ style=filled
+];
+
+0 -> 30;
+"31" [
+ label = "MPI_Bcast\l
+ invocations: 1841\l
+ include time:\l
+  min: 0.0452629\l
+  max: 0.0452629\l
+  sum: 0.0452629\l
+  avg: 0.00565787\l
+ exclude time:\l
+  min: 0.0452629\l
+  max: 0.0452629\l
+  sum: 0.0452629\l
+  avg: 0.00565787\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+30 -> 31;
+"32" [
+ label = "MPI_Gather\l
+ invocations: 1140\l
+ include time:\l
+  min: 0.0743487\l
+  max: 0.0743487\l
+  sum: 0.0743487\l
+  avg: 0.00929359\l
+ exclude time:\l
+  min: 0.0743487\l
+  max: 0.0743487\l
+  sum: 0.0743487\l
+  avg: 0.00929359\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+30 -> 32;
+"33" [
+ label = "MPI_Gatherv\l
+ invocations: 1140\l
+ include time:\l
+  min: 0.0843727\l
+  max: 0.0843727\l
+  sum: 0.0843727\l
+  avg: 0.0105466\l
+ exclude time:\l
+  min: 0.0843727\l
+  max: 0.0843727\l
+  sum: 0.0843727\l
+  avg: 0.0105466\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+30 -> 33;
+"34" [
+ label = "solve_em_\l
+ invocations: 144\l
+ include time:\l
+  min: 64.3969\l
+  max: 64.3969\l
+  sum: 64.3969\l
+  avg: 8.04961\l
+ exclude time:\l
+  min: 12.8492\l
+  max: 12.8492\l
+  sum: 12.8492\l
+  avg: 1.60615\l
+ "
+ fillcolor=1,
+ style=filled
+];
+
+30 -> 34;
+"35" [
+ label = "MPI_Irecv\l
+ invocations: 16848\l
+ include time:\l
+  min: 0.730924\l
+  max: 0.730924\l
+  sum: 0.730924\l
+  avg: 0.0913655\l
+ exclude time:\l
+  min: 0.730924\l
+  max: 0.730924\l
+  sum: 0.730924\l
+  avg: 0.0913655\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 35;
+"36" [
+ label = "MPI_Isend\l
+ invocations: 16848\l
+ include time:\l
+  min: 0.706565\l
+  max: 0.706565\l
+  sum: 0.706565\l
+  avg: 0.0883207\l
+ exclude time:\l
+  min: 0.706565\l
+  max: 0.706565\l
+  sum: 0.706565\l
+  avg: 0.0883207\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 36;
+"37" [
+ label = "MPI_Wait\l
+ invocations: 33696\l
+ include time:\l
+  min: 8.10172\l
+  max: 8.10172\l
+  sum: 8.10172\l
+  avg: 1.01272\l
+ exclude time:\l
+  min: 8.10172\l
+  max: 8.10172\l
+  sum: 8.10172\l
+  avg: 1.01272\l
+ "
+ fillcolor=4,
+ style=filled
+];
+
+34 -> 37;
+"38" [
+ label = "module_bc_em_mp_set_w_surface_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.00577737\l
+  max: 0.00577737\l
+  sum: 0.00577737\l
+  avg: 0.000722171\l
+ exclude time:\l
+  min: 0.00577737\l
+  max: 0.00577737\l
+  sum: 0.00577737\l
+  avg: 0.000722171\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 38;
+"39" [
+ label = "real_time_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.00430871\l
+  max: 0.00430871\l
+  sum: 0.00430871\l
+  avg: 0.000538589\l
+ exclude time:\l
+  min: 0.00430871\l
+  max: 0.00430871\l
+  sum: 0.00430871\l
+  avg: 0.000538589\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 39;
+"40" [
+ label = "module_em_mp_rk_step_prep_\l
+ invocations: 432\l
+ include time:\l
+  min: 2.37882\l
+  max: 2.37882\l
+  sum: 2.37882\l
+  avg: 0.297352\l
+ exclude time:\l
+  min: 0.131968\l
+  max: 0.131968\l
+  sum: 0.131968\l
+  avg: 0.016496\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 40;
+"41" [
+ label = "module_big_step_utilities_em_mp_calculate_full_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.0185983\l
+  max: 0.0185983\l
+  sum: 0.0185983\l
+  avg: 0.00232478\l
+ exclude time:\l
+  min: 0.0185983\l
+  max: 0.0185983\l
+  sum: 0.0185983\l
+  avg: 0.00232478\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+40 -> 41;
+"42" [
+ label = "module_big_step_utilities_em_mp_calc_mu_uv_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.0233008\l
+  max: 0.0233008\l
+  sum: 0.0233008\l
+  avg: 0.00291259\l
+ exclude time:\l
+  min: 0.0233008\l
+  max: 0.0233008\l
+  sum: 0.0233008\l
+  avg: 0.00291259\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+40 -> 42;
+"43" [
+ label = "module_big_step_utilities_em_mp_couple_momentum_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.66662\l
+  max: 0.66662\l
+  sum: 0.66662\l
+  avg: 0.0833274\l
+ exclude time:\l
+  min: 0.66662\l
+  max: 0.66662\l
+  sum: 0.66662\l
+  avg: 0.0833274\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+40 -> 43;
+"44" [
+ label = "module_big_step_utilities_em_mp_calc_ww_cp_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.204058\l
+  max: 0.204058\l
+  sum: 0.204058\l
+  avg: 0.0255072\l
+ exclude time:\l
+  min: 0.204058\l
+  max: 0.204058\l
+  sum: 0.204058\l
+  avg: 0.0255072\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+40 -> 44;
+"45" [
+ label = "module_big_step_utilities_em_mp_calc_cq_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.634867\l
+  max: 0.634867\l
+  sum: 0.634867\l
+  avg: 0.0793584\l
+ exclude time:\l
+  min: 0.634867\l
+  max: 0.634867\l
+  sum: 0.634867\l
+  avg: 0.0793584\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+40 -> 45;
+"46" [
+ label = "module_big_step_utilities_em_mp_calc_alt_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.371945\l
+  max: 0.371945\l
+  sum: 0.371945\l
+  avg: 0.0464931\l
+ exclude time:\l
+  min: 0.371945\l
+  max: 0.371945\l
+  sum: 0.371945\l
+  avg: 0.0464931\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+40 -> 46;
+"47" [
+ label = "module_big_step_utilities_em_mp_calc_php_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.327463\l
+  max: 0.327463\l
+  sum: 0.327463\l
+  avg: 0.0409328\l
+ exclude time:\l
+  min: 0.327463\l
+  max: 0.327463\l
+  sum: 0.327463\l
+  avg: 0.0409328\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+40 -> 47;
+"48" [
+ label = "module_bc_em_mp_rk_phys_bc_dry_1_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.15947\l
+  max: 0.15947\l
+  sum: 0.15947\l
+  avg: 0.0199338\l
+ exclude time:\l
+  min: 0.15947\l
+  max: 0.15947\l
+  sum: 0.15947\l
+  avg: 0.0199338\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 48;
+"49" [
+ label = "module_first_rk_step_part1_mp_first_rk_step_part1_\l
+ invocations: 144\l
+ include time:\l
+  min: 2.47908\l
+  max: 2.47908\l
+  sum: 2.47908\l
+  avg: 0.309885\l
+ exclude time:\l
+  min: 0.335588\l
+  max: 0.335588\l
+  sum: 0.335588\l
+  avg: 0.0419485\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 49;
+"50" [
+ label = "MPI_Irecv\l
+ invocations: 576\l
+ include time:\l
+  min: 0.0394246\l
+  max: 0.0394246\l
+  sum: 0.0394246\l
+  avg: 0.00492807\l
+ exclude time:\l
+  min: 0.0394246\l
+  max: 0.0394246\l
+  sum: 0.0394246\l
+  avg: 0.00492807\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+49 -> 50;
+"51" [
+ label = "MPI_Isend\l
+ invocations: 576\l
+ include time:\l
+  min: 0.0299796\l
+  max: 0.0299796\l
+  sum: 0.0299796\l
+  avg: 0.00374744\l
+ exclude time:\l
+  min: 0.0299796\l
+  max: 0.0299796\l
+  sum: 0.0299796\l
+  avg: 0.00374744\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+49 -> 51;
+"52" [
+ label = "MPI_Wait\l
+ invocations: 1152\l
+ include time:\l
+  min: 0.138894\l
+  max: 0.138894\l
+  sum: 0.138894\l
+  avg: 0.0173618\l
+ exclude time:\l
+  min: 0.138894\l
+  max: 0.138894\l
+  sum: 0.138894\l
+  avg: 0.0173618\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+49 -> 52;
+"53" [
+ label = "module_em_mp_init_zero_tendency_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.526813\l
+  max: 0.526813\l
+  sum: 0.526813\l
+  avg: 0.0658516\l
+ exclude time:\l
+  min: 0.0817662\l
+  max: 0.0817662\l
+  sum: 0.0817662\l
+  avg: 0.0102208\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+49 -> 53;
+"54" [
+ label = "module_big_step_utilities_em_mp_zero_tend_\l
+ invocations: 1728\l
+ include time:\l
+  min: 0.445047\l
+  max: 0.445047\l
+  sum: 0.445047\l
+  avg: 0.0556308\l
+ exclude time:\l
+  min: 0.445047\l
+  max: 0.445047\l
+  sum: 0.445047\l
+  avg: 0.0556308\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+53 -> 54;
+"55" [
+ label = "module_big_step_utilities_em_mp_phy_prep_\l
+ invocations: 144\l
+ include time:\l
+  min: 1.30789\l
+  max: 1.30789\l
+  sum: 1.30789\l
+  avg: 0.163486\l
+ exclude time:\l
+  min: 1.30789\l
+  max: 1.30789\l
+  sum: 1.30789\l
+  avg: 0.163486\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+49 -> 55;
+"56" [
+ label = "module_radiation_driver_mp_pre_radiation_driver_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.00397532\l
+  max: 0.00397532\l
+  sum: 0.00397532\l
+  avg: 0.000496915\l
+ exclude time:\l
+  min: 0.00358916\l
+  max: 0.00358916\l
+  sum: 0.00358916\l
+  avg: 0.000448645\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+49 -> 56;
+"57" [
+ label = "MPI_Allgather\l
+ invocations: 4\l
+ include time:\l
+  min: 0.000386157\l
+  max: 0.000386157\l
+  sum: 0.000386157\l
+  avg: 4.82696e-05\l
+ exclude time:\l
+  min: 0.000386157\l
+  max: 0.000386157\l
+  sum: 0.000386157\l
+  avg: 4.82696e-05\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+56 -> 57;
+"58" [
+ label = "module_radiation_driver_mp_radiation_driver_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.00443488\l
+  max: 0.00443488\l
+  sum: 0.00443488\l
+  avg: 0.00055436\l
+ exclude time:\l
+  min: 0.00443488\l
+  max: 0.00443488\l
+  sum: 0.00443488\l
+  avg: 0.00055436\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+49 -> 58;
+"59" [
+ label = "module_surface_driver_mp_surface_driver_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.0365588\l
+  max: 0.0365588\l
+  sum: 0.0365588\l
+  avg: 0.00456985\l
+ exclude time:\l
+  min: 0.0365588\l
+  max: 0.0365588\l
+  sum: 0.0365588\l
+  avg: 0.00456985\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+49 -> 59;
+"60" [
+ label = "module_pbl_driver_mp_pbl_driver_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.0226671\l
+  max: 0.0226671\l
+  sum: 0.0226671\l
+  avg: 0.00283339\l
+ exclude time:\l
+  min: 0.0226671\l
+  max: 0.0226671\l
+  sum: 0.0226671\l
+  avg: 0.00283339\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+49 -> 60;
+"61" [
+ label = "module_cumulus_driver_mp_cumulus_driver_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.0107489\l
+  max: 0.0107489\l
+  sum: 0.0107489\l
+  avg: 0.00134361\l
+ exclude time:\l
+  min: 0.0107489\l
+  max: 0.0107489\l
+  sum: 0.0107489\l
+  avg: 0.00134361\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+49 -> 61;
+"62" [
+ label = "module_shallowcu_driver_mp_shallowcu_driver_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.00334007\l
+  max: 0.00334007\l
+  sum: 0.00334007\l
+  avg: 0.000417509\l
+ exclude time:\l
+  min: 0.00334007\l
+  max: 0.00334007\l
+  sum: 0.00334007\l
+  avg: 0.000417509\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+49 -> 62;
+"63" [
+ label = "module_force_scm_mp_force_scm_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.00977049\l
+  max: 0.00977049\l
+  sum: 0.00977049\l
+  avg: 0.00122131\l
+ exclude time:\l
+  min: 0.00977049\l
+  max: 0.00977049\l
+  sum: 0.00977049\l
+  avg: 0.00122131\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+49 -> 63;
+"64" [
+ label = "module_fddagd_driver_mp_fddagd_driver_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.00899947\l
+  max: 0.00899947\l
+  sum: 0.00899947\l
+  avg: 0.00112493\l
+ exclude time:\l
+  min: 0.00899947\l
+  max: 0.00899947\l
+  sum: 0.00899947\l
+  avg: 0.00112493\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+49 -> 64;
+"65" [
+ label = "module_first_rk_step_part2_mp_first_rk_step_part2_\l
+ invocations: 144\l
+ include time:\l
+  min: 6.02036\l
+  max: 6.02036\l
+  sum: 6.02036\l
+  avg: 0.752545\l
+ exclude time:\l
+  min: 1.90392\l
+  max: 1.90392\l
+  sum: 1.90392\l
+  avg: 0.23799\l
+ "
+ fillcolor=8,
+ style=filled
+];
+
+34 -> 65;
+"66" [
+ label = "MPI_Irecv\l
+ invocations: 1872\l
+ include time:\l
+  min: 0.0950535\l
+  max: 0.0950535\l
+  sum: 0.0950535\l
+  avg: 0.0118817\l
+ exclude time:\l
+  min: 0.0950535\l
+  max: 0.0950535\l
+  sum: 0.0950535\l
+  avg: 0.0118817\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+65 -> 66;
+"67" [
+ label = "MPI_Isend\l
+ invocations: 1872\l
+ include time:\l
+  min: 0.0838203\l
+  max: 0.0838203\l
+  sum: 0.0838203\l
+  avg: 0.0104775\l
+ exclude time:\l
+  min: 0.0838203\l
+  max: 0.0838203\l
+  sum: 0.0838203\l
+  avg: 0.0104775\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+65 -> 67;
+"68" [
+ label = "MPI_Wait\l
+ invocations: 3744\l
+ include time:\l
+  min: 1.06298\l
+  max: 1.06298\l
+  sum: 1.06298\l
+  avg: 0.132872\l
+ exclude time:\l
+  min: 1.06298\l
+  max: 1.06298\l
+  sum: 1.06298\l
+  avg: 0.132872\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+65 -> 68;
+"69" [
+ label = "module_em_mp_calculate_phy_tend_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.0313126\l
+  max: 0.0313126\l
+  sum: 0.0313126\l
+  avg: 0.00391407\l
+ exclude time:\l
+  min: 0.0313126\l
+  max: 0.0313126\l
+  sum: 0.0313126\l
+  avg: 0.00391407\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+65 -> 69;
+"70" [
+ label = "module_diffusion_em_mp_compute_diff_metrics_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.20636\l
+  max: 0.20636\l
+  sum: 0.20636\l
+  avg: 0.025795\l
+ exclude time:\l
+  min: 0.20636\l
+  max: 0.20636\l
+  sum: 0.20636\l
+  avg: 0.025795\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+65 -> 70;
+"71" [
+ label = "module_diffusion_em_mp_cal_deform_and_div_\l
+ invocations: 144\l
+ include time:\l
+  min: 1.21507\l
+  max: 1.21507\l
+  sum: 1.21507\l
+  avg: 0.151884\l
+ exclude time:\l
+  min: 1.21507\l
+  max: 1.21507\l
+  sum: 1.21507\l
+  avg: 0.151884\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+65 -> 71;
+"72" [
+ label = "module_diffusion_em_mp_calculate_km_kh_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.495045\l
+  max: 0.495045\l
+  sum: 0.495045\l
+  avg: 0.0618806\l
+ exclude time:\l
+  min: 0.0166087\l
+  max: 0.0166087\l
+  sum: 0.0166087\l
+  avg: 0.00207609\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+65 -> 72;
+"73" [
+ label = "module_diffusion_em_mp_calculate_n2_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.366832\l
+  max: 0.366832\l
+  sum: 0.366832\l
+  avg: 0.045854\l
+ exclude time:\l
+  min: 0.366832\l
+  max: 0.366832\l
+  sum: 0.366832\l
+  avg: 0.045854\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+72 -> 73;
+"74" [
+ label = "module_diffusion_em_mp_isotropic_km_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.111604\l
+  max: 0.111604\l
+  sum: 0.111604\l
+  avg: 0.0139505\l
+ exclude time:\l
+  min: 0.111604\l
+  max: 0.111604\l
+  sum: 0.111604\l
+  avg: 0.0139505\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+72 -> 74;
+"75" [
+ label = "module_diffusion_em_mp_phy_bc_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.0176587\l
+  max: 0.0176587\l
+  sum: 0.0176587\l
+  avg: 0.00220734\l
+ exclude time:\l
+  min: 0.0176587\l
+  max: 0.0176587\l
+  sum: 0.0176587\l
+  avg: 0.00220734\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+65 -> 75;
+"76" [
+ label = "module_physics_addtendc_mp_update_phy_ten_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.909142\l
+  max: 0.909142\l
+  sum: 0.909142\l
+  avg: 0.113643\l
+ exclude time:\l
+  min: 0.909142\l
+  max: 0.909142\l
+  sum: 0.909142\l
+  avg: 0.113643\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+65 -> 76;
+"77" [
+ label = "module_em_mp_rk_tendency_\l
+ invocations: 432\l
+ include time:\l
+  min: 8.98852\l
+  max: 8.98852\l
+  sum: 8.98852\l
+  avg: 1.12357\l
+ exclude time:\l
+  min: 0.344035\l
+  max: 0.344035\l
+  sum: 0.344035\l
+  avg: 0.0430044\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 77;
+"78" [
+ label = "module_big_step_utilities_em_mp_zero_tend_\l
+ invocations: 5184\l
+ include time:\l
+  min: 1.28547\l
+  max: 1.28547\l
+  sum: 1.28547\l
+  avg: 0.160684\l
+ exclude time:\l
+  min: 1.28547\l
+  max: 1.28547\l
+  sum: 1.28547\l
+  avg: 0.160684\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 78;
+"79" [
+ label = "module_advect_em_mp_advect_u_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.907898\l
+  max: 0.907898\l
+  sum: 0.907898\l
+  avg: 0.113487\l
+ exclude time:\l
+  min: 0.907898\l
+  max: 0.907898\l
+  sum: 0.907898\l
+  avg: 0.113487\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 79;
+"80" [
+ label = "module_advect_em_mp_advect_v_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.765953\l
+  max: 0.765953\l
+  sum: 0.765953\l
+  avg: 0.0957442\l
+ exclude time:\l
+  min: 0.765953\l
+  max: 0.765953\l
+  sum: 0.765953\l
+  avg: 0.0957442\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 80;
+"81" [
+ label = "module_advect_em_mp_advect_w_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.772128\l
+  max: 0.772128\l
+  sum: 0.772128\l
+  avg: 0.096516\l
+ exclude time:\l
+  min: 0.772128\l
+  max: 0.772128\l
+  sum: 0.772128\l
+  avg: 0.096516\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 81;
+"82" [
+ label = "module_advect_em_mp_advect_scalar_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.634304\l
+  max: 0.634304\l
+  sum: 0.634304\l
+  avg: 0.079288\l
+ exclude time:\l
+  min: 0.634304\l
+  max: 0.634304\l
+  sum: 0.634304\l
+  avg: 0.079288\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 82;
+"83" [
+ label = "module_big_step_utilities_em_mp_rhs_ph_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.802983\l
+  max: 0.802983\l
+  sum: 0.802983\l
+  avg: 0.100373\l
+ exclude time:\l
+  min: 0.802983\l
+  max: 0.802983\l
+  sum: 0.802983\l
+  avg: 0.100373\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 83;
+"84" [
+ label = "module_big_step_utilities_em_mp_horizontal_pressure_gradient_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.944549\l
+  max: 0.944549\l
+  sum: 0.944549\l
+  avg: 0.118069\l
+ exclude time:\l
+  min: 0.944549\l
+  max: 0.944549\l
+  sum: 0.944549\l
+  avg: 0.118069\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 84;
+"85" [
+ label = "module_big_step_utilities_em_mp_pg_buoy_w_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.16765\l
+  max: 0.16765\l
+  sum: 0.16765\l
+  avg: 0.0209563\l
+ exclude time:\l
+  min: 0.16765\l
+  max: 0.16765\l
+  sum: 0.16765\l
+  avg: 0.0209563\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 85;
+"86" [
+ label = "module_big_step_utilities_em_mp_w_damp_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.350144\l
+  max: 0.350144\l
+  sum: 0.350144\l
+  avg: 0.043768\l
+ exclude time:\l
+  min: 0.350144\l
+  max: 0.350144\l
+  sum: 0.350144\l
+  avg: 0.043768\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 86;
+"87" [
+ label = "module_big_step_utilities_em_mp_coriolis_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.518714\l
+  max: 0.518714\l
+  sum: 0.518714\l
+  avg: 0.0648393\l
+ exclude time:\l
+  min: 0.518714\l
+  max: 0.518714\l
+  sum: 0.518714\l
+  avg: 0.0648393\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 87;
+"88" [
+ label = "module_big_step_utilities_em_mp_curvature_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.601411\l
+  max: 0.601411\l
+  sum: 0.601411\l
+  avg: 0.0751764\l
+ exclude time:\l
+  min: 0.601411\l
+  max: 0.601411\l
+  sum: 0.601411\l
+  avg: 0.0751764\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 88;
+"89" [
+ label = "module_big_step_utilities_em_mp_horizontal_diffusion_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.40507\l
+  max: 0.40507\l
+  sum: 0.40507\l
+  avg: 0.0506338\l
+ exclude time:\l
+  min: 0.40507\l
+  max: 0.40507\l
+  sum: 0.40507\l
+  avg: 0.0506338\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 89;
+"90" [
+ label = "module_big_step_utilities_em_mp_horizontal_diffusion_3dmp_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.192012\l
+  max: 0.192012\l
+  sum: 0.192012\l
+  avg: 0.0240015\l
+ exclude time:\l
+  min: 0.192012\l
+  max: 0.192012\l
+  sum: 0.192012\l
+  avg: 0.0240015\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 90;
+"91" [
+ label = "module_big_step_utilities_em_mp_vertical_diffusion_u_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.0817102\l
+  max: 0.0817102\l
+  sum: 0.0817102\l
+  avg: 0.0102138\l
+ exclude time:\l
+  min: 0.0817102\l
+  max: 0.0817102\l
+  sum: 0.0817102\l
+  avg: 0.0102138\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 91;
+"92" [
+ label = "module_big_step_utilities_em_mp_vertical_diffusion_v_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.077522\l
+  max: 0.077522\l
+  sum: 0.077522\l
+  avg: 0.00969026\l
+ exclude time:\l
+  min: 0.077522\l
+  max: 0.077522\l
+  sum: 0.077522\l
+  avg: 0.00969026\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 92;
+"93" [
+ label = "module_big_step_utilities_em_mp_vertical_diffusion_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.06423\l
+  max: 0.06423\l
+  sum: 0.06423\l
+  avg: 0.00802875\l
+ exclude time:\l
+  min: 0.06423\l
+  max: 0.06423\l
+  sum: 0.06423\l
+  avg: 0.00802875\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 93;
+"94" [
+ label = "module_big_step_utilities_em_mp_vertical_diffusion_3dmp_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.0727312\l
+  max: 0.0727312\l
+  sum: 0.0727312\l
+  avg: 0.0090914\l
+ exclude time:\l
+  min: 0.0727312\l
+  max: 0.0727312\l
+  sum: 0.0727312\l
+  avg: 0.0090914\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+77 -> 94;
+"95" [
+ label = "module_em_mp_rk_addtend_dry_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.74486\l
+  max: 0.74486\l
+  sum: 0.74486\l
+  avg: 0.0931075\l
+ exclude time:\l
+  min: 0.74486\l
+  max: 0.74486\l
+  sum: 0.74486\l
+  avg: 0.0931075\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 95;
+"96" [
+ label = "module_small_step_em_mp_small_step_prep_\l
+ invocations: 432\l
+ include time:\l
+  min: 2.67584\l
+  max: 2.67584\l
+  sum: 2.67584\l
+  avg: 0.33448\l
+ exclude time:\l
+  min: 2.67584\l
+  max: 2.67584\l
+  sum: 2.67584\l
+  avg: 0.33448\l
+ "
+ fillcolor=8,
+ style=filled
+];
+
+34 -> 96;
+"97" [
+ label = "module_small_step_em_mp_calc_p_rho_\l
+ invocations: 1440\l
+ include time:\l
+  min: 2.62362\l
+  max: 2.62362\l
+  sum: 2.62362\l
+  avg: 0.327953\l
+ exclude time:\l
+  min: 2.62362\l
+  max: 2.62362\l
+  sum: 2.62362\l
+  avg: 0.327953\l
+ "
+ fillcolor=8,
+ style=filled
+];
+
+34 -> 97;
+"98" [
+ label = "module_small_step_em_mp_calc_coef_w_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.550319\l
+  max: 0.550319\l
+  sum: 0.550319\l
+  avg: 0.0687898\l
+ exclude time:\l
+  min: 0.550319\l
+  max: 0.550319\l
+  sum: 0.550319\l
+  avg: 0.0687898\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 98;
+"99" [
+ label = "module_small_step_em_mp_advance_uv_\l
+ invocations: 1008\l
+ include time:\l
+  min: 3.46231\l
+  max: 3.46231\l
+  sum: 3.46231\l
+  avg: 0.432789\l
+ exclude time:\l
+  min: 3.46231\l
+  max: 3.46231\l
+  sum: 3.46231\l
+  avg: 0.432789\l
+ "
+ fillcolor=7,
+ style=filled
+];
+
+34 -> 99;
+"100" [
+ label = "module_small_step_em_mp_advance_mu_t_\l
+ invocations: 1008\l
+ include time:\l
+  min: 2.1849\l
+  max: 2.1849\l
+  sum: 2.1849\l
+  avg: 0.273112\l
+ exclude time:\l
+  min: 2.1849\l
+  max: 2.1849\l
+  sum: 2.1849\l
+  avg: 0.273112\l
+ "
+ fillcolor=8,
+ style=filled
+];
+
+34 -> 100;
+"101" [
+ label = "module_small_step_em_mp_advance_w_\l
+ invocations: 1008\l
+ include time:\l
+  min: 3.26716\l
+  max: 3.26716\l
+  sum: 3.26716\l
+  avg: 0.408395\l
+ exclude time:\l
+  min: 3.26716\l
+  max: 3.26716\l
+  sum: 3.26716\l
+  avg: 0.408395\l
+ "
+ fillcolor=7,
+ style=filled
+];
+
+34 -> 101;
+"102" [
+ label = "module_small_step_em_mp_sumflux_\l
+ invocations: 1008\l
+ include time:\l
+  min: 1.42454\l
+  max: 1.42454\l
+  sum: 1.42454\l
+  avg: 0.178068\l
+ exclude time:\l
+  min: 1.42454\l
+  max: 1.42454\l
+  sum: 1.42454\l
+  avg: 0.178068\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 102;
+"103" [
+ label = "module_big_step_utilities_em_mp_calc_mu_uv_1_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.0112958\l
+  max: 0.0112958\l
+  sum: 0.0112958\l
+  avg: 0.00141198\l
+ exclude time:\l
+  min: 0.0112958\l
+  max: 0.0112958\l
+  sum: 0.0112958\l
+  avg: 0.00141198\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 103;
+"104" [
+ label = "module_small_step_em_mp_small_step_finish_\l
+ invocations: 432\l
+ include time:\l
+  min: 1.34505\l
+  max: 1.34505\l
+  sum: 1.34505\l
+  avg: 0.168131\l
+ exclude time:\l
+  min: 1.34505\l
+  max: 1.34505\l
+  sum: 1.34505\l
+  avg: 0.168131\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 104;
+"105" [
+ label = "module_em_mp_rk_scalar_tend_\l
+ invocations: 432\l
+ include time:\l
+  min: 1.72208\l
+  max: 1.72208\l
+  sum: 1.72208\l
+  avg: 0.215259\l
+ exclude time:\l
+  min: 0.0605755\l
+  max: 0.0605755\l
+  sum: 0.0605755\l
+  avg: 0.00757194\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 105;
+"106" [
+ label = "module_big_step_utilities_em_mp_zero_tend_\l
+ invocations: 1296\l
+ include time:\l
+  min: 0.24245\l
+  max: 0.24245\l
+  sum: 0.24245\l
+  avg: 0.0303062\l
+ exclude time:\l
+  min: 0.24245\l
+  max: 0.24245\l
+  sum: 0.24245\l
+  avg: 0.0303062\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+105 -> 106;
+"107" [
+ label = "module_advect_em_mp_advect_scalar_\l
+ invocations: 288\l
+ include time:\l
+  min: 0.359805\l
+  max: 0.359805\l
+  sum: 0.359805\l
+  avg: 0.0449756\l
+ exclude time:\l
+  min: 0.359805\l
+  max: 0.359805\l
+  sum: 0.359805\l
+  avg: 0.0449756\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+105 -> 107;
+"108" [
+ label = "module_big_step_utilities_em_mp_horizontal_diffusion_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.149966\l
+  max: 0.149966\l
+  sum: 0.149966\l
+  avg: 0.0187458\l
+ exclude time:\l
+  min: 0.149966\l
+  max: 0.149966\l
+  sum: 0.149966\l
+  avg: 0.0187458\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+105 -> 108;
+"109" [
+ label = "module_big_step_utilities_em_mp_vertical_diffusion_mp_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.061876\l
+  max: 0.061876\l
+  sum: 0.061876\l
+  avg: 0.00773451\l
+ exclude time:\l
+  min: 0.061876\l
+  max: 0.061876\l
+  sum: 0.061876\l
+  avg: 0.00773451\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+105 -> 109;
+"110" [
+ label = "module_advect_em_mp_advect_scalar_pd_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.847403\l
+  max: 0.847403\l
+  sum: 0.847403\l
+  avg: 0.105925\l
+ exclude time:\l
+  min: 0.847403\l
+  max: 0.847403\l
+  sum: 0.847403\l
+  avg: 0.105925\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+105 -> 110;
+"111" [
+ label = "module_em_mp_rk_update_scalar_\l
+ invocations: 432\l
+ include time:\l
+  min: 0.253029\l
+  max: 0.253029\l
+  sum: 0.253029\l
+  avg: 0.0316286\l
+ exclude time:\l
+  min: 0.253029\l
+  max: 0.253029\l
+  sum: 0.253029\l
+  avg: 0.0316286\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 111;
+"112" [
+ label = "module_big_step_utilities_em_mp_calc_p_rho_phi_\l
+ invocations: 576\l
+ include time:\l
+  min: 1.43319\l
+  max: 1.43319\l
+  sum: 1.43319\l
+  avg: 0.179149\l
+ exclude time:\l
+  min: 1.43319\l
+  max: 1.43319\l
+  sum: 1.43319\l
+  avg: 0.179149\l
+ "
+ fillcolor=8,
+ style=filled
+];
+
+34 -> 112;
+"113" [
+ label = "module_bc_em_mp_rk_phys_bc_dry_2_\l
+ invocations: 288\l
+ include time:\l
+  min: 0.0578224\l
+  max: 0.0578224\l
+  sum: 0.0578224\l
+  avg: 0.0072278\l
+ exclude time:\l
+  min: 0.0578224\l
+  max: 0.0578224\l
+  sum: 0.0578224\l
+  avg: 0.0072278\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 113;
+"114" [
+ label = "module_em_mp_rk_update_scalar_pd_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.0965459\l
+  max: 0.0965459\l
+  sum: 0.0965459\l
+  avg: 0.0120682\l
+ exclude time:\l
+  min: 0.0965459\l
+  max: 0.0965459\l
+  sum: 0.0965459\l
+  avg: 0.0120682\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 114;
+"115" [
+ label = "module_physics_addtendc_mp_advance_ppt_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.0102638\l
+  max: 0.0102638\l
+  sum: 0.0102638\l
+  avg: 0.00128297\l
+ exclude time:\l
+  min: 0.0102638\l
+  max: 0.0102638\l
+  sum: 0.0102638\l
+  avg: 0.00128297\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 115;
+"116" [
+ label = "module_bc_em_mp_set_phys_bc_dry_2_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.105839\l
+  max: 0.105839\l
+  sum: 0.105839\l
+  avg: 0.0132298\l
+ exclude time:\l
+  min: 0.105839\l
+  max: 0.105839\l
+  sum: 0.105839\l
+  avg: 0.0132298\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 116;
+"117" [
+ label = "module_diagnostics_mp_diagnostic_output_calc_\l
+ invocations: 144\l
+ include time:\l
+  min: 0.0034991\l
+  max: 0.0034991\l
+  sum: 0.0034991\l
+  avg: 0.000437387\l
+ exclude time:\l
+  min: 0.0034991\l
+  max: 0.0034991\l
+  sum: 0.0034991\l
+  avg: 0.000437387\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+34 -> 117;
+"118" [
+ label = "module_wrf_top_mp_wrf_finalize_\l
+ invocations: 1\l
+ include time:\l
+  min: 0.0144111\l
+  max: 0.0144111\l
+  sum: 0.0144111\l
+  avg: 0.00180139\l
+ exclude time:\l
+  min: 0.0142866\l
+  max: 0.0142866\l
+  sum: 0.0142866\l
+  avg: 0.00178582\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+0 -> 118;
+"119" [
+ label = "MPI_Bcast\l
+ invocations: 1\l
+ include time:\l
+  min: 2.51943e-05\l
+  max: 2.51943e-05\l
+  sum: 2.51943e-05\l
+  avg: 3.14929e-06\l
+ exclude time:\l
+  min: 2.51943e-05\l
+  max: 2.51943e-05\l
+  sum: 2.51943e-05\l
+  avg: 3.14929e-06\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+118 -> 119;
+"120" [
+ label = "MPI_Finalize\l
+ invocations: 1\l
+ include time:\l
+  min: 9.93686e-05\l
+  max: 9.93686e-05\l
+  sum: 9.93686e-05\l
+  avg: 1.24211e-05\l
+ exclude time:\l
+  min: 9.93686e-05\l
+  max: 9.93686e-05\l
+  sum: 9.93686e-05\l
+  avg: 1.24211e-05\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+118 -> 120;
+}

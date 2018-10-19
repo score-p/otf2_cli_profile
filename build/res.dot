@@ -1,0 +1,211 @@
+digraph call_tree {
+graph [splines=ortho, ranksep=1.5];
+node [shape = record, colorscheme=spectral9];
+edge [];
+
+"34" [
+ label = "solve_em_\l
+ invocations: 1152\l
+ include time:\l
+  min: 64.3969\l
+  max: 64.4857\l
+  sum: 515.746\l
+  avg: 64.4682\l
+ exclude time:\l
+  min: 12.8492\l
+  max: 15.8609\l
+  sum: 116.147\l
+  avg: 14.5183\l
+ "
+ fillcolor=1,
+ style=filled
+];
+
+30 -> 34;
+"30" [
+ label = "module_wrf_top_mp_wrf_run_\l
+ "
+ fillcolor=8,
+ style=filled
+];
+
+0 -> 30;
+"1" [
+ label = "module_wrf_top_mp_wrf_init_\l
+ invocations: 8\l
+ include time:\l
+  min: 11.5873\l
+  max: 11.6086\l
+  sum: 92.8145\l
+  avg: 11.6018\l
+ exclude time:\l
+  min: 6.85309\l
+  max: 7.94152\l
+  sum: 56.01\l
+  avg: 7.00125\l
+ "
+ fillcolor=5,
+ style=filled
+];
+
+0 -> 1;
+"0" [
+ label = "MAIN__\l
+ "
+ fillcolor=9,
+ style=filled
+];
+
+"37" [
+ label = "MPI_Wait\l
+ invocations: 312192\l
+ include time:\l
+  min: 3.18173\l
+  max: 8.15502\l
+  sum: 43.9365\l
+  avg: 5.49207\l
+ exclude time:\l
+  min: 3.18173\l
+  max: 8.15502\l
+  sum: 43.9365\l
+  avg: 5.49207\l
+ "
+ fillcolor=6,
+ style=filled
+];
+
+34 -> 37;
+"31" [
+ label = "MPI_Bcast\l
+ invocations: 14728\l
+ include time:\l
+  min: 0.0452629\l
+  max: 4.92165\l
+  sum: 34.3678\l
+  avg: 4.29597\l
+ exclude time:\l
+  min: 0.0452629\l
+  max: 4.92165\l
+  sum: 34.3678\l
+  avg: 4.29597\l
+ "
+ fillcolor=7,
+ style=filled
+];
+
+30 -> 31;
+"99" [
+ label = "module_small_step_em_mp_advance_uv_\l
+ invocations: 8064\l
+ include time:\l
+  min: 3.1702\l
+  max: 3.84446\l
+  sum: 28.7483\l
+  avg: 3.59354\l
+ exclude time:\l
+  min: 3.1702\l
+  max: 3.84446\l
+  sum: 28.7483\l
+  avg: 3.59354\l
+ "
+ fillcolor=7,
+ style=filled
+];
+
+34 -> 99;
+"101" [
+ label = "module_small_step_em_mp_advance_w_\l
+ invocations: 8064\l
+ include time:\l
+  min: 3.26716\l
+  max: 3.61516\l
+  sum: 27.408\l
+  avg: 3.426\l
+ exclude time:\l
+  min: 3.26716\l
+  max: 3.61516\l
+  sum: 27.408\l
+  avg: 3.426\l
+ "
+ fillcolor=7,
+ style=filled
+];
+
+34 -> 101;
+"5" [
+ label = "MPI_Init\l
+ invocations: 8\l
+ include time:\l
+  min: 2.86108\l
+  max: 2.86117\l
+  sum: 22.889\l
+  avg: 2.86113\l
+ exclude time:\l
+  min: 2.86108\l
+  max: 2.86117\l
+  sum: 22.889\l
+  avg: 2.86113\l
+ "
+ fillcolor=8,
+ style=filled
+];
+
+1 -> 5;
+"96" [
+ label = "module_small_step_em_mp_small_step_prep_\l
+ invocations: 3456\l
+ include time:\l
+  min: 2.53105\l
+  max: 2.83897\l
+  sum: 21.5763\l
+  avg: 2.69703\l
+ exclude time:\l
+  min: 2.53105\l
+  max: 2.83897\l
+  sum: 21.5763\l
+  avg: 2.69703\l
+ "
+ fillcolor=8,
+ style=filled
+];
+
+34 -> 96;
+"97" [
+ label = "module_small_step_em_mp_calc_p_rho_\l
+ invocations: 11520\l
+ include time:\l
+  min: 2.39624\l
+  max: 2.63543\l
+  sum: 20.0643\l
+  avg: 2.50803\l
+ exclude time:\l
+  min: 2.39624\l
+  max: 2.63543\l
+  sum: 20.0643\l
+  avg: 2.50803\l
+ "
+ fillcolor=8,
+ style=filled
+];
+
+34 -> 97;
+"100" [
+ label = "module_small_step_em_mp_advance_mu_t_\l
+ invocations: 8064\l
+ include time:\l
+  min: 2.1849\l
+  max: 2.37633\l
+  sum: 17.9428\l
+  avg: 2.24285\l
+ exclude time:\l
+  min: 2.1849\l
+  max: 2.37633\l
+  sum: 17.9428\l
+  avg: 2.24285\l
+ "
+ fillcolor=8,
+ style=filled
+];
+
+34 -> 100;
+}
