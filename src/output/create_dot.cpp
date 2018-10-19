@@ -154,7 +154,6 @@ public:
         result_file.close();
     }
 
-
     void print(){
         //top_nodes!!!
         if(params.top_nodes != 0){
@@ -195,7 +194,7 @@ private:
             curr = region.parent;
             // draw if parent node hasn't been drawn yet else break
             if(printed_nodes.find(curr->call_id) == printed_nodes.end())
-                print_node_partial(*curr);
+                print_node(*curr, false);
             else
                 break;
         }
@@ -208,7 +207,7 @@ private:
         });
 
 
-        for( auto it = data.begin(); it != data.begin()+num-1; ++it ){
+        for( auto it = data.begin(); it != data.begin()+num; ++it ){
             if(it == data.end())
                 break;
 
@@ -217,51 +216,53 @@ private:
         }
     }
 
-    void print_node_partial(Node& region){
-        result_file 
-                << "\"" << region.call_id << "\" ["
-                << "label = \"" 
-                << region.region << "\"" << std::endl;
+    // void print_node_partial(Node& region){
+    //     result_file 
+    //             << "\"" << region.call_id << "\" ["
+    //             << "label = \"" 
+    //             << region.region << "\"" << std::endl;
         
-        // colorize node, 9 colors
-        result_file
-            << " fillcolor=" << node_color(region.sum_excl_time) << ",\n"
-            << " style=filled\n";
+    //     // colorize node, 9 colors
+    //     result_file
+    //         << " fillcolor=" << node_color(region.sum_excl_time) << ",\n"
+    //         << " style=filled\n";
 
-        // closing tag
-        result_file << "];\n" << std::endl;
+    //     // closing tag
+    //     result_file << "];\n" << std::endl;
 
-        // set edge netween node and parent
-        if( region.parent){
-            result_file 
-                << region.parent->call_id
-                << " -> "
-                << region.call_id
-                << ";"
-            << std::endl;
-        }
+    //     // set edge netween node and parent
+    //     if( region.parent){
+    //         result_file 
+    //             << region.parent->call_id
+    //             << " -> "
+    //             << region.call_id
+    //             << ";"
+    //         << std::endl;
+    //     }
 
-        printed_nodes[region.call_id] = &region;
-    }
+    //     printed_nodes[region.call_id] = &region;
+    // }
 
-    void print_node(Node& region){
+    void print_node(Node& region, bool full_node = true){
         // filter nodes
         result_file 
-            << "\"" << region.call_id << "\" [\n"
-            << " label = \"" 
-            << region.region << "\\l\n"
-            << " invocations: " << region.invocations << "\\l\n"
-            << " include time:" << "\\l\n"
-            << "  min: " << region.min_incl_time << "\\l\n"
-            << "  max: " << region.max_incl_time << "\\l\n"
-            << "  sum: " << region.sum_incl_time << "\\l\n"
-            << "  avg: " << region.avg_incl_time << "\\l\n"
-            << " exclude time:" << "\\l\n"
-            << "  min: " << region.min_excl_time << "\\l\n"
-            << "  max: " << region.max_excl_time << "\\l\n"
-            << "  sum: " << region.sum_excl_time << "\\l\n"
-            << "  avg: " << region.avg_excl_time << "\\l\n"
-            << " \"\n";
+            << "\""             << region.call_id       << "\" [\n"
+            << " label = \""    << region.region        << "\\l\n";
+        if(full_node)
+            result_file
+                << " invocations: " << region.invocations   << "\\l\n"
+                << " include time:"                         << "\\l\n"
+                << "  min: "        << region.min_incl_time << "\\l\n"
+                << "  max: "        << region.max_incl_time << "\\l\n"
+                << "  sum: "        << region.sum_incl_time << "\\l\n"
+                << "  avg: "        << region.avg_incl_time << "\\l\n"
+                << " exclude time:"                         << "\\l\n"
+                << "  min: "        << region.min_excl_time << "\\l\n"
+                << "  max: "        << region.max_excl_time << "\\l\n"
+                << "  sum: "        << region.sum_excl_time << "\\l\n"
+                << "  avg: "        << region.avg_excl_time << "\\l\n";
+        
+        result_file << " \"\n";
         
         // colorize node, 9 colors
         result_file
