@@ -11,7 +11,7 @@ bool Dot_writer::open(std::string filename = "result.dot"){
             << "node [shape = record, colorscheme=spectral9];\n"
             << "edge [];\n"
         << std::endl;
-        getMeta();
+        
         return true;
     } 
     else
@@ -55,7 +55,7 @@ void Dot_writer::print_node(Node& region, bool full_node = true){
         << " style=filled\n";
 
     // closing tag
-    result_file << "];\n" << std::endl;
+    result_file << "];" << std::endl;
 
     // set edge netween node and parent
     if( region.parent){
@@ -63,35 +63,39 @@ void Dot_writer::print_node(Node& region, bool full_node = true){
             << region.parent->call_id
             << " -> "
             << region.call_id
-            << ";"
+            << ";\n"
         << std::endl;
     }
     // remember which nodes have been drawn
     printed_nodes[region.call_id] = &region;
+
+    
 }
 
-void Dot_writer::print(){
+void Dot_writer::print(Data& data){
+    getMeta(data);
     if(params.top_nodes != 0){
-        top_nodes();
+        top_nodes(data);
         return;
     }
-    if(params.node_min_ratio == 0 || params.node_min_ratio == 100){
-        for( const auto& region : data ){
-            print_node(*region);
-        }
-        return;
-    }
-    else {
+    if(params.node_min_ratio != 0 || params.node_min_ratio != 100){
         for(const auto& region : data){
             if(region->sum_excl_time > params.node_min_ratio){
                 print_node(*region);
                 print_predecessors(*region);
             }
         }
+        return;
+    }
+    else {
+        for( const auto& region : data ){
+            print_node(*region);
+        }
+        return;
     }
 }
 
-void Dot_writer::getMeta(){
+void Dot_writer::getMeta(Data& data){
     
     for( const auto& region : data ){
         if( region->sum_excl_time < min_time )
@@ -115,7 +119,7 @@ void Dot_writer::print_predecessors( Node& region){
     }
 }
 
-void Dot_writer::top_nodes(){
+void Dot_writer::top_nodes(Data& data){
     int num = params.top_nodes;
     std::sort(data.begin(), data.end(), [](Node* a, Node* b){
         return a->sum_excl_time > b->sum_excl_time;

@@ -83,14 +83,12 @@ Data& read_data( AllData& alldata) {
     return *data;
 }
 
-
-
 bool CreateDot(AllData& alldata) {
     alldata.verbosePrint(1, true, "producing dot output");
     Data data = read_data(alldata);
-    Dot_writer writer(data, alldata.params);
+    Dot_writer writer(alldata.params);
     writer.open("res.dot");
-    writer.print();
+    writer.print(data);
     writer.close();
     return true;
 }

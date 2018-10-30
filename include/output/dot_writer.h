@@ -7,7 +7,7 @@
 
 class Dot_writer{
 public:
-    Dot_writer(Data& data, Params& params): data(data), params(params)
+    Dot_writer(Params& params): params(params)
     {}
 private:
     std::ofstream result_file;
@@ -23,6 +23,7 @@ private:
     // graph parameter
     const std::string splines = "ortho";
     const float ranksep = 1.5;
+
     // node parameter
     const std::string shape = "record";
     const std::string colorscheme = "spectral9";
@@ -30,11 +31,11 @@ private:
 
     ////
     //methods
-    void getMeta();
+    void getMeta(Data& data);
   
     void print_predecessors( Node& region);
 
-    void top_nodes();
+    void top_nodes(Data& data);
 
     void print_node(Node& region, bool full_node);
     
@@ -47,7 +48,7 @@ public:
 
     void close();
 
-    void print();
+    void print(Data& data);
 };
 
 #endif
