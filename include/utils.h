@@ -129,9 +129,9 @@ struct Params {
                           << "      --cube              generate CUBE xml profile" << std::endl
                           << "      --xlsx              generate XLSX ouptut file" << std::endl
                           << "      --dot               generate dot file for drawing graphs" << std::endl
-                          << "        -filter <percent> only show path, where nodes took at least num \% of total time" << std::endl
-                          << "        -top <n>          only show top num nodes" << std::endl
-                          << "        -rank <n>         only show specific rank" << std::endl
+                          << "        --filter <percent> only show path, where nodes took at least num \% of total time" << std::endl
+                          << "        --top <n>          only show top num nodes" << std::endl
+                          << "        --rank <n>         only show specific rank" << std::endl
                           << std::endl
                           << "                          (default: 50)" << std::endl
                           << "      -b <size>           set buffersize of the reader in Byte" << std::endl
@@ -166,21 +166,21 @@ struct Params {
             } else if (arguments[i] == "--dot") {
                 create_dot = true;
 
-            } else if (arguments[i] == "-filter") {
+            } else if (arguments[i] == "--filter") {
                 auto value = checkNextValue(arguments, i);
                 if (value < 0 || value > 100)
                     return false;
 
                 node_min_ratio = value;
                 ++i;
-            } else if (arguments[i] == "-rank") {
+            } else if (arguments[i] == "--rank") {
                 auto value = checkNextValue(arguments, i);
                 if (value < 0)
                     return false;
 
                 rank = value;
                 ++i;
-            } else if (arguments[i] == "-top") {
+            } else if (arguments[i] == "--top") {
             auto value = checkNextValue(arguments, i);
             if (value < 0)
                 return false;
