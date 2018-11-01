@@ -79,8 +79,9 @@ void Dot_writer::print(Data& data){
         return;
     }
     if(params.node_min_ratio != 0 || params.node_min_ratio != 100){
+        double ratio = total_time / 100 * params.node_min_ratio;
         for(const auto& region : data){
-            if(region->sum_excl_time > params.node_min_ratio){
+            if(region->sum_excl_time > ratio){
                 print_node(*region);
                 print_predecessors(*region);
             }
@@ -102,6 +103,8 @@ void Dot_writer::getMeta(Data& data){
             min_time = region->sum_excl_time;
         if( region->sum_excl_time > max_time )
             max_time = region->sum_excl_time;
+
+        total_time += region->sum_excl_time;
     }
     timerange = max_time - min_time;
 }

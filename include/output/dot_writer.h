@@ -18,6 +18,7 @@ private:
     double min_time = std::numeric_limits<uint64_t>::max();
     double max_time = 0;
     double timerange = 0;
+    double total_time = 0;
     std::map<uint32_t, Node*> printed_nodes;
 
     // graph parameter
