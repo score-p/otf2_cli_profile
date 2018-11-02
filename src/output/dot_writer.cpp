@@ -153,14 +153,15 @@ void Dot_writer::add_node(Node& node){
 
 void Dot_writer::print(){
 
-    getMeta();
+    get_meta();
 
     //run filter
     filter();
     
-    for( auto& node : nodes )
-        if(node->printflag != Printflag::dontprint)
+    for( auto& node : nodes ){
+        if(node->state != NodeState::dontprint)
             print_node(*node);
+    }
 
         return;
     }
