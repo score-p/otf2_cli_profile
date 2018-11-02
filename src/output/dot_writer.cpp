@@ -6,10 +6,10 @@ bool Dot_writer::open(std::string filename = "result.dot"){
     if(result_file.is_open()){
         // print header of graph file
         result_file 
-            << "digraph call_tree {\n"
-            << "graph [splines=ortho, ranksep=1.5];\n"
-            << "node [shape = record, colorscheme=spectral9];\n"
-            << "edge [];\n"
+        << "digraph call_tree {\n"
+        << "graph [splines=ortho, ranksep=1.5];\n"
+        << "node [shape = record, colorscheme=spectral9];\n"
+        << "edge [];\n"
         << std::endl;
         
         return true;
@@ -26,134 +26,117 @@ void Dot_writer::close(){
     result_file.close();
 }
 
-void Dot_writer::print_node(Node& region, bool full_node = true){
+void Dot_writer::filter(){
+
+    if(params.top_nodes != 0){
+        top_nodes();
+    }
+
+    if(params.node_min_ratio != 0 || params.node_min_ratio != 100){
+        double ratio = total_time / 100 * params.node_min_ratio;
+        for(const auto& node : nodes){
+            if(node->sum_excl_time > ratio){
+                node->state = NodeState::full;
+                mark_predecessors(*node);
+            }
+        }
+        return;
+    } else {
+        for( const auto& node : nodes )
+            node->state = NodeState::full;
+    }
+}
+
+void Dot_writer::print_node(Node& node){
     // filter nodes
     result_file 
-        << "\""             << region.call_id       << "\" [\n"
-        << " label = \""    << region.region        << "\\l\n";
+    << "\""             << node.call_id       << "\" [\n"
+    << " label = \""    << node.region        << "\\l\n";
 
-    if(full_node){
+    if(node.state == NodeState::full){
         result_file
-            << " invocations: " << region.invocations   << "\\l\n"
-            << " include time:"                         << "\\l\n"
-            << "  min: "        << region.min_incl_time << "\\l\n"
-            << "  max: "        << region.max_incl_time << "\\l\n"
-            << "  sum: "        << region.sum_incl_time << "\\l\n"
-            << "  avg: "        << region.avg_incl_time << "\\l\n"
-            << " exclude time:"                         << "\\l\n"
-            << "  min: "        << region.min_excl_time << "\\l\n"
-            << "  max: "        << region.max_excl_time << "\\l\n"
-            << "  sum: "        << region.sum_excl_time << "\\l\n"
-            << "  avg: "        << region.avg_excl_time << "\\l\n";
+        << " invocations: " << node.invocations   << "\\l\n"
+        << " include time:"                       << "\\l\n"
+        << "  min: "        << node.min_incl_time << "\\l\n"
+        << "  max: "        << node.max_incl_time << "\\l\n"
+        << "  sum: "        << node.sum_incl_time << "\\l\n"
+        << "  avg: "        << node.avg_incl_time << "\\l\n"
+        << " exclude time:"                       << "\\l\n"
+        << "  min: "        << node.min_excl_time << "\\l\n"
+        << "  max: "        << node.max_excl_time << "\\l\n"
+        << "  sum: "        << node.sum_excl_time << "\\l\n"
+        << "  avg: "        << node.avg_excl_time << "\\l\n";
     }
     
     result_file << " \"\n";
     
     // colorize node, 9 colors
     result_file
-        << " fillcolor=" << node_color(region.sum_excl_time) << ",\n"
-        << " style=filled\n";
+    << " fillcolor=" << node_color(node.sum_excl_time) << ",\n"
+    << " style=filled\n";
 
     // closing tag
     result_file << "];" << std::endl;
 
     // set edge netween node and parent
-    if( region.parent){
+    if( node.parent){
         result_file 
-            << region.parent->call_id
-            << " -> "
-            << region.call_id
-            << ";\n"
+        << node.parent->call_id
+        << " -> "
+        << node.call_id
+        << ";\n"
         << std::endl;
     }
-    // remember which nodes have been drawn
-    printed_nodes[region.call_id] = &region;
 
-    
+    // mark as printed
+    node.state = NodeState::printed; 
 }
 
-void Dot_writer::print(Data& data){
-    getMeta(data);
-    if(params.top_nodes != 0){
-        top_nodes(data);
-        return;
-    }
-    if(params.node_min_ratio != 0 || params.node_min_ratio != 100){
-        double ratio = total_time / 100 * params.node_min_ratio;
-        for(const auto& region : data){
-            if(region->sum_excl_time > ratio){
-                print_node(*region);
-                print_predecessors(*region);
-            }
-        }
-        return;
-    }
-    else {
-        for( const auto& region : data ){
-            print_node(*region);
-        }
-        return;
-    }
-}
+void Dot_writer::get_meta(){
+    for( const auto& node : nodes ){
 
-void Dot_writer::getMeta(Data& data){
-    
-    for( const auto& region : data ){
-        if( region->sum_excl_time < min_time )
-            min_time = region->sum_excl_time;
-        if( region->sum_excl_time > max_time )
-            max_time = region->sum_excl_time;
+        if( node->sum_excl_time < min_time )
+            min_time = node->sum_excl_time;
 
-        total_time += region->sum_excl_time;
+        if( node->sum_excl_time > max_time )
+            max_time = node->sum_excl_time;
+
+        total_time += node->sum_excl_time;
     }
+
     timerange = max_time - min_time;
 }
 
-// draw all predessor
-void Dot_writer::print_predecessors( Node& region){
-    Node* curr = &region;
-    while( curr->parent != nullptr){
-        curr = region.parent;
-        // draw if parent node hasn't been drawn yet else break
-        if(printed_nodes.find(curr->call_id) == printed_nodes.end())
-            print_node(*curr, false);
+void Dot_writer::mark_predecessors( Node& node){
+
+    Node* curr = &node;
+
+    while( curr->parent != nullptr ){
+        curr = curr->parent;
+
+        if(curr->state == NodeState::dontprint)
+            curr->state = NodeState::partial;
         else
             break;
     }
 }
 
-void Dot_writer::top_nodes(Data& data){
-    int num = params.top_nodes;
-    std::sort(data.begin(), data.end(), [](Node* a, Node* b){
+void Dot_writer::top_nodes(){
+
+    std::sort(nodes.begin(), nodes.end(), [](Node* a, Node* b){
         return a->sum_excl_time > b->sum_excl_time;
     });
 
-
-    for( auto it = data.begin(); it != data.begin()+num; ++it ){
-        if(it == data.end())
+    int num = params.top_nodes;
+    for( auto it = nodes.begin(); it != nodes.begin()+num; ++it ){
+        if(it == nodes.end())
             break;
 
-        print_node(**it);
-        print_predecessors(**it);
+        (*it)->state = NodeState::full;
+        mark_predecessors(**it);
     }
 }
 
-
-/* class Nodes{
-    private:
-        string label;
-        std::vector<Attributes*> attributes;
-
-    }
-
-*/
-void Dot_writer::print_node(){
-    //print label
-    //print attributes
-    //color
-    //edge
-
-}
 int Dot_writer::node_color(const double time){
     int color_code = num_colors;
     for( int i = 0; i < num_colors; ++i ){
@@ -162,3 +145,22 @@ int Dot_writer::node_color(const double time){
     }
     return color_code;
 }
+
+void Dot_writer::add_node(Node& node){
+    Node* curr = &node;
+    nodes.push_back(curr);
+}
+
+void Dot_writer::print(){
+
+    getMeta();
+
+    //run filter
+    filter();
+    
+    for( auto& node : nodes )
+        if(node->printflag != Printflag::dontprint)
+            print_node(*node);
+
+        return;
+    }

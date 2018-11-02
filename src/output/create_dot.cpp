@@ -13,7 +13,6 @@ Data& read_data( AllData& alldata) {
     std::stack<Node*> parent_nodes;
     
     int call_id = 0;
-    // uint64_t total_time = alldata[0]. 
     
     for ( const auto& region : alldata.call_path_tree ) {
         
@@ -85,11 +84,21 @@ Data& read_data( AllData& alldata) {
 
 bool CreateDot(AllData& alldata) {
     alldata.verbosePrint(1, true, "producing dot output");
+    
     Data data = read_data(alldata);
+    
     Dot_writer writer(alldata.params);
+    
     writer.open("res.dot");
-    writer.print(data);
+
+    for( auto& node : data){
+        writer.add_node(*node);
+    }
+    
+    writer.print();
+    
     writer.close();
+    
     return true;
 }
 

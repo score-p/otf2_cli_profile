@@ -10,6 +10,10 @@
 
 bool CreateDot(AllData& alldata);
 
+enum NodeState
+{
+    full, partial, dontprint, printed
+};
 
 struct Node {
     uint32_t call_id = 0;
@@ -32,6 +36,9 @@ struct Node {
     double max_excl_time = 0;
     double sum_excl_time = 0;
     double avg_excl_time = 0;
+
+    NodeState state = NodeState::dontprint;
+
 };
 
 typedef std::vector<Node*> Data;
