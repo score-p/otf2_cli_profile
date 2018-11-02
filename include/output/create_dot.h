@@ -2,6 +2,9 @@
 #define CREATE_DOT_H
 
 #include <fstream>
+#include <string>
+#include <stack>
+#include <algorithm>
 
 #include "all_data.h"
 
