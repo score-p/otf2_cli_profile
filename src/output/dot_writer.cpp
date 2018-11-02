@@ -35,11 +35,22 @@ void Dot_writer::filter(){
     }
 
     if(params.node_min_ratio != 0 && params.node_min_ratio != 100){
+
         double ratio = total_time / 100 * params.node_min_ratio;
+
+        int node_count = 0;
         for(const auto& node : nodes){
             if(node->sum_excl_time > ratio){
+
+                // check if printing more nodes than "top_nodes"
+                if(params.top_nodes != 0 && node_count == params.top_nodes)
+                    break;
+                ++node_count;
+
                 node->state = NodeState::full;
                 mark_predecessors(*node);
+            } else if(node->state != NodeState::partial){
+                node->state = NodeState::dontprint;
             }
         }
         filter = true;
