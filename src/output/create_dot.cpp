@@ -92,7 +92,7 @@ bool CreateDot(AllData& alldata) {
     writer.open("res.dot");
 
     for( auto& node : data){
-        writer.add_node(*node);
+        writer.add_node(node);
     }
     
     writer.print();

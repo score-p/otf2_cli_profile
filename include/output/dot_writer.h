@@ -38,7 +38,7 @@ public:
     void close();
 
     // add node to the graph
-    void add_node(Node& node);
+    void add_node(Node* node);
 
     // print graph
     void print();
@@ -48,12 +48,6 @@ private:
     // gathers global min, max, total time
     void gather_meta();
     
-    // mark predecessor when need to be printed
-    void mark_predecessors( Node& node);
-
-    // mark top x nodes, which took the most time, to be printed
-    void top_nodes();
-
     // print node to dot file
     void print_node(Node& node);
 
@@ -62,6 +56,12 @@ private:
 
     // filter nodes
     void filter();
+
+    // mark top x nodes, which took the most time
+    void top_nodes();
+    
+    // mark predecessor nodes to be printed
+    void mark_predecessors( Node* node);
 
 };
 

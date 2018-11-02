@@ -49,7 +49,7 @@ void Dot_writer::filter(){
                 ++node_count;
 
                 node->state = NodeState::full;
-                mark_predecessors(*node);
+                mark_predecessors(node);
             } else if(node->state != NodeState::partial){
                 node->state = NodeState::dontprint;
             }
@@ -122,9 +122,9 @@ void Dot_writer::gather_meta(){
     timerange = max_time - min_time;
 }
 
-void Dot_writer::mark_predecessors( Node& node){
+void Dot_writer::mark_predecessors( Node* node){
 
-    Node* curr = &node;
+    Node* curr = node;
 
     while( curr->parent != nullptr ){
         curr = curr->parent;
@@ -148,7 +148,7 @@ void Dot_writer::top_nodes(){
             break;
 
         (*it)->state = NodeState::full;
-        mark_predecessors(**it);
+        mark_predecessors(*it);
     }
 }
 
@@ -161,9 +161,8 @@ int Dot_writer::node_color(const double time){
     return color_code;
 }
 
-void Dot_writer::add_node(Node& node){
-    Node* curr = &node;
-    nodes.push_back(curr);
+void Dot_writer::add_node(Node* node){
+    nodes.push_back(node);
 }
 
 void Dot_writer::print(){
