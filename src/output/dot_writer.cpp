@@ -4,7 +4,8 @@
 bool Dot_writer::open(std::string filename = "result.dot"){
     result_file.open(filename);
     if(result_file.is_open()){
-        // print header of graph file
+        
+        // header of dot/graph file
         result_file 
         << "digraph call_tree {\n"
         << "graph [splines=ortho, ranksep=1.5];\n"
@@ -42,7 +43,7 @@ void Dot_writer::filter(){
         for(const auto& node : nodes){
             if(node->sum_excl_time > ratio){
 
-                // check if printing more nodes than "top_nodes"
+                // check if printing more nodes than "top_nodes" marked
                 if(params.top_nodes != 0 && node_count == params.top_nodes)
                     break;
                 ++node_count;
@@ -63,7 +64,6 @@ void Dot_writer::filter(){
 }
 
 void Dot_writer::print_node(Node& node){
-    // filter nodes
     result_file 
     << "\""             << node.call_id       << "\" [\n"
     << " label = \""    << node.region        << "\\l\n";
@@ -85,15 +85,15 @@ void Dot_writer::print_node(Node& node){
     
     result_file << " \"\n";
     
-    // colorize node, 9 colors
+    // colorize node
     result_file
     << " fillcolor=" << node_color(node.sum_excl_time) << ",\n"
     << " style=filled\n";
 
-    // closing tag
+    // closing node tag
     result_file << "];" << std::endl;
 
-    // set edge netween node and parent
+    // set edge between this node and its parent
     if( node.parent){
         result_file 
         << node.parent->call_id
@@ -107,7 +107,7 @@ void Dot_writer::print_node(Node& node){
     node.state = NodeState::printed; 
 }
 
-void Dot_writer::get_meta(){
+void Dot_writer::gather_meta(){
     for( const auto& node : nodes ){
 
         if( node->sum_excl_time < min_time )
@@ -168,15 +168,12 @@ void Dot_writer::add_node(Node& node){
 
 void Dot_writer::print(){
 
-    get_meta();
+    gather_meta();
 
-    //run filter
     filter();
     
     for( auto& node : nodes ){
         if(node->state != NodeState::dontprint)
             print_node(*node);
     }
-
-        return;
-    }
+}

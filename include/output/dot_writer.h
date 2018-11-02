@@ -31,7 +31,8 @@ private:
     const int num_colors = 9;
 
 public:
-
+    // open new ofstream
+    // set graph parameter 
     bool open(std::string filename);
 
     void close();
@@ -44,7 +45,8 @@ public:
 
 private:
 
-    void get_meta();
+    // gathers global min, max, total time
+    void gather_meta();
     
     // mark predecessor when need to be printed
     void mark_predecessors( Node& node);
@@ -53,7 +55,7 @@ private:
     void top_nodes();
 
     // print node to dot file
-    void print_node(Node& region);
+    void print_node(Node& node);
 
     // get nodecolor
     int node_color(const double time);
