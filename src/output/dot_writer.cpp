@@ -27,12 +27,14 @@ void Dot_writer::close(){
 }
 
 void Dot_writer::filter(){
+    bool filter = false;
 
     if(params.top_nodes != 0){
         top_nodes();
+        filter = true;
     }
 
-    if(params.node_min_ratio != 0 || params.node_min_ratio != 100){
+    if(params.node_min_ratio != 0 && params.node_min_ratio != 100){
         double ratio = total_time / 100 * params.node_min_ratio;
         for(const auto& node : nodes){
             if(node->sum_excl_time > ratio){
@@ -40,8 +42,10 @@ void Dot_writer::filter(){
                 mark_predecessors(*node);
             }
         }
-        return;
-    } else {
+        filter = true;
+    } 
+
+    if(!filter){
         for( const auto& node : nodes )
             node->state = NodeState::full;
     }
