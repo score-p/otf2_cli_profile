@@ -8,8 +8,8 @@ bool Dot_writer::open(std::string filename = "result.dot"){
         // header of dot/graph file
         result_file 
         << "digraph call_tree {\n"
-        << "graph [splines=ortho, ranksep=1.5];\n"
-        << "node [shape = record, colorscheme=spectral9];\n"
+        << "graph [splines=" << splines <<", ranksep=" << ranksep << "];\n"
+        << "node [shape = "<< shape << ", colorscheme="<< colorscheme << "];\n"
         << "edge [];\n"
         << std::endl;
         
