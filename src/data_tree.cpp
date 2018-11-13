@@ -30,7 +30,7 @@ data_tree::data_tree(map<uint64_t, tuple<uint64_t, uint64_t, shared_ptr<tree_nod
 // add a node without data
 shared_ptr<tree_node> data_tree::insert_node(uint64_t function_id, shared_ptr<tree_node> parent) {
     if (parent == nullptr) {
-        shared_ptr<tree_node> tmp(new tree_node(function_id, parent));
+        shared_ptr<tree_node> tmp = std::make_shared<tree_node>(function_id, parent);
 
         root_nodes.insert(make_pair(function_id, tmp));
 
@@ -40,7 +40,7 @@ shared_ptr<tree_node> data_tree::insert_node(uint64_t function_id, shared_ptr<tr
         auto node = parent->children.find(function_id);
 
         if (node == parent->children.end()) {
-            shared_ptr<tree_node> tmp(new tree_node(function_id, parent));
+            shared_ptr<tree_node> tmp = std::make_shared<tree_node>(function_id, parent);
 
             parent->children.insert(node, make_pair(function_id, tmp));
 
@@ -55,7 +55,8 @@ shared_ptr<tree_node> data_tree::insert_node(uint64_t function_id, shared_ptr<tr
 // same as above with different intake and return
 tree_node* data_tree::insert_node(uint64_t function_id, tree_node* parent) {
     if (parent == nullptr) {
-        shared_ptr<tree_node> tmp(new tree_node(function_id, parent));
+        shared_ptr<tree_node> tmp = std::make_shared<tree_node>(function_id, parent);
+
 
         root_nodes.insert(make_pair(function_id, tmp));
 
@@ -65,7 +66,8 @@ tree_node* data_tree::insert_node(uint64_t function_id, tree_node* parent) {
         auto node = parent->children.find(function_id);
 
         if (node == parent->children.end()) {
-            shared_ptr<tree_node> tmp(new tree_node(function_id, parent));
+            shared_ptr<tree_node> tmp = std::make_shared<tree_node>(function_id, parent);
+
             parent->children.insert(make_pair(function_id, tmp));
 
             return tmp.get();
