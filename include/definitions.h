@@ -320,6 +320,7 @@ struct Definitions {
     DefinitionType<uint64_t, Region>        regions;
     DefinitionType<uint64_t, Metric>        metrics;
     DefinitionType<paradigm_id_t, Paradigm> paradigms;
+    DefinitionType<paradigm_id_t, Paradigm> io_paradigms;
     DefinitionType<uint64_t, IoHandle>      iohandles;
     DefinitionType<uint64_t, Group>         groups;
     SystemTree system_tree{};

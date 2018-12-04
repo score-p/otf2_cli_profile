@@ -16,8 +16,33 @@ using namespace rapidjson;
 using std::cout;
 using std::string;
 
+template <typename os_t>
+class PlainWriter {
+  os_t& m_stream;
+public:
+  PlainWriter(os_t& output) : m_stream(output) {}
+  template <typename T>
+  void Key(T k) const {
+    m_stream << k << ": ";
+  }
+  void Uint64(uint64_t u) const {
+    m_stream << u << "\n";
+  }
+  void Uint(uint32_t u) const {
+    m_stream << u << "\n";
+  }
+  void StartObject() const {}
+  void EndObject() const {}
+  void StartArray() const {}
+  void EndArray() const {}
+};
+
 struct ProfileEntry {
     std::map<std::string, uint64_t> entries;
+    void add_data(const std::string& key, uint64_t value) {
+        if(value == 0 || value == (uint64_t)(-1)) return;
+        entries[key] += value;
+    }
     template <typename Writer>
     void WriteProfile(Writer& w) const {
         w.StartObject();
@@ -34,6 +59,7 @@ struct WorkflowProfile {
     uint32_t node_count;
     uint32_t process_count;
     uint32_t thread_count;
+    uint64_t timer_resolution;
     std::map<std::string, uint64_t>     counters;
     std::map<std::string, ProfileEntry> functions_by_paradigm;
     std::map<std::string, ProfileEntry> messages_by_paradigm;
@@ -80,6 +106,8 @@ void WorkflowProfile::WriteProfile(Writer& w) const {
     w.Uint(process_count);
     w.Key("thread count");
     w.Uint(thread_count);
+    w.Key("timer resolution");
+    w.Uint64(timer_resolution);
     w.Key("hardware counters");
     w.StartArray();
     for (const auto& c : counters) {
@@ -125,6 +153,7 @@ bool CreateJSON(AllData& alldata) {
     static std::string bytestr("bytes");
     static std::string timestr("time");
     static std::string countstr("count");
+    profile.timer_resolution = alldata.metaData.timerResolution;
 
     for (const auto& call_node : alldata.call_path_tree) {
         const auto& r = alldata.definitions.regions.get(call_node.function_id);
@@ -133,7 +162,7 @@ bool CreateJSON(AllData& alldata) {
         }
 
         const auto& p        = alldata.definitions.paradigms.get(r->paradigm_id);
-        std::string paradigm = "Compiler";
+        std::string paradigm = "COMPUTE";
         if (p) {
             paradigm = p->name;
         }
@@ -148,14 +177,14 @@ bool CreateJSON(AllData& alldata) {
             if (excl_time < one_node_data.second.f_data.excl_time) {
                 excl_time = one_node_data.second.f_data.excl_time;
             }
-            if (one_node_data.second.m_data.bytes_send)
-                profile.messages_by_paradigm[paradigm].entries[bytestr] += one_node_data.second.m_data.bytes_send;
-            if (one_node_data.second.m_data.bytes_recv)
-                profile.messages_by_paradigm[paradigm].entries[bytestr] += one_node_data.second.m_data.bytes_recv;
-            if (one_node_data.second.m_data.count_send)
-                profile.messages_by_paradigm[paradigm].entries[countstr] += one_node_data.second.m_data.count_send;
-            if (one_node_data.second.m_data.count_recv)
-                profile.messages_by_paradigm[paradigm].entries[countstr] += one_node_data.second.m_data.count_recv;
+	    auto& message_entry = profile.messages_by_paradigm[paradigm];
+	    auto& collop_entry = profile.collops_by_paradigm[paradigm];
+	    const auto& message_data = one_node_data.second.m_data;
+	    const auto& collop_data = one_node_data.second.c_data;
+	    message_entry.add_data(bytestr, message_data.bytes_send);
+	    message_entry.add_data(bytestr, message_data.bytes_recv);
+	    message_entry.add_data(countstr, message_data.count_send);
+	    message_entry.add_data(countstr, message_data.count_recv);
             if (one_node_data.second.c_data.bytes_send)
                 profile.collops_by_paradigm[paradigm].entries[bytestr] += one_node_data.second.c_data.bytes_send;
             if (one_node_data.second.c_data.bytes_recv)
@@ -181,7 +210,7 @@ bool CreateJSON(AllData& alldata) {
     }
     static std::string meta_time = "meta operation time";
     for (auto io_entry : alldata.io_data) {
-        std::string paradigm_name = alldata.definitions.paradigms.get(io_entry.first)->name;
+        std::string paradigm_name = alldata.definitions.io_paradigms.get(io_entry.first)->name;
         cout << "Summarizing io for " << paradigm_name << std::endl;
         profile.io_ops_by_paradigm[paradigm_name].entries[bytestr] += io_entry.second.num_bytes;
         profile.io_ops_by_paradigm[paradigm_name].entries[countstr] += io_entry.second.num_operations;

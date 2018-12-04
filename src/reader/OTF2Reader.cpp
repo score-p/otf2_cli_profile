@@ -76,7 +76,11 @@ string OTF2ParadigmToString(OTF2_Paradigm paradigm) {
 
 bool OTF2Reader::initialize(AllData& alldata) {
     alldata.verbosePrint(1, true, "OTF2: reader initalization");
-
+    for(auto para = (int)OTF2_PARADIGM_UNKNOWN;
+	para != (int)OTF2_PARADIGM_SHMEM;
+	++para) {
+      alldata.definitions.paradigms.add(para, {OTF2ParadigmToString(para)});
+    }
     _reader = OTF2_Reader_Open(alldata.params.input_file_name.c_str());
 
     if (nullptr == _reader) {
@@ -122,16 +126,12 @@ OTF2_CallbackCode OTF2Reader::handle_def_io_handle(void* userData, OTF2_IoHandle
         auto strings = filesystem_entries.get(file);
         if (strings.second != OTF2_CALLBACK_SUCCESS)
             return strings.second;
-        cout << "Adding io handle: " << self << ", " << name << " -> " << *strings.first[0] << ", " << file << ", "
-             << parent << endl;
         alldata->definitions.iohandles.add(self, {*strings.first[0], ioParadigm, file, parent});
         return OTF2_CALLBACK_SUCCESS;
     } else {
         auto strings = string_id.get(name);
         if (strings.second != OTF2_CALLBACK_SUCCESS)
             return strings.second;
-        cout << "Adding io handle: " << self << ", " << name << " -> " << *strings.first[0] << ", " << file << ", "
-             << parent << endl;
         alldata->definitions.iohandles.add(self, {*strings.first[0], ioParadigm, file, parent});
     }
     return OTF2_CALLBACK_SUCCESS;
@@ -142,7 +142,6 @@ OTF2_CallbackCode OTF2Reader::handle_def_io_fs_entry(void* userData, OTF2_IoFile
     auto strings = string_id.get(name);
     if (strings.second != OTF2_CALLBACK_SUCCESS)
         return strings.second;
-    cout << "Adding fs entry: " << self << " -> " << name << " -> " << *strings.first[0] << endl;
     filesystem_entries.add(self, strings.first[0]->c_str());
     return OTF2_CALLBACK_SUCCESS;
 }
@@ -398,7 +397,7 @@ OTF2_CallbackCode OTF2Reader::handle_def_io_paradigm(void* userData, OTF2_IoPara
         return strings.second;
     }
 
-    alldata->definitions.paradigms.add(paradigm, {*strings.first[0]});
+    alldata->definitions.io_paradigms.add(paradigm, {*strings.first[0]});
 
     return OTF2_CALLBACK_SUCCESS;
 }
@@ -655,7 +654,7 @@ OTF2_CallbackCode OTF2Reader::handle_mpi_request_test(OTF2_LocationRef locationI
     return OTF2_CALLBACK_SUCCESS;
 }
 */
-/*TODO nicht verwendet
+/*
 OTF2_CallbackCode OTF2Reader::handle_mpi_collective_begin(OTF2_LocationRef locationID,
                                                           OTF2_TimeStamp   time,
                                                           uint64_t eventPosition, void* userData,
