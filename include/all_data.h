@@ -26,6 +26,8 @@ struct AllData {
     /* runtime measurement */
     TimeMeasurement tm;
 
+    /* I/O summary */
+    std::map<uint64_t, IoData> io_data;
     AllData(uint32_t my_rank = 0, uint32_t num_ranks = 1) {
         metaData.myRank   = my_rank;
         metaData.numRanks = num_ranks;
