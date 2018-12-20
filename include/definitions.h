@@ -143,7 +143,7 @@ class SystemTree {
             parent->children.insert(std::make_pair(_size, new_node));
             new_node->data.level = parent->data.level + 1;
 
-            if (num_nodes_per_level.size() <= new_node->data.level)
+            if (new_node->data.level < num_nodes_per_level.size())
                 ++num_nodes_per_level[new_node->data.level];
             else
                 num_nodes_per_level.push_back(1);
