@@ -99,7 +99,7 @@ struct Params {
     uint8_t verbose_level = 0;
     // bool        read_from_stats    = false;
     bool        read_metrics       = true;  // counter
-    bool        output_type_set        = false;
+    bool        output_type_set    = false;
     bool        create_cube        = false;
     bool        create_json        = false;
     bool        summarize_it       = false;  // TODO added for testing

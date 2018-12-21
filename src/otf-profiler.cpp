@@ -117,19 +117,23 @@ int main(int argc, char** argv) {
     }
 #endif /* OTFPROFILER_MPI */
 
+#ifdef HAVE_CUBE
     if (alldata.params.create_cube) {
         /* step 6.3: create CUBE output */
         alldata.tm.start(ScopeID::CUBE);
         CreateCube(alldata);
         alldata.tm.stop(ScopeID::CUBE);
     }
+#endif
 
+#ifdef HAVE_JSON
     if (alldata.params.create_json) {
         /* step 6.3: create CUBE output */
         alldata.tm.start(ScopeID::JSON);
         CreateJSON(alldata);
         alldata.tm.stop(ScopeID::JSON);
     }
+#endif
 
     alldata.tm.stop(ScopeID::TOTAL);
 #ifdef SHOW_RESULTS
