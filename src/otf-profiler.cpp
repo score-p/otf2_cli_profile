@@ -51,6 +51,23 @@ int main(int argc, char** argv) {
     if (!alldata.params.parseCommandLine(argc, argv))
         return error();
 
+    // check if library for set flags are available
+    if(!alldata.params.output_type_set){
+        std::cerr << "ERROR: No supported output type set. See --help for output options.";
+        return 1;
+    } else if (alldata.params.create_cube) {
+        #ifndef HAVE_CUBE
+            std::cerr << "ERROR: No cube library found" << std::endl;
+            return 1;
+        #endif
+
+    } else if (alldata.params.create_json) {
+        #ifndef HAVE_JSON
+            std::cerr << "ERROR: No json library found" << std::endl;
+            return 1;
+        #endif
+    }
+
     /* registers all scopes for time measurement depending on the verbose level */
     if (alldata.params.verbose_level > 0)
         alldata.tm.registerScope(ScopeID::TOTAL, "Total time");
@@ -100,23 +117,19 @@ int main(int argc, char** argv) {
     }
 #endif /* OTFPROFILER_MPI */
 
-#ifdef HAVE_CUBE
     if (alldata.params.create_cube) {
         /* step 6.3: create CUBE output */
         alldata.tm.start(ScopeID::CUBE);
         CreateCube(alldata);
         alldata.tm.stop(ScopeID::CUBE);
     }
-#endif
 
-#ifdef HAVE_JSON
     if (alldata.params.create_json) {
         /* step 6.3: create CUBE output */
         alldata.tm.start(ScopeID::JSON);
         CreateJSON(alldata);
         alldata.tm.stop(ScopeID::JSON);
     }
-#endif
 
     alldata.tm.stop(ScopeID::TOTAL);
 #ifdef SHOW_RESULTS
