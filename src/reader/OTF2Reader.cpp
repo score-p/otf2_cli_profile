@@ -101,6 +101,12 @@ bool OTF2Reader::initialize(AllData& alldata) {
 
     locationList.reserve(number_locations);
 
+    //convert and add all OTF2 Paradigms
+    auto& paradigms = alldata.definitions.paradigms;
+    for(auto i = 0; i < OTF2_PARADIGM_NONE; ++i) {
+        paradigms.add(i,{OTF2ParadigmToString(i)});
+    }
+
     return true;
 }
 
