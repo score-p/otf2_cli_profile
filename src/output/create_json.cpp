@@ -7,8 +7,6 @@
 #include <string>
 #include "all_data.h"
 #include "rapidjson/document.h"
-#include "rapidjson/pointer.h"
-#include "rapidjson/prettywriter.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 
@@ -134,7 +132,7 @@ bool CreateJSON(AllData& alldata) {
     cout << "Creating JSON profile" << std::endl;
     WorkflowProfile                 profile;
     StringBuffer                    b;
-    /*Pretty*/ Writer<StringBuffer> w(b);
+    Writer<StringBuffer> w(b);
     for (const auto& n : alldata.definitions.system_tree) {
         switch (n.data.class_id) {
             case definitions::SystemClass::LOCATION:
