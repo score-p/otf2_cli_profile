@@ -19,6 +19,7 @@ struct AllData {
     meta_data metaData;
 
     definitions::Definitions definitions;
+    uint64_t traceID;
 
     /* program parameters */
     Params params;

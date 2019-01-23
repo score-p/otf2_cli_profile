@@ -107,6 +107,9 @@ bool OTF2Reader::initialize(AllData& alldata) {
         paradigms.add(i,{OTF2ParadigmToString(i)});
     }
 
+    OTF2_ErrorCode ignored = 
+      OTF2_Reader_GetTraceId( _reader,
+                        &alldata.traceID );
     return true;
 }
 
