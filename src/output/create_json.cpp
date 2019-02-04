@@ -67,6 +67,8 @@ struct WorkflowProfile {
     uint64_t serial_time;
     uint64_t num_functions;
     uint64_t num_invocations;
+    std::string filename;
+    uint64_t traceID;
     template <typename Writer>
     void WriteProfile(Writer& w) const;
     WorkflowProfile()
@@ -96,6 +98,13 @@ void WriteMapUnderKey(std::string key, const Map& m, Writer& w) {
 template <typename Writer>
 void WorkflowProfile::WriteProfile(Writer& w) const {
     w.StartObject();
+    w.Key("trace");
+    w.StartObject();
+    w.Key("filename");
+    w.String(filename.c_str());
+    w.Key("id");
+    w.Uint64(traceID);
+    w.EndObject();
     w.Key("job id");
     w.Uint64(job_id);
     w.Key("node count");
@@ -215,6 +224,8 @@ bool CreateJSON(AllData& alldata) {
         profile.io_ops_by_paradigm[paradigm_name].entries[timestr] += io_entry.second.transfer_time;
         profile.io_ops_by_paradigm[paradigm_name].entries[meta_time] += io_entry.second.nontransfer_time;
     }
+    profile.filename = alldata.params.input_file_name;
+    profile.traceID = alldata.traceID;
     profile.WriteProfile(w);
     string        fname = alldata.params.output_file_prefix + ".json";
     std::ofstream outfile(fname.c_str());
