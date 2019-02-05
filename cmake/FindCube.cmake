@@ -136,16 +136,7 @@ ELSE()
 ENDIF()
 include (FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(CUBE
-    FOUND_VAR CUBE_FOUND
     REQUIRED_VARS CUBE_LIBRARIES CUBE_INCLUDE_DIRS
 )
 
 mark_as_advanced(CUBE_INCLUDE_DIRS CUBE_LIBRARIES)
-
-if(CUBE_FOUND)
-    message(STATUS "CUBE: Cube package found.")
-else()
-    message(STATUS "CUBE: Cube package not found.")
-    # unset(CUBE_INCLUDE_DIRS)
-    # unset(CUBE_LIBRARIES)
-endif()

@@ -97,16 +97,8 @@ ENDIF()
 
 include (FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(OTF
-    FOUND_VAR OTF_FOUND
     REQUIRED_VARS OTF_LIBRARIES OTF_INCLUDE_DIRS
+    FAIL_MESSAGE "OTF: Open Trace Format library not found."
 )
 
 mark_as_advanced(OTF_INCLUDE_DIRS OTF_LIBRARIES)
-
-if(OTF_FOUND)
-    message(STATUS "OTF: Open Trace Format library found.")
-else()
-    message(STATUS "OTF: Open Trace Format library not found.")
-    # unset(OTF_INCLUDE_DIRS)
-    # unset(OTF_LIBRARIES)
-endif()
