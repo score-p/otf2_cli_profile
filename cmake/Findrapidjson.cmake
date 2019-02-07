@@ -5,7 +5,7 @@ endif()
 find_path(RAPIDJSON_INCLUDE_DIRS NAMES rapidjson/rapidjson.h HINTS ${RAPIDJSON_INC_DIR})
 
 include(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(RAPIDJSON
+find_package_handle_standard_args(RAPIDJSON
 	REQUIRED_VARS RAPIDJSON_INCLUDE_DIRS
     FAIL_MESSAGE "RAPIDJSON: rapidjson package not found."
 )
