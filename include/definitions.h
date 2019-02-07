@@ -343,7 +343,7 @@ struct meta_data {
     uint32_t myRank;
     uint32_t numRanks;
 
-#ifdef OTFPROFILE_MPI
+#ifdef OTFPROFILER_MPI
 
     uint32_t packBufferSize;
     char*    packBuffer;
@@ -351,7 +351,7 @@ struct meta_data {
 #endif
 
     meta_data(uint32_t my_rank = 0, uint32_t num_ranks = 1) : myRank(my_rank), numRanks(num_ranks), timerResolution(0) {
-#ifdef OTFPROFILE_MPI
+#ifdef OTFPROFILER_MPI
 
         packBufferSize = 0;
         packBuffer     = NULL;
@@ -360,14 +360,14 @@ struct meta_data {
     }
 
     ~meta_data() {
-#ifdef OTFPROFILE_MPI
+#ifdef OTFPROFILER_MPI
 
         freePackBuffer();
 
 #endif
     }
 
-#ifdef OTFPROFILE_MPI
+#ifdef OTFPROFILER_MPI
     char* guaranteePackBuffer(uint32_t size) {
         if (packBufferSize < size) {
             packBufferSize = size;
@@ -388,7 +388,7 @@ struct meta_data {
 
     char* getPackBuffer() { return packBuffer; }
 
-#endif /* OTFPROFILE_MPI */
+#endif /* OTFPROFILER_MPI */
 };
 
 #endif  // DEFINITIONS_H

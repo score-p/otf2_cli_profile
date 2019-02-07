@@ -1,11 +1,8 @@
 cmake_minimum_required (VERSION 3.5)
 
-project (OTF-Profiler)
-
 # Set the version number
-set (OTFProfiler_VERSION_MAJOR 2)
-set (OTFProfiler_VERSION_MINOR 0)
-set (OTFProfiler_VERSION_PATCH 0)
+project ( OTFProfiler VERSION 2.0.0 )
+
 
 include_directories("${PROJECT_BINARY_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}/include")
@@ -16,9 +13,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake;${CMAKE_MODULE_PATH}")
 
 include(cmake/DefaultBuildType.cmake)
 
-#TODO: checks for MPI, CUBE
 
-option (USE_OTF "USE OTF library" ON)
+option (USE_OTF "USE OTF library" OFF)
 if (USE_OTF)
      find_package (OTF)
      if (OTF_FOUND)
@@ -48,15 +44,24 @@ if (USE_CUBE)
     endif (CUBE_FOUND)
 endif (USE_CUBE)
 
-# option (BUILD_MPI_VERSION "Build MPI parallel version of OTF-Profiler")
+option (USE_MPI "Build MPI parallel version of OTF-Profiler" OFF)
+if (USE_MPI)
+    find_package(MPI REQUIRED)
+    if (MPI_FOUND)
+        MESSAGE(STATUS "MPI Found")
+        set (HAVE_MPI true)
+    else ()
+        unset (HAVE_MPI)
+    endif (MPI_FOUND)
+endif (USE_MPI)
 
-option (USE_JSON "USE JSON outputter (via rapidjson library)" ON)
+option (USE_JSON "USE JSON outputter (via rapidjson library)" OFF)
 if(USE_JSON)
     find_package(rapidjson)
     if(RAPIDJSON_FOUND)
-	set(HAVE_JSON true)
+        set(HAVE_JSON true)
     else()
-	unset(HAVE_JSON)
+        unset(HAVE_JSON)
     endif(RAPIDJSON_FOUND)
 endif(USE_JSON)
 
@@ -90,9 +95,6 @@ if (HAVE_JSON AND USE_JSON)
     list(APPEND SOURCE_FILES src/output/create_json.cpp)
 endif (HAVE_JSON AND USE_JSON)
 
-if (HAVE_MPI AND BUILD_MPI_VERSION)
-
-endif (HAVE_MPI AND BUILD_MPI_VERSION)
 
 # configure a header file to pass some of the CMake settings
 # to the source code
@@ -112,8 +114,8 @@ install (TARGETS otf-profiler DESTINATION bin)
 
 # build MPI parallel version of OTF-Profiler
 if (HAVE_MPI AND USE_MPI)
+    add_executable(otf-profiler-mpi ${SOURCE_FILES} src/reduce_data.cpp)
     target_compile_definitions(otf-profiler-mpi PUBLIC OTFPROFILER_MPI)
     target_compile_features(otf-profiler-mpi PUBLIC cxx_std_11)
-    add_executable(otf-profiler-mpi ${SOURCE_FILES} src/reduce_data.cpp)
-    target_link_libraries (otfprofiler-mpi ${EXTRA-LIBS})
+    target_link_libraries (otf-profiler-mpi ${EXTRA_LIBS} ${MPI_CXX_LIBRARIES})
 endif (HAVE_MPI AND USE_MPI)
