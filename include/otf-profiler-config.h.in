@@ -15,6 +15,8 @@
 #cmakedefine HAVE_OPEN_TRACE_FORMAT
 #cmakedefine HAVE_OTF2
 #cmakedefine HAVE_JSON
+#cmakedefine HAVE_MPI
+
 
 #cmakedefine OTFPROFILER_MPI
 

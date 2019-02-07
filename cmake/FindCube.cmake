@@ -44,12 +44,13 @@ IF(NOT CUBELIB_CONFIG OR NOT EXISTS ${CUBELIB_CONFIG})
         HINTS
         ${PATH}
     )
+
 ENDIF()
 
 # cube version 4.4 or later
 IF(CUBELIB_CONFIG OR EXISTS ${CUBELIB_CONFIG})
 
-    MESSAGE(STATUS "CUBE: cubelib-config found. (using ${CUBELIB_CONFIG}")
+    # MESSAGE(STATUS "CUBE: cubelib-config found. (using ${CUBELIB_CONFIG}")
     execute_process(COMMAND ${CUBELIB_CONFIG} "--version" OUTPUT_VARIABLE CUBE_VERSION)
 
     STRING(STRIP "${CUBE_VERSION}" CUBE_VERSION)
@@ -80,7 +81,6 @@ IF(CUBELIB_CONFIG OR EXISTS ${CUBELIB_CONFIG})
 
 # cube pre version 4.4
 ELSEIF(CUBE_CONFIG OR EXISTS ${CUBE_CONFIG})
-    message(STATUS "CUBE: cube-config found. (using ${CUBE_CONFIG})")
 
     execute_process(COMMAND ${CUBE_CONFIG} "--version" OUTPUT_VARIABLE CUBE_VERSION)
     STRING(STRIP ${CUBE_VERSION} CUBE_VERSION)
@@ -112,8 +112,6 @@ ELSEIF(CUBE_CONFIG OR EXISTS ${CUBE_CONFIG})
         ENDIF(${_ARG} MATCHES "^-l")
 ENDFOREACH(_ARG)
 ELSE()
-   MESSAGE(STATUS "CUBE: No cube-config found. Try to find Cube manually by setting CUBE_INC_DIR, CUBE_LIB_DIR and CUBE_LIBS.")
-
     if (CUBE_INC_DIR AND CUBE_LIBS AND CUBE_LIB_DIR)
         find_path(CUBE_INCLUDE_DIRS NAMES Cube.h HINTS ${CUBE_INC_DIR})
 
@@ -137,6 +135,7 @@ ENDIF()
 include (FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(CUBE
     REQUIRED_VARS CUBE_LIBRARIES CUBE_INCLUDE_DIRS
+    FAIL_MESSAGE "CUBE: No cube-config found. Try to find Cube manually by setting CUBE_INC_DIR, CUBE_LIB_DIR and CUBE_LIBS."
 )
 
 mark_as_advanced(CUBE_INCLUDE_DIRS CUBE_LIBRARIES)

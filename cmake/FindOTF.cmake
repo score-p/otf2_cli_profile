@@ -37,7 +37,6 @@ FIND_PROGRAM(OTF_CONFIG NAMES otfconfig
 )
 
 IF(NOT OTF_CONFIG OR NOT EXISTS ${OTF_CONFIG})
-    MESSAGE(STATUS "OTF: No otfconfig found. Try to find OTF manually by setting OTF_INC_DIR, OTF_LIB_DIR and OTF_LIBS.")
 
     if (OTF_INC_DIR AND OTF_LIBS AND OTF_LIB_DIR)
         find_path(OTF_INCLUDE_DIRS NAMES otf.h HINTS ${OTF_INC_DIR})
@@ -60,7 +59,6 @@ IF(NOT OTF_CONFIG OR NOT EXISTS ${OTF_CONFIG})
     endif(OTF_INC_DIR AND OTF_LIBS AND OTF_LIB_DIR)
 
 ELSE()
-    message(STATUS "OTF: otfconfig found. (using ${OTF_CONFIG})")
 
     execute_process(COMMAND ${OTF_CONFIG} "--version" OUTPUT_VARIABLE OTF_VERSION)
     STRING(STRIP ${OTF_VERSION} OTF_VERSION)
@@ -98,7 +96,7 @@ ENDIF()
 include (FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(OTF
     REQUIRED_VARS OTF_LIBRARIES OTF_INCLUDE_DIRS
-    FAIL_MESSAGE "OTF: Open Trace Format library not found."
+    FAIL_MESSAGE "OTF: No otfconfig found. Try to find OTF manually by setting OTF_INC_DIR, OTF_LIB_DIR and OTF_LIBS."
 )
 
 mark_as_advanced(OTF_INCLUDE_DIRS OTF_LIBRARIES)
