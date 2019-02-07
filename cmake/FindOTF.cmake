@@ -27,7 +27,7 @@
 # Find Open Trace Format library
 if (OTF_LIBRARIES AND OTF_INCLUDE_DIRS)
   set (OTF_FIND_QUIETLY TRUE)
-endif (OTF_LIBRARIES AND OTF_INCLUDE_DIRS)
+endif()
 
 FIND_PROGRAM(OTF_CONFIG NAMES otfconfig
     PATHS
@@ -36,29 +36,29 @@ FIND_PROGRAM(OTF_CONFIG NAMES otfconfig
     ${PATH}
 )
 
-IF(NOT OTF_CONFIG OR NOT EXISTS ${OTF_CONFIG})
+if(NOT OTF_CONFIG OR NOT EXISTS ${OTF_CONFIG})
 
     if (OTF_INC_DIR AND OTF_LIBS AND OTF_LIB_DIR)
         find_path(OTF_INCLUDE_DIRS NAMES otf.h HINTS ${OTF_INC_DIR})
 
         STRING( REPLACE " " ";" _OTF_LIBS ${OTF_LIBS} )
-        FOREACH( _ARG ${_OTF_LIBS} )
-            IF(${_ARG} MATCHES "^-l")
+        foreach( _ARG ${_OTF_LIBS} )
+            if(${_ARG} MATCHES "^-l")
                 STRING(REGEX REPLACE "^-l" "" _ARG "${_ARG}")
                 STRING(STRIP "${_ARG}" _ARG)
-            ENDIF(${_ARG} MATCHES "^-l")
+            endif()
             FIND_LIBRARY(_OTF_LIB_FROM_ARG NAMES ${_ARG}
                 HINTS ${OTF_LIB_DIR} NO_DEFAULT_PATH
             )
-            IF(_OTF_LIB_FROM_ARG)
+            if(_OTF_LIB_FROM_ARG)
                 SET(OTF_LIBRARIES ${OTF_LIBRARIES} ${_OTF_LIB_FROM_ARG})
-            ENDIF(_OTF_LIB_FROM_ARG)
+            endif()
             UNSET(_OTF_LIB_FROM_ARG CACHE)
-        ENDFOREACH(_ARG)
+        endforeach(_ARG)
         UNSET(_OTF_LIBS CACHE)
-    endif(OTF_INC_DIR AND OTF_LIBS AND OTF_LIB_DIR)
+    endif()
 
-ELSE()
+else()
 
     execute_process(COMMAND ${OTF_CONFIG} "--version" OUTPUT_VARIABLE OTF_VERSION)
     STRING(STRIP ${OTF_VERSION} OTF_VERSION)
@@ -69,29 +69,29 @@ ELSE()
 
     execute_process(COMMAND ${OTF_CONFIG} "--libs" OUTPUT_VARIABLE _LINK_LD_ARGS)
     STRING( REPLACE " " ";" _LINK_LD_ARGS ${_LINK_LD_ARGS} )
-    FOREACH( _ARG ${_LINK_LD_ARGS} )
-        IF(${_ARG} MATCHES "^-L")
+    foreach( _ARG ${_LINK_LD_ARGS} )
+        if(${_ARG} MATCHES "^-L")
             STRING(REGEX REPLACE "^-L" "" _ARG ${_ARG})
             STRING(STRIP "${_ARG}" _ARG)
             SET(OTF_LINK_DIRS ${OTF_LINK_DIRS} ${_ARG})
-        ENDIF(${_ARG} MATCHES "^-L")
+        endif()
 
-        IF(${_ARG} MATCHES "^-l")
+        if(${_ARG} MATCHES "^-l")
             STRING(REGEX REPLACE "^-l" "" _ARG "${_ARG}")
             STRING(STRIP "${_ARG}" _ARG)
             # NO_DEFAULT_PATH - We have to "filter" -lm, as g++ links it anyways. And then stuff explodes
             FIND_LIBRARY(_OTF_LIB_FROM_ARG NAMES ${_ARG}
                 HINTS ${OTF_LINK_DIRS} NO_DEFAULT_PATH
             )
-            IF(_OTF_LIB_FROM_ARG)
+            if(_OTF_LIB_FROM_ARG)
                 SET(OTF_LIBRARIES ${OTF_LIBRARIES} ${_OTF_LIB_FROM_ARG})
-            ENDIF(_OTF_LIB_FROM_ARG)
+            endif()
             UNSET(_OTF_LIB_FROM_ARG CACHE)
-        ENDIF(${_ARG} MATCHES "^-l")
-    ENDFOREACH(_ARG)
+        endif()
+    endforeach(_ARG)
 
 
-ENDIF()
+endif()
 
 include (FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(OTF

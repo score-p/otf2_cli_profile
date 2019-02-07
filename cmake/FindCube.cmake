@@ -25,9 +25,9 @@
 
 
 # Find Cube library
-IF (CUBE_LIBRARIES AND CUBE_INCLUDE_DIRS)
+if (CUBE_LIBRARIES AND CUBE_INCLUDE_DIRS)
   set (CUBE_FIND_QUIETLY TRUE)
-ENDIF (CUBE_LIBRARIES AND CUBE_INCLUDE_DIRS)
+endif()
 
 # Find Cube
 FIND_PROGRAM(CUBELIB_CONFIG NAMES cubelib-config
@@ -36,7 +36,7 @@ FIND_PROGRAM(CUBELIB_CONFIG NAMES cubelib-config
     HINTS
     ${PATH}
 )
-IF(NOT CUBELIB_CONFIG OR NOT EXISTS ${CUBELIB_CONFIG})
+if(NOT CUBELIB_CONFIG OR NOT EXISTS ${CUBELIB_CONFIG})
 
     FIND_PROGRAM(CUBE_CONFIG NAMES cube-config
         PATHS
@@ -45,10 +45,10 @@ IF(NOT CUBELIB_CONFIG OR NOT EXISTS ${CUBELIB_CONFIG})
         ${PATH}
     )
 
-ENDIF()
+endif()
 
 # cube version 4.4 or later
-IF(CUBELIB_CONFIG OR EXISTS ${CUBELIB_CONFIG})
+if(CUBELIB_CONFIG OR EXISTS ${CUBELIB_CONFIG})
 
     # MESSAGE(STATUS "CUBE: cubelib-config found. (using ${CUBELIB_CONFIG}")
     execute_process(COMMAND ${CUBELIB_CONFIG} "--version" OUTPUT_VARIABLE CUBE_VERSION)
@@ -61,13 +61,13 @@ IF(CUBELIB_CONFIG OR EXISTS ${CUBELIB_CONFIG})
 
     execute_process(COMMAND ${CUBELIB_CONFIG} "--ldflags" OUTPUT_VARIABLE _LINK_LD_ARGS)
     STRING( REPLACE " " ";" _LINK_LD_ARGS ${_LINK_LD_ARGS} )
-    FOREACH( _ARG ${_LINK_LD_ARGS} )
-        IF(${_ARG} MATCHES "^-L")
+    foreach( _ARG ${_LINK_LD_ARGS} )
+        if(${_ARG} MATCHES "^-L")
             STRING(REGEX REPLACE "^-L" "" _ARG "${_ARG}")
             STRING(STRIP "${_ARG}" _ARG)
             SET(CUBE_LINK_DIRS ${CUBE_LINK_DIRS} ${_ARG})
-        ENDIF(${_ARG} MATCHES "^-L")
-    ENDFOREACH(_ARG)
+        endif()
+    endforeach(_ARG)
 
     execute_process(COMMAND ${CUBELIB_CONFIG} "--libs" OUTPUT_VARIABLE _ARG)
 
@@ -80,7 +80,7 @@ IF(CUBELIB_CONFIG OR EXISTS ${CUBELIB_CONFIG})
     SET(CUBE_LIBRARIES ${CUBE_LIBRARIES} ${CUBE_LIB})
 
 # cube pre version 4.4
-ELSEIF(CUBE_CONFIG OR EXISTS ${CUBE_CONFIG})
+elseif(CUBE_CONFIG OR EXISTS ${CUBE_CONFIG})
 
     execute_process(COMMAND ${CUBE_CONFIG} "--version" OUTPUT_VARIABLE CUBE_VERSION)
     STRING(STRIP ${CUBE_VERSION} CUBE_VERSION)
@@ -91,47 +91,47 @@ ELSEIF(CUBE_CONFIG OR EXISTS ${CUBE_CONFIG})
 
     execute_process(COMMAND ${CUBE_CONFIG} "--cube-ldflags " OUTPUT_VARIABLE _LINK_LD_ARGS)
     STRING( REPLACE " " ";" _LINK_LD_ARGS ${_LINK_LD_ARGS} )
-    FOREACH( _ARG ${_LINK_LD_ARGS} )
-        IF(${_ARG} MATCHES "^-L")
+    foreach( _ARG ${_LINK_LD_ARGS} )
+        if(${_ARG} MATCHES "^-L")
             STRING(REGEX REPLACE "^-L" "" _ARG ${_ARG})
             STRING(STRIP "${_ARG}" _ARG)
             SET(CUBE_LINK_DIRS ${CUBE_LINK_DIRS} ${_ARG})
-        ENDIF(${_ARG} MATCHES "^-L")
+        endif()
 
-        IF(${_ARG} MATCHES "^-l")
+        if(${_ARG} MATCHES "^-l")
             STRING(REGEX REPLACE "^-l" "" _ARG "${_ARG}")
             STRING(STRIP "${_ARG}" _ARG)
             # NO_DEFAULT_PATH - We have to "filter" -lm, as g++ links it anyways. And then stuff explodes
             FIND_LIBRARY(_CUBE_LIB_FROM_ARG NAMES ${_ARG}
                 HINTS ${CUBE_LINK_DIRS} NO_DEFAULT_PATH
             )
-            IF(_CUBE_LIB_FROM_ARG)
+            if(_CUBE_LIB_FROM_ARG)
                 SET(CUBE_LIBRARIES ${CUBE_LIBRARIES} ${_CUBE_LIB_FROM_ARG})
-            ENDIF(_CUBE_LIB_FROM_ARG)
+            endif()
             UNSET(_CUBE_LIB_FROM_ARG CACHE)
-        ENDIF(${_ARG} MATCHES "^-l")
-ENDFOREACH(_ARG)
-ELSE()
+        endif()
+    endforeach(_ARG)
+else()
     if (CUBE_INC_DIR AND CUBE_LIBS AND CUBE_LIB_DIR)
         find_path(CUBE_INCLUDE_DIRS NAMES Cube.h HINTS ${CUBE_INC_DIR})
 
         STRING( REPLACE " " ";" _CUBE_LIBS ${CUBE_LIBS} )
-        FOREACH( _ARG ${_CUBE_LIBS} )
-            IF(${_ARG} MATCHES "^-l")
+        foreach( _ARG ${_CUBE_LIBS} )
+            if(${_ARG} MATCHES "^-l")
                 STRING(REGEX REPLACE "^-l" "" _ARG "${_ARG}")
                 STRING(STRIP "${_ARG}" _ARG)
-            ENDIF(${_ARG} MATCHES "^-l")
+            endif()
             FIND_LIBRARY(_CUBE_LIB_FROM_ARG NAMES ${_ARG}
                 HINTS ${CUBE_LIB_DIR} NO_DEFAULT_PATH
             )
-            IF(_CUBE_LIB_FROM_ARG)
+            if(_CUBE_LIB_FROM_ARG)
                 SET(CUBE_LIBRARIES ${CUBE_LIBRARIES} ${_CUBE_LIB_FROM_ARG})
-            ENDIF(_CUBE_LIB_FROM_ARG)
+            endif()
             UNSET(_CUBE_LIB_FROM_ARG CACHE)
-        ENDFOREACH(_ARG)
+        endforeach(_ARG)
         UNSET(_CUBE_LIBS CACHE)
-    endif(CUBE_INC_DIR AND CUBE_LIBS AND CUBE_LIB_DIR)
-ENDIF()
+    endif()
+endif()
 include (FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(CUBE
     REQUIRED_VARS CUBE_LIBRARIES CUBE_INCLUDE_DIRS

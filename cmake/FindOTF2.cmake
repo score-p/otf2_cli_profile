@@ -4,7 +4,7 @@ if(OTF2_USE_STATIC_LIBS)
   set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
 endif()
 
-IF(OTF2_CONFIG_PATH)
+if(OTF2_CONFIG_PATH)
     FIND_PROGRAM(OTF2_CONFIG NAMES otf2-config
         PATHS
         /opt/otf2/bin
@@ -16,9 +16,9 @@ ELSE(OTF2_CONFIG_PATH)
         PATHS
         /opt/otf2/bin
     )
-ENDIF(OTF2_CONFIG_PATH)
+endif()
 
-IF(NOT OTF2_CONFIG OR NOT EXISTS ${OTF2_CONFIG})
+if(NOT OTF2_CONFIG OR NOT EXISTS ${OTF2_CONFIG})
     SET(OTF2_VERSION ${OTF2_REQUIRED_VERSION})
 ELSE()
 
@@ -32,33 +32,33 @@ ELSE()
 
     execute_process(COMMAND ${OTF2_CONFIG} "--ldflags" OUTPUT_VARIABLE _LINK_LD_ARGS)
     STRING( REPLACE " " ";" _LINK_LD_ARGS ${_LINK_LD_ARGS} )
-    FOREACH( _ARG ${_LINK_LD_ARGS} )
-        IF(${_ARG} MATCHES "^-L")
+    foreach( _ARG ${_LINK_LD_ARGS} )
+        if(${_ARG} MATCHES "^-L")
             STRING(REGEX REPLACE "^-L" "" _ARG ${_ARG})
             STRING(STRIP "${_ARG}" _ARG)
             SET(OTF2_LINK_DIRS ${OTF2_LINK_DIRS} ${_ARG})
-        ENDIF(${_ARG} MATCHES "^-L")
-    ENDFOREACH(_ARG)
+        endif()
+    endforeach(_ARG)
 
     execute_process(COMMAND ${OTF2_CONFIG} "--libs" OUTPUT_VARIABLE _LINK_LD_ARGS)
     STRING( REPLACE " " ";" _LINK_LD_ARGS ${_LINK_LD_ARGS} )
-    FOREACH( _ARG ${_LINK_LD_ARGS} )
-        IF(${_ARG} MATCHES "^-l")
+    foreach( _ARG ${_LINK_LD_ARGS} )
+        if(${_ARG} MATCHES "^-l")
             STRING(REGEX REPLACE "^-l" "" _ARG "${_ARG}")
             STRING(STRIP "${_ARG}" _ARG)
             # NO_DEFAULT_PATH - We have to "filter" -lm, as g++ links it anyways. And then stuff explodes
             FIND_LIBRARY(_OTF2_LIB_FROM_ARG NAMES ${_ARG}
                 HINTS ${OTF2_LINK_DIRS} NO_DEFAULT_PATH
             )
-            IF(_OTF2_LIB_FROM_ARG)
+            if(_OTF2_LIB_FROM_ARG)
                 SET(OTF2_LIBRARIES ${OTF2_LIBRARIES} ${_OTF2_LIB_FROM_ARG})
-            ENDIF(_OTF2_LIB_FROM_ARG)
+            endif()
             UNSET(_OTF2_LIB_FROM_ARG CACHE)
-        ENDIF(${_ARG} MATCHES "^-l")
-    ENDFOREACH(_ARG)
+        endif()
+    endforeach(_ARG)
 
     find_program(OTF2_PRINT "otf2-print" PATHS "${OTF2_LINK_DIRS}/.." PATH_SUFFIXES "bin")
-ENDIF()
+endif()
 
 include (FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(OTF2
