@@ -23,7 +23,7 @@ endif()
 option (USE_OTF2 "Use OTF2 library" ON)
 if (USE_OTF2)
     find_package (OTF2)
-    set (HAVE_OTF2 OTF2)
+    set (HAVE_OTF2 OTF2_FOUND)
 endif()
 
 option (USE_CUBE "USE Cube package (library and GUI)" ON)
