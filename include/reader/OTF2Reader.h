@@ -599,7 +599,7 @@ class OTF2Reader : public TraceReader {
     static inline OTF2_CallbackCode handle_def_metrics(void* userData, OTF2_MetricMemberRef self, OTF2_StringRef name,
                                                        OTF2_StringRef description, OTF2_MetricType metricType,
                                                        OTF2_MetricMode metricMode, OTF2_Type valueType, OTF2_Base base,
-                                                       int64_t exponent, OTF2_StringRef uint);
+                                                       int64_t exponent, OTF2_StringRef unit);
 
     /** @brief Function pointer definition for the callback which is
      *         triggered by a ClockProperties definition record.
