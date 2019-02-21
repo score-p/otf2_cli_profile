@@ -74,6 +74,85 @@ string OTF2ParadigmToString(OTF2_Paradigm paradigm) {
     }
 }
 
+MetricMode mappingOTF2MetricMode( OTF2_MetricMode metricMode ){
+    switch (metricMode){
+        case OTF2_METRIC_ACCUMULATED_POINT:
+            return MetricMode::ACCUMULATED_POINT;
+
+        case OTF2_METRIC_ACCUMULATED_LAST:
+            return MetricMode::ACCUMULATED_LAST;
+
+        case OTF2_METRIC_ACCUMULATED_NEXT:
+            return MetricMode::ACCUMULATED_NEXT;
+
+        case OTF2_METRIC_ABSOLUTE_POINT:
+            return MetricMode::ABSOLUTE_POINT;
+
+        case OTF2_METRIC_ABSOLUTE_LAST:
+            return MetricMode::ABSOLUTE_LAST;
+
+        case OTF2_METRIC_ABSOLUTE_NEXT:
+            return MetricMode::ABSOLUTE_NEXT;
+
+        case OTF2_METRIC_RELATIVE_POINT:
+            return MetricMode::RELATIVE_POINT;
+
+        case OTF2_METRIC_RELATIVE_LAST:
+            return MetricMode::RELATIVE_LAST;
+
+        case OTF2_METRIC_RELATIVE_NEXT:
+            return MetricMode::RELATIVE_NEXT;
+    }
+}
+
+MetricType mappingOTF2MetricType( OTF2_MetricType metricType ){
+    switch( metricType ) {
+
+        case OTF2_METRIC_TYPE_PAPI:
+            return MetricType::PAPI;
+
+        case OTF2_METRIC_TYPE_RUSAGE:
+            return MetricType::RUSAGE;
+
+        case OTF2_METRIC_TYPE_USER:
+            return MetricType::USER;
+
+        // OTF2_METRIC_TYPE_OTHER
+        default:
+            return MetricType::OTHER;
+    }
+}
+
+RecorderKind mappingOTF2MetricRecorderType( OTF2_RecorderKind recorderKind ){
+    switch( recorderKind ) {
+        case OTF2_RECORDER_KIND_ABSTRACT:
+            return RecorderKind::ABSTRACT;
+
+        case OTF2_RECORDER_KIND_CPU:
+            return RecorderKind::CPU;
+
+        case OTF2_RECORDER_KIND_GPU:
+            return RecorderKind::GPU;
+
+        // OTF2_RECORDER_KIND_UNKNOWN
+        default:
+            return RecorderKind::UNKNOWN;
+    }
+}
+
+MetricOccurrence mappingOTF2MetricOccurrence( OTF2_MetricOccurrence metricOccurrence ){
+    switch( metricOccurrence ){
+        case OTF2_METRIC_SYNCHRONOUS_STRICT:
+            return MetricOccurrence::SYNCHRONOUS_STRICT;
+
+        case OTF2_METRIC_SYNCHRONOUS:
+            return MetricOccurrence::SYNCHRONOUS;
+
+        case OTF2_METRIC_ASYNCHRONOUS:
+            return MetricOccurrence::ASYNCHRONOUS;
+    }
+}
+
 bool OTF2Reader::initialize(AllData& alldata) {
     alldata.verbosePrint(1, true, "OTF2: reader initalization");
     for(auto para = (int)OTF2_PARADIGM_UNKNOWN;
@@ -168,11 +247,19 @@ OTF2_CallbackCode OTF2Reader::handle_def_attribute(void* userData, OTF2_Attribut
     return OTF2_CALLBACK_SUCCESS;
 }
 */
+    // OTF2_GlobalDefReaderCallback_MetricMember
+OTF2_CallbackCode OTF2Reader::handle_def_metrics(   void*                   userData,
+                                        OTF2_MetricMemberRef    self,
+                                        OTF2_StringRef          name,
+                                        OTF2_StringRef          description,
+                                        OTF2_MetricType         metricType,
+                                        OTF2_MetricMode         metricMode,
+                                        OTF2_Type               valueType,
+                                        OTF2_Base               base,
+                                        int64_t                 exponent,
+                                        OTF2_StringRef          unit
+                                    ){
 
-OTF2_CallbackCode OTF2Reader::handle_def_metrics(void* userData, OTF2_MetricMemberRef self, OTF2_StringRef name,
-                                                 OTF2_StringRef description, OTF2_MetricType metricType,
-                                                 OTF2_MetricMode metricMode, OTF2_Type valueType, OTF2_Base base,
-                                                 int64_t exponent, OTF2_StringRef unit) {
     auto* alldata = static_cast<AllData*>(userData);
     auto  strings = string_id.get(name, description, unit);
 
@@ -195,33 +282,75 @@ OTF2_CallbackCode OTF2Reader::handle_def_metrics(void* userData, OTF2_MetricMemb
             return OTF2_CALLBACK_INTERRUPT;
     }
 
-    if (metricMode == OTF2_METRIC_ACCUMULATED_START) {
-        alldata->definitions.metrics.add(self,
-                                         {*strings.first[0], *strings.first[1], *strings.first[2], a_type, false});
-    }
+    // if (metricMode == OTF2_METRIC_ACCUMULATED_START) {
+    //     alldata->definitions.metrics.add(self,
+    //                                      {*strings.first[0], *strings.first[1], *strings.first[2], a_type, false});
+    // }
+
+    definitions::Metric metric{
+        *strings.first[0],                  // name
+        *strings.first[1],                  // description
+        mappingOTF2MetricType(metricType),  //PAPI, etc.
+        mappingOTF2MetricMode(metricMode),  //accumulative, relative, etc.
+        a_type,                             // type of the value: OTF2_TYPE_INT64, etc.
+        base == OTF2_BASE_BINARY ? MetricBase::BINARY : MetricBase::DECIMAL,
+        exponent,
+        *strings.first[2],                  // unit
+        false
+    };
+
+    alldata->definitions.metrics.add(self, metric);
 
     return OTF2_CALLBACK_SUCCESS;
 }
 
 // for metrics -> narrowing the metrics to synchronous
-OTF2_CallbackCode OTF2Reader::handle_def_metric_class(void* userData, OTF2_MetricRef self, uint8_t numberOfMetrics,
-                                                      const OTF2_MetricMemberRef* metricMembers,
-                                                      OTF2_MetricOccurrence       metricOccurence,
-                                                      OTF2_RecorderKind           recorderKind) {
+OTF2_CallbackCode OTF2Reader::handle_def_metric_class(  void*                       userData,
+                                                        OTF2_MetricRef              self,
+                                                        uint8_t                     numberOfMetrics,
+                                                        const OTF2_MetricMemberRef* metricMembers,
+                                                        OTF2_MetricOccurrence       metricOccurrence,
+                                                        OTF2_RecorderKind           recorderKind) {
+    // auto* alldata = static_cast<AllData*>(userData);
+
+    // if (metricOccurrence == OTF2_METRIC_SYNCHRONOUS_STRICT) {
+    //     alldata->metaData.metricClassToMetric.insert(make_pair(self, map<uint64_t, uint64_t>()));
+
+    //     for (int i = 0; i < numberOfMetrics; i++) {
+    //         auto* def_ref = alldata->definitions.metrics.get(metricMembers[i]);
+    //         if (def_ref != nullptr) {
+    //             alldata->metaData.metricClassToMetric[self].insert(make_pair(i, metricMembers[i]));
+    //             const_cast<definitions::Metric*>(def_ref)->allowed =
+    //                 true;  // allowed -> nur strict_sync, beschränkt aber nicht auf accumulated_start
+    //         }
+    //     }
+    // }
+
+
     auto* alldata = static_cast<AllData*>(userData);
 
-    if (metricOccurence == OTF2_METRIC_SYNCHRONOUS_STRICT) {
-        alldata->metaData.metricClassToMetric.insert(make_pair(self, map<uint64_t, uint64_t>()));
+    if( recorderKind != OTF2_RECORDER_KIND_ABSTRACT) {
+        if(metricOccurrence == OTF2_METRIC_SYNCHRONOUS_STRICT){
 
-        for (int i = 0; i < numberOfMetrics; i++) {
-            auto* def_ref = alldata->definitions.metrics.get(metricMembers[i]);
-            if (def_ref != nullptr) {
-                alldata->metaData.metricClassToMetric[self].insert(make_pair(i, metricMembers[i]));
-                const_cast<definitions::Metric*>(def_ref)->allowed =
-                    true;  // allowed -> nur strict_sync, beschränkt aber nicht auf accumulated_start
+            definitions::Metric_Class metric_class {
+                numberOfMetrics,
+                std::map<uint8_t, uint32_t>(),
+                mappingOTF2MetricOccurrence(metricOccurrence),
+                mappingOTF2MetricRecorderType(recorderKind)
+            };
+
+            for (int i = 0; i < numberOfMetrics; ++i) {
+                auto* def_ref = alldata->definitions.metrics.get(metricMembers[i]);
+                if (def_ref != nullptr){
+                    metric_class.metric_member[i] = metricMembers[i];
+                        const_cast<definitions::Metric*>(def_ref)->allowed = true;
+                }
             }
+            alldata->definitions.metric_classes.add(self, metric_class);
         }
     }
+
+
     return OTF2_CALLBACK_SUCCESS;
 }
 
@@ -458,25 +587,34 @@ OTF2_CallbackCode OTF2Reader::handle_metric(OTF2_LocationRef locationID, OTF2_Ti
                                             const OTF2_MetricValue* metricValues) {
     auto* alldata = static_cast<AllData*>(userData);
 
-    auto class_mapping = alldata->metaData.metricClassToMetric.find(metric);
-    if (class_mapping != alldata->metaData.metricClassToMetric.end()) {
-        MetricDataType a_type;
+    // auto class_mapping = alldata->metaData.metricClassToMetric.find(metric);
+    // if (class_mapping != alldata->metaData.metricClassToMetric.end()) {
+    auto class_mapping = alldata->definitions.metric_classes.get(metric);
+    if (class_mapping != nullptr) {
+        auto* metric_class_def = alldata->definitions.metric_classes.get(metric);
 
-        for (uint8_t i = 0; i < numberOfMetrics; i++) {
-            auto  metric_ref = class_mapping->second.find(i);
-            auto* metric_def = alldata->definitions.metrics.get(metric_ref->second);
-            if (metric_ref != class_mapping->second.end() && metric_def != nullptr && metric_def->allowed) {
-                MetricData md;
+        if(metric_class_def->metric_occurrence == MetricOccurrence::SYNCHRONOUS_STRICT){
 
-                if (typeIDs[i] == OTF2_TYPE_UINT64) {
-                    md = {MetricDataType::UINT64, metricValues[i].unsigned_int, metricValues[i].unsigned_int};
-                } else if (typeIDs[i] == OTF2_TYPE_INT64) {
-                    md = {MetricDataType::INT64, metricValues[i].signed_int, metricValues[i].signed_int};
-                } else if (typeIDs[i] == OTF2_TYPE_DOUBLE) {
-                    md = {MetricDataType::DOUBLE, metricValues[i].floating_point, metricValues[i].floating_point};
+            MetricDataType a_type;
+
+            for (uint8_t i = 0; i < numberOfMetrics; i++) {
+                // auto  metric_ref = class_mapping->second.find(i);
+                auto  metric_ref = class_mapping->metric_member.find(i);
+                auto* metric_def = alldata->definitions.metrics.get(metric_ref->second);
+                // if (metric_ref != class_mapping->second.end() && metric_def != nullptr && metric_def->allowed) {
+                if (metric_ref != class_mapping->metric_member.end() && metric_def != nullptr && metric_def->allowed) {
+                    MetricData md;
+
+                    if (typeIDs[i] == OTF2_TYPE_UINT64) {
+                        md = {MetricDataType::UINT64, metricValues[i].unsigned_int, metricValues[i].unsigned_int};
+                    } else if (typeIDs[i] == OTF2_TYPE_INT64) {
+                        md = {MetricDataType::INT64, metricValues[i].signed_int, metricValues[i].signed_int};
+                    } else if (typeIDs[i] == OTF2_TYPE_DOUBLE) {
+                        md = {MetricDataType::DOUBLE, metricValues[i].floating_point, metricValues[i].floating_point};
+                    }
+
+                    tmp_metric.insert(make_pair(metric_ref->second, md));
                 }
-
-                tmp_metric.insert(make_pair(metric_ref->second, md));
             }
         }
     }

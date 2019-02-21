@@ -595,6 +595,7 @@ class OTF2Reader : public TraceReader {
                                                             OTF2_RecorderKind           recorderKind);
 
     // TODO comment
+    // OTF2_GlobalDefReaderCallback_MetricMember
     static inline OTF2_CallbackCode handle_def_metrics(void* userData, OTF2_MetricMemberRef self, OTF2_StringRef name,
                                                        OTF2_StringRef description, OTF2_MetricType metricType,
                                                        OTF2_MetricMode metricMode, OTF2_Type valueType, OTF2_Base base,
