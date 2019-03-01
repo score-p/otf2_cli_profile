@@ -135,13 +135,13 @@ OTF2_CallbackCode OTF2Reader::handle_def_io_handle(void* userData, OTF2_IoHandle
         auto strings = filesystem_entries.get(file);
         if (strings.second != OTF2_CALLBACK_SUCCESS)
             return strings.second;
-        alldata->definitions.iohandles.add(self, {*strings.first[0], ioParadigm, file, parent});
+        alldata->definitions.iohandles.add(self, {*strings.first[0], ioParadigm, file, parent, std::set<std::string>()});
         return OTF2_CALLBACK_SUCCESS;
     } else {
         auto strings = string_id.get(name);
         if (strings.second != OTF2_CALLBACK_SUCCESS)
-            return strings.second;
-        alldata->definitions.iohandles.add(self, {*strings.first[0], ioParadigm, file, parent});
+	    return strings.second;
+        alldata->definitions.iohandles.add(self, {*strings.first[0], ioParadigm, file, parent, std::set<std::string>()});
     }
     return OTF2_CALLBACK_SUCCESS;
 }
@@ -398,7 +398,8 @@ OTF2_CallbackCode OTF2Reader::handle_def_io_paradigm(void* userData, OTF2_IoPara
                                                      OTF2_StringRef name, OTF2_IoParadigmClass paradigmClass,
                                                      OTF2_IoParadigmFlag flags, uint8_t numProperties,
                                                      const OTF2_IoParadigmProperty* properties, const OTF2_Type* types,
-                                                     const OTF2_AttributeValue* values) {
+                                                     const OTF2_AttributeValue* values) 
+{
     auto* alldata = static_cast<AllData*>(userData);
     auto  strings = string_id.get(name);
 
@@ -408,6 +409,35 @@ OTF2_CallbackCode OTF2Reader::handle_def_io_paradigm(void* userData, OTF2_IoPara
 
     alldata->definitions.io_paradigms.add(paradigm, {*strings.first[0]});
 
+    return OTF2_CALLBACK_SUCCESS;
+}
+
+OTF2_CallbackCode OTF2Reader::handle_def_io_precreated_handle(void* userData, OTF2_IoHandleRef handle, OTF2_IoAccessMode mode,
+							      OTF2_IoStatusFlag statusFlags)
+{
+    auto* alldata = static_cast<AllData*>(userData);
+    auto* ioh = alldata->definitions.iohandles.get(handle);
+    if(!ioh) return OTF2_CALLBACK_ERROR;
+    switch(mode) {
+    case OTF2_IO_ACCESS_MODE_READ_ONLY:
+	ioh->modes.insert("R");
+	break;
+    case OTF2_IO_ACCESS_MODE_WRITE_ONLY:
+	ioh->modes.insert("W");
+	break;
+    case OTF2_IO_ACCESS_MODE_READ_WRITE:
+	ioh->modes.insert("R");
+	ioh->modes.insert("W");
+	break;
+    case OTF2_IO_ACCESS_MODE_EXECUTE_ONLY:
+	ioh->modes.insert("X");
+	break;
+    case OTF2_IO_ACCESS_MODE_SEARCH_ONLY:
+	ioh->modes.insert("S");
+	break;
+    default:
+	return OTF2_CALLBACK_ERROR;
+    }
     return OTF2_CALLBACK_SUCCESS;
 }
 
@@ -429,6 +459,21 @@ OTF2_CallbackCode OTF2Reader::handle_io_begin(OTF2_LocationRef locationID, OTF2_
                                               OTF2_IoHandleRef handle, OTF2_IoOperationMode mode,
                                               OTF2_IoOperationFlag flag, uint64_t bytesRequest, uint64_t matchingId) {
     open_io_events[matchingId] = {time, bytesRequest};
+    auto* alldata     = static_cast<AllData*>(userData);
+    auto* h = alldata->definitions.iohandles.get(handle);
+    if(!h) return OTF2_CALLBACK_ERROR;
+    switch(mode) {
+    case OTF2_IO_OPERATION_MODE_READ:
+	h->modes.insert("R");
+	break;
+    case OTF2_IO_OPERATION_MODE_WRITE:
+	h->modes.insert("W");
+	break;
+    case OTF2_IO_OPERATION_MODE_FLUSH:
+    default:
+	break;
+    }
+    
     return OTF2_CALLBACK_SUCCESS;
 }
 OTF2_CallbackCode OTF2Reader::handle_io_end(OTF2_LocationRef locationID, OTF2_TimeStamp time, uint64_t eventPosition,
@@ -451,6 +496,38 @@ OTF2_CallbackCode OTF2Reader::handle_io_end(OTF2_LocationRef locationID, OTF2_Ti
         } else {
             alldata->io_data[p].nontransfer_time += duration;
         }
+    }
+    return OTF2_CALLBACK_SUCCESS;
+}
+
+OTF2_CallbackCode OTF2Reader::handle_io_create_handle(OTF2_LocationRef locationID, OTF2_TimeStamp time,
+						      uint64_t eventPosition,
+						      void* userData, OTF2_AttributeList* attributeList,
+						      OTF2_IoHandleRef handle, OTF2_IoAccessMode mode,
+						      OTF2_IoCreationFlag creationFlags,
+						      OTF2_IoStatusFlag statusFlags)
+{
+    auto* alldata = static_cast<AllData*>(userData);
+    auto* ioh = alldata->definitions.iohandles.get(handle);
+    switch(mode) {
+    case OTF2_IO_ACCESS_MODE_READ_ONLY:
+	ioh->modes.insert("R");
+	break;
+    case OTF2_IO_ACCESS_MODE_WRITE_ONLY:
+	ioh->modes.insert("W");
+	break;
+    case OTF2_IO_ACCESS_MODE_READ_WRITE:
+	ioh->modes.insert("R");
+	ioh->modes.insert("W");
+	break;
+    case OTF2_IO_ACCESS_MODE_EXECUTE_ONLY:
+	ioh->modes.insert("X");
+	break;
+    case OTF2_IO_ACCESS_MODE_SEARCH_ONLY:
+	ioh->modes.insert("S");
+	break;
+    default:
+	return OTF2_CALLBACK_ERROR;
     }
     return OTF2_CALLBACK_SUCCESS;
 }
@@ -853,11 +930,13 @@ bool OTF2Reader::readDefinitions(AllData& alldata) {
     status = OTF2_GlobalDefReaderCallbacks_SetIoHandleCallback(glob_def_callbacks, handle_def_io_handle);
     if (OTF2_SUCCESS != status)
         return false;
+    status = OTF2_GlobalDefReaderCallbacks_SetIoPreCreatedHandleStateCallback(glob_def_callbacks, handle_def_io_precreated_handle);
+    if (OTF2_SUCCESS != status)
+	return false;
 
     status = OTF2_Reader_RegisterGlobalDefCallbacks(_reader, glob_def_reader, glob_def_callbacks, &alldata);
     if (OTF2_SUCCESS != status)
         return false;
-
     uint64_t definitions_read = 0;
     status                    = OTF2_Reader_ReadAllGlobalDefinitions(_reader, glob_def_reader, &definitions_read);
     if (OTF2_SUCCESS != status) {
@@ -909,6 +988,7 @@ bool OTF2Reader::readEvents(AllData& alldata) {
     OTF2_EvtReaderCallbacks_SetMetricCallback(evt_callbacks, handle_metric);
     OTF2_EvtReaderCallbacks_SetIoOperationBeginCallback(evt_callbacks, handle_io_begin);
     OTF2_EvtReaderCallbacks_SetIoOperationCompleteCallback(evt_callbacks, handle_io_end);
+    OTF2_EvtReaderCallbacks_SetIoCreateHandleCallback(evt_callbacks, handle_io_create_handle);
 #ifndef OTFPROFILE_MPI
 
     OTF2_DefReader* local_def_reader;

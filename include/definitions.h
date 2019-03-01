@@ -314,6 +314,9 @@ struct IoHandle {
     uint32_t    io_paradigm;
     uint64_t    file;
     uint64_t    parent;
+  // Defined by events, so we need to allow changes post-handle-definition
+  // Ugly but that's the world we live in
+    mutable std::set<std::string> modes;
 };
 
 struct Definitions {
