@@ -74,14 +74,13 @@ class OTF2Reader : public TraceReader {
                                                   OTF2_AttributeList* attributeList, OTF2_IoHandleRef handle,
                                                   uint64_t bytesResult, uint64_t matchingId);
     static inline OTF2_CallbackCode handle_io_create_handle(OTF2_LocationRef locationID, OTF2_TimeStamp time,
-							    uint64_t eventPosition,
-							    void* userData, OTF2_AttributeList* attributeList,
-							    OTF2_IoHandleRef handle, OTF2_IoAccessMode mode,
-							    OTF2_IoCreationFlag creationFlags,
-							    OTF2_IoStatusFlag statusFlags);
-    static inline OTF2_CallbackCode handle_def_io_precreated_handle(void* userData, 
-								    OTF2_IoHandleRef handle, OTF2_IoAccessMode mode,
-								    OTF2_IoStatusFlag statusFlags);
+                                                            uint64_t eventPosition, void* userData,
+                                                            OTF2_AttributeList* attributeList, OTF2_IoHandleRef handle,
+                                                            OTF2_IoAccessMode mode, OTF2_IoCreationFlag creationFlags,
+                                                            OTF2_IoStatusFlag statusFlags);
+    static inline OTF2_CallbackCode handle_def_io_precreated_handle(void* userData, OTF2_IoHandleRef handle,
+                                                                    OTF2_IoAccessMode mode,
+                                                                    OTF2_IoStatusFlag statusFlags);
 
     static inline OTF2_CallbackCode handle_def_io_handle(void* userData, OTF2_IoHandleRef self, OTF2_StringRef name,
                                                          OTF2_IoFileRef file, OTF2_IoParadigmRef ioParadigm,

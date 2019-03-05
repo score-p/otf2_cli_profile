@@ -215,11 +215,11 @@ class SystemTree {
     SystemTree* copy_reduced(const SystemTree& sys_tree, uint32_t level);
 
    private:
-    std::shared_ptr<SystemNode_t> root;
-    std::vector<SystemNode_t*>    system_nodes{};
-    std::vector<SystemNode_t*>    location_grps{};
+    std::shared_ptr<SystemNode_t>     root;
+    std::vector<SystemNode_t*>        system_nodes{};
+    std::vector<SystemNode_t*>        location_grps{};
     std::map<uint64_t, SystemNode_t*> locations{};
-    uint32_t _size = 0;
+    uint32_t                          _size = 0;
     // test
     std::vector<uint32_t> num_nodes_per_level;
 };
@@ -314,8 +314,8 @@ struct IoHandle {
     uint32_t    io_paradigm;
     uint64_t    file;
     uint64_t    parent;
-  // Defined by events, so we need to allow changes post-handle-definition
-  // Ugly but that's the world we live in
+    // Defined by events, so we need to allow changes post-handle-definition
+    // Ugly but that's the world we live in
     mutable std::set<std::string> modes;
 };
 
@@ -326,7 +326,7 @@ struct Definitions {
     DefinitionType<paradigm_id_t, Paradigm> io_paradigms;
     DefinitionType<uint64_t, IoHandle>      iohandles;
     DefinitionType<uint64_t, Group>         groups;
-    SystemTree system_tree{};
+    SystemTree                              system_tree{};
 };
 }  // namespace definitions
 

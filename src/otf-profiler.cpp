@@ -52,20 +52,20 @@ int main(int argc, char** argv) {
         return error();
 
     // check if library for set flags are available
-    if(!alldata.params.output_type_set){
+    if (!alldata.params.output_type_set) {
         std::cerr << "ERROR: No supported output type set. See --help for output options.";
         return 1;
     } else if (alldata.params.create_cube) {
-        #ifndef HAVE_CUBE
-            std::cerr << "ERROR: No cube library found" << std::endl;
-            return 1;
-        #endif
+#ifndef HAVE_CUBE
+        std::cerr << "ERROR: No cube library found" << std::endl;
+        return 1;
+#endif
 
     } else if (alldata.params.create_json) {
-        #ifndef HAVE_JSON
-            std::cerr << "ERROR: No json library found" << std::endl;
-            return 1;
-        #endif
+#ifndef HAVE_JSON
+        std::cerr << "ERROR: No json library found" << std::endl;
+        return 1;
+#endif
     }
 
     /* registers all scopes for time measurement depending on the verbose level */

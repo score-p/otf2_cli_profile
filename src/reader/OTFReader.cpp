@@ -12,10 +12,10 @@
 #endif
 using namespace std;
 
-static uint64_t              systemTreeNodeId = -1;
-static std::vector<uint64_t> myProcessesList;
-static map<uint64_t, vector<MetricData>> tmp_metric;
-static std::vector<uint64_t> locationList;
+static uint64_t                                  systemTreeNodeId = -1;
+static std::vector<uint64_t>                     myProcessesList;
+static map<uint64_t, vector<MetricData>>         tmp_metric;
+static std::vector<uint64_t>                     locationList;
 static std::map<uint64_t, std::deque<StackData>> global_node_stack;
 
 bool OTFReader::initialize(AllData &alldata) {
