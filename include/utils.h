@@ -152,10 +152,10 @@ struct Params {
             } else if (arguments[i] == "--summarize" || arguments[i] == "-s") {
                 summarize_it = true;
             } else if (arguments[i] == "--cube") {
-                create_cube = true;
+                create_cube     = true;
                 output_type_set = true;
             } else if (arguments[i] == "--json") {
-                create_json = true;
+                create_json     = true;
                 output_type_set = true;
             } else if (arguments[i] == "-i") {
                 if (!checkNext(arguments, i))

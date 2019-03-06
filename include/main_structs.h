@@ -41,9 +41,9 @@ struct MetricData {
         operator uint64_t() const { return u; }
         operator double() const { return d; }
 
-        int64_t operator+(const int64_t rhs) { return s + rhs; }
+        int64_t  operator+(const int64_t rhs) { return s + rhs; }
         uint64_t operator+(const uint64_t rhs) { return u + rhs; }
-        double operator+(const double rhs) { return d + rhs; }
+        double   operator+(const double rhs) { return d + rhs; }
 
         int64_t& operator+=(const int64_t rhs) {
             s += rhs;
@@ -58,9 +58,9 @@ struct MetricData {
             return d;
         }
 
-        int64_t operator-(const int64_t rhs) { return s - rhs; }
+        int64_t  operator-(const int64_t rhs) { return s - rhs; }
         uint64_t operator-(const uint64_t rhs) { return u - rhs; }
-        double operator-(const double rhs) { return d - rhs; }
+        double   operator-(const double rhs) { return d - rhs; }
 
         int64_t& operator-=(const int64_t rhs) {
             s -= rhs;
@@ -159,7 +159,7 @@ struct MetricData {
 
 struct metric_class_data {
     // class id -> zahl der reihelfolge = "metric id"? -> nope wirkliche metric_id
-    uint64_t class_id = 0;
+    uint64_t                       class_id = 0;
     std::map<uint64_t, MetricData> met_data;
 
     metric_class_data() : class_id(0), met_data() {}
