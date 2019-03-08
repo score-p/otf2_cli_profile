@@ -20,6 +20,10 @@
 #include "reduce_data.h"
 #endif /* OTFPROFILER_MPI */
 
+#ifdef HAVE_DATA_OUT
+#include "data_out.h"
+#endif /* HAVE_JSON */
+
 using namespace std;
 
 int error() {
@@ -77,6 +81,7 @@ int main(int argc, char** argv) {
         alldata.tm.registerScope(ScopeID::REDUCE, "reduce data");
         alldata.tm.registerScope(ScopeID::CUBE, "Cube creation process");
         alldata.tm.registerScope(ScopeID::JSON, "JSON creation process");
+        alldata.tm.registerScope(ScopeID::JSON, "JSON data output creation process");
     }
 
     /* starts runtime measurement for total time */
@@ -135,6 +140,13 @@ int main(int argc, char** argv) {
     }
 #endif
 
+#ifdef HAVE_DATA_OUT
+    if (alldata.params.data_out) {
+        alldata.tm.start(ScopeID::JSON);
+        DataOut(alldata);
+        alldata.tm.stop(ScopeID::JSON);
+    }
+#endif
     alldata.tm.stop(ScopeID::TOTAL);
 #ifdef SHOW_RESULTS
     /* step 6.3: show result data on stdout */

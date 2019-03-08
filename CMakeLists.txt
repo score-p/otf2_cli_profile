@@ -44,6 +44,12 @@ if(USE_JSON)
     set(HAVE_JSON RAPIDJSON_FOUND)
 endif()
 
+option (USE_DATA_OUT "export everything into json format" ON)
+if(USE_DATA_OUT)
+    find_package(rapidjson)
+    set(HAVE_DATA_OUT RAPIDJSON_FOUND)
+endif()
+
 set(SOURCE_FILES
     src/reader/tracereader.cpp
     src/data_tree.cpp
@@ -74,6 +80,10 @@ if (HAVE_JSON AND USE_JSON)
     list(APPEND SOURCE_FILES src/output/create_json.cpp)
 endif()
 
+if (HAVE_DATA_OUT AND USE_DATA_OUT)
+    include_directories("${RAPIDJSON_INCLUDE_DIRS}")
+    list(APPEND SOURCE_FILES src/output/data_out.cpp)
+endif()
 
 # configure a header file to pass some of the CMake settings
 # to the source code
