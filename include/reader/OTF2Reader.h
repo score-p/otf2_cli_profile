@@ -46,7 +46,7 @@ class OTF2Reader : public TraceReader {
    public:
     OTF2Reader() = default;
 
-    ~OTF2Reader() { close(); };
+    ~OTF2Reader() { close(); }
 
     void close();
     bool initialize(AllData& alldata);
