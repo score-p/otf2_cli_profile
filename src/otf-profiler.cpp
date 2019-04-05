@@ -22,7 +22,11 @@
 
 #ifdef HAVE_DATA_OUT
 #include "data_out.h"
-#endif /* HAVE_JSON */
+#endif /* HAVE_DATA_OUT */
+
+#ifdef HAVE_DATA_IN
+#include "jsonreader.h"
+#endif /* HAVE_DATA_IN */
 
 using namespace std;
 
@@ -98,7 +102,10 @@ int main(int argc, char** argv) {
     if (reader == nullptr)
         return error();
 
-    if (!reader->initialize(alldata) || !reader->readDefinitions(alldata) || !reader->readEvents(alldata))
+    if (!reader->initialize(alldata) ||
+        !reader->readDefinitions(alldata) ||
+        !reader->readEvents(alldata) ||
+        !reader->readStatistics(alldata))
         return error();
 
     reader.reset(nullptr);

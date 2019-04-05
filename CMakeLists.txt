@@ -85,6 +85,9 @@ if (HAVE_DATA_OUT AND USE_DATA_OUT)
     list(APPEND SOURCE_FILES src/output/data_out.cpp)
 endif()
 
+if (HAVE_JSON)
+    list(APPEND SOURCE_FILES src/reader/jsonreader.cpp)
+endif()
 # configure a header file to pass some of the CMake settings
 # to the source code
 configure_file (

@@ -185,38 +185,41 @@ void display_node(std::shared_ptr<tree_node> node, Writer& writer){
         writer.StartArray();
             for(const auto& data : node->node_data){
                 writer.StartObject();
-                    writer.Key("location");
-                    writer.Uint64(data.first);
-                    writer.Key("f_data");
+                    // writer.Key("location");
+                    // writer.Uint64(data.first);
+                    writer.Key(std::to_string(data.first).c_str());
                     writer.StartObject();
-                        writer.Key("count");
-                        writer.Uint64(data.second.f_data.count);
-                        writer.Key("incl_time");
-                        writer.Uint64(data.second.f_data.incl_time);
-                        writer.Key("excl_time");
-                        writer.Uint64(data.second.f_data.excl_time);
-                    writer.EndObject();
-                    writer.Key("m_data");
-                    writer.StartObject();
-                        writer.Key("count_send");
-                        writer.Uint64(data.second.m_data.count_send);
-                        writer.Key("count_recv");
-                        writer.Uint64(data.second.m_data.count_recv);
-                        writer.Key("bytes_send");
-                        writer.Uint64(data.second.m_data.bytes_send);
-                        writer.Key("bytes_recv");
-                        writer.Uint64(data.second.m_data.bytes_recv);
-                    writer.EndObject();
-                    writer.Key("c_data");
-                    writer.StartObject();
-                        writer.Key("count_send");
-                        writer.Uint64(data.second.c_data.count_send);
-                        writer.Key("count_recv");
-                        writer.Uint64(data.second.c_data.count_recv);
-                        writer.Key("bytes_send");
-                        writer.Uint64(data.second.c_data.bytes_send);
-                        writer.Key("bytes_recv");
-                        writer.Uint64(data.second.c_data.bytes_recv);
+                        writer.Key("f_data");
+                        writer.StartObject();
+                            writer.Key("count");
+                            writer.Uint64(data.second.f_data.count);
+                            writer.Key("incl_time");
+                            writer.Uint64(data.second.f_data.incl_time);
+                            writer.Key("excl_time");
+                            writer.Uint64(data.second.f_data.excl_time);
+                        writer.EndObject();
+                        writer.Key("m_data");
+                        writer.StartObject();
+                            writer.Key("count_send");
+                            writer.Uint64(data.second.m_data.count_send);
+                            writer.Key("count_recv");
+                            writer.Uint64(data.second.m_data.count_recv);
+                            writer.Key("bytes_send");
+                            writer.Uint64(data.second.m_data.bytes_send);
+                            writer.Key("bytes_recv");
+                            writer.Uint64(data.second.m_data.bytes_recv);
+                        writer.EndObject();
+                        writer.Key("c_data");
+                        writer.StartObject();
+                            writer.Key("count_send");
+                            writer.Uint64(data.second.c_data.count_send);
+                            writer.Key("count_recv");
+                            writer.Uint64(data.second.c_data.count_recv);
+                            writer.Key("bytes_send");
+                            writer.Uint64(data.second.c_data.bytes_send);
+                            writer.Key("bytes_recv");
+                            writer.Uint64(data.second.c_data.bytes_recv);
+                        writer.EndObject();
                     writer.EndObject();
                 writer.EndObject();
             }
@@ -225,13 +228,17 @@ void display_node(std::shared_ptr<tree_node> node, Writer& writer){
         writer.Key("children");
         writer.StartArray();
             for(const auto& child : node->children){
+                writer.StartObject();
+                writer.Key(std::to_string(child.first).c_str());
                 display_node(child.second, writer);
+                writer.EndObject();
             }
         writer.EndArray();
 
         writer.Key("have_message");
         writer.StartArray();
             for(const auto& msg : node->have_message){
+                writer.StartObject();
                 writer.Key("count_send");
                 writer.Uint64(msg.second->count_send);
                 writer.Key("count_recv");
@@ -240,12 +247,14 @@ void display_node(std::shared_ptr<tree_node> node, Writer& writer){
                 writer.Uint64(msg.second->bytes_send);
                 writer.Key("bytes_recv");
                 writer.Uint64(msg.second->bytes_recv);
+                writer.EndObject();
             }
         writer.EndArray();
 
         writer.Key("have_collop");
         writer.StartArray();
             for(const auto& collop : node->have_collop){
+                writer.StartObject();
                 writer.Key("count_send");
                 writer.Uint64(collop.second->count_send);
                 writer.Key("count_recv");
@@ -254,6 +263,8 @@ void display_node(std::shared_ptr<tree_node> node, Writer& writer){
                 writer.Uint64(collop.second->bytes_send);
                 writer.Key("bytes_recv");
                 writer.Uint64(collop.second->bytes_recv);
+                writer.EndObject();
+
             }
         writer.EndArray();
     writer.EndObject();
@@ -267,7 +278,7 @@ void display_data_tree(AllData alldata, Writer& writer){
         writer.StartArray();
             for(const auto& node : alldata.call_path_tree.root_nodes){
                 writer.StartObject();
-                    writer.Key("tree_node");
+                    writer.Key(std::to_string(node.first).c_str());
                     display_node(node.second, writer);
                 writer.EndObject();
             }
@@ -295,9 +306,9 @@ void display_meta_data(AllData alldata, Writer& writer){
         writer.StartArray();
             for(const auto& procs : alldata.metaData.processIdToName){
                 writer.StartObject();
-                writer.Key("key");
+                writer.Key("processID");
                 writer.Uint64(procs.first);
-                writer.Key("value");
+                writer.Key("name");
                 writer.String(procs.second.c_str());
                 writer.EndObject();
             }
@@ -307,7 +318,7 @@ void display_meta_data(AllData alldata, Writer& writer){
         writer.StartArray();
             for(const auto& metric : alldata.metaData.metricIdToName){
                 writer.StartObject();
-                writer.Key("key");
+                writer.Key("metricID");
                 writer.Uint64(metric.first);
                 writer.Key("value");
                 writer.String(metric.second.c_str());
@@ -315,14 +326,15 @@ void display_meta_data(AllData alldata, Writer& writer){
             }
         writer.EndArray();
 
+        //does this even work??
         writer.Key("metricClassToMetric");
         writer.StartArray();
             for(const auto& class_id : alldata.metaData.metricClassToMetric){
-                writer.Key("key");
+                writer.Key("metricClassId");
                 writer.Uint64(class_id.first);
                 writer.StartArray();
                     for(const auto& num_metric : class_id.second){
-                        writer.Key("key");
+                        writer.Key("metricId");
                         writer.Uint64(num_metric.first);
                         writer.Key("value");
                         writer.Uint64(num_metric.second);

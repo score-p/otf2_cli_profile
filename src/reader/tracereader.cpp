@@ -17,6 +17,10 @@
 #include "OTF2Reader.h"
 #endif
 
+#ifdef HAVE_JSON
+#include "jsonreader.h"
+#endif
+
 using namespace std;
 
 unique_ptr<TraceReader> getTraceReader(AllData& alldata) {
@@ -41,6 +45,15 @@ unique_ptr<TraceReader> getTraceReader(AllData& alldata) {
         return nullptr;
 #else
         return unique_ptr<OTF2Reader>(new OTF2Reader);
+#endif
+    } else if (filetype == "json"){
+#ifndef HAVE_JSON
+        cerr << "ERROR: Can't process json files!" << endl
+             << "rapidjson was not found." << endl;
+        return nullptr;
+#else
+    #define HAVE_DATA_IN
+        return unique_ptr<JSONReader>(new JSONReader);
 #endif
     } else
         cerr << "ERROR: Unknown file type!" << endl;
