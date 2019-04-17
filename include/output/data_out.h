@@ -37,6 +37,15 @@ void display(Writer& writer, Data_map data, AllData alldata);
 template <typename Writer>
 void display_meta_data(AllData alldata, Writer& writer);
 
+template <typename Writer>
+void display_params(AllData alldata, Writer& writer);
+
+template <typename Writer>
+void display_system_node(std::shared_ptr<definitions::SystemTree::SystemNode> node, AllData alldata, Writer& writer);
+
+template <typename Writer>
+void display_system_tree(AllData alldata, Writer& writer);
+
 bool DataOut(AllData& alldata);
 
 #endif

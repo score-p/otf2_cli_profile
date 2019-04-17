@@ -8,7 +8,8 @@
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/prettywriter.h" // human readable json
-
+#include "definitions.h"
+#include "main_structs.h"
 
 
 static Data_map read_data(AllData& alldata){
@@ -92,15 +93,14 @@ bool DataOut(AllData& alldata){
 template <typename Writer>
 void display(Writer& writer, Data_map data, AllData alldata){
 
-    // aggregated data about regions
     writer.StartObject();
-    // display_regions(data, writer); // to be removed
-    display_data_tree(alldata, writer);
-    // meta_data
-    display_meta_data(alldata, writer);
-
-    display_definitions(alldata, writer);
-    // time measurement
+        // display_regions(data, writer); // to be removed
+        display_data_tree(alldata, writer);
+        display_meta_data(alldata, writer);
+        display_definitions(alldata, writer);
+        display_params(alldata, writer);
+        display_system_tree(alldata, writer);
+        // time measurement
     writer.EndObject();
 }
 
@@ -155,17 +155,148 @@ void display_definitions(AllData alldata, Writer& writer){
         writer.StartArray();
             for(const auto& region : alldata.definitions.regions.get_all()){
                 writer.StartObject();
-                writer.Key("name");
-                writer.String(region.second.name.c_str());
-                writer.Key("paradigm_id");
-                writer.Uint(region.second.paradigm_id);
-                writer.Key("source_line");
-                writer.Uint(region.second.source_line);
-                writer.Key("file_name");
-                writer.String(region.second.file_name.c_str());
+                    writer.Key("id");
+                    writer.Uint(region.first);
+                    writer.Key("name");
+                    writer.String(region.second.name.c_str());
+                    writer.Key("paradigm_id");
+                    writer.Uint(region.second.paradigm_id);
+                    writer.Key("source_line");
+                    writer.Uint(region.second.source_line);
+                    writer.Key("file_name");
+                    writer.String(region.second.file_name.c_str());
                 writer.EndObject();
             }
         writer.EndArray();
+
+        writer.Key("metrics");
+        writer.StartArray();
+            for(const auto& it : alldata.definitions.metrics.get_all()){
+                const definitions::Metric& metric = it.second;
+                writer.StartObject();
+                    writer.Key(std::to_string(it.first).c_str());
+                    writer.StartObject();
+                        writer.Key("name");
+                        writer.String(metric.name.c_str());
+                        writer.Key("description");
+                        writer.String(metric.description.c_str());
+                        writer.Key("metricType");
+                        writer.Uint(static_cast<uint> (metric.metricType));
+                        writer.Key("metricMode");
+                        writer.Uint(static_cast<uint> (metric.metricMode));
+                        writer.Key("type");
+                        writer.Uint(static_cast<uint> (metric.type));
+                        writer.Key("base");
+                        writer.Uint(static_cast<uint> (metric.base));
+                        writer.Key("exponent");
+                        writer.Int64(metric.exponent);
+                        writer.Key("unit");
+                        writer.String(metric.unit.c_str());
+                        writer.Key("allowed");
+                        writer.Bool(metric.allowed);
+                    writer.EndObject();
+                writer.EndObject();
+            }
+        writer.EndArray();
+
+        writer.Key("metric_classes");
+        writer.StartArray();
+            for(const auto& it : alldata.definitions.metric_classes.get_all()){
+                const definitions::Metric_Class& metric_class = it.second;
+
+                writer.StartObject();
+                    writer.Key(std::to_string(it.first).c_str());
+                    writer.StartObject();
+                        writer.Key("num_of_metrics");
+                        writer.Uint(metric_class.num_of_metrics);
+                        writer.Key("metric_member");
+                        writer.StartArray();
+                            for(const auto& member : metric_class.metric_member){
+                                writer.StartObject();
+                                    writer.Key(std::to_string(member.first).c_str());
+                                    writer.Uint(member.second);
+                                writer.EndObject();
+                            }
+                        writer.EndArray();
+                        writer.Key("metric_occurrence");
+                        writer.Uint(static_cast<uint> (metric_class.metric_occurrence));
+                        writer.Key("recorder_kind");
+                        writer.Uint(static_cast<uint> (metric_class.recorder_kind));
+                    writer.EndObject();
+                writer.EndObject();
+            }
+        writer.EndArray();
+
+        writer.Key("paradigms");
+        writer.StartArray();
+            for(const auto& paradigm : alldata.definitions.paradigms.get_all()){
+                writer.StartObject();
+                    writer.Key(std::to_string(paradigm.first).c_str());
+                    writer.String(paradigm.second.name.c_str());
+                writer.EndObject();
+            }
+        writer.EndArray();
+
+        writer.Key("io_paradigms");
+        writer.StartArray();
+            for(const auto& io_paradigm : alldata.definitions.io_paradigms.get_all()){
+                writer.StartObject();
+                    writer.Key(std::to_string(io_paradigm.first).c_str());
+                    writer.String(io_paradigm.second.name.c_str());
+                writer.EndObject();
+            }
+        writer.EndArray();
+
+        writer.Key("iohandles");
+        writer.StartArray();
+            for(const auto& iohandle : alldata.definitions.iohandles.get_all()){
+                writer.StartObject();
+                    writer.Key(std::to_string(iohandle.first).c_str());
+                    writer.StartObject();
+                        writer.Key("name");
+                        writer.String(iohandle.second.name.c_str());
+                        writer.Key("io_paradigm");
+                        writer.Uint(iohandle.second.io_paradigm);
+                        writer.Key("file");
+                        writer.Uint64(iohandle.second.file);
+                        writer.Key("parent");
+                        writer.Uint64(iohandle.second.parent);
+                    writer.EndObject();
+                writer.EndObject();
+            }
+        writer.EndArray();
+
+        writer.Key("groups");
+        writer.StartArray();
+            for(const auto& it : alldata.definitions.groups.get_all()){
+                const definitions::Group& group = it.second;
+                writer.StartObject();
+
+                    writer.Key(std::to_string(it.first).c_str());
+                    writer.StartObject();
+
+                        writer.Key("name");
+                        writer.String(group.name.c_str());
+
+                        writer.Key("type");
+                        writer.Uint(group.type);
+
+                        writer.Key("paradigm_id");
+                        writer.Uint(group.paradigm_id);
+
+                        writer.Key("members");
+                        writer.StartArray();
+                            for(const auto& member : group.members)
+                                writer.Uint64(member);
+                        writer.EndArray();
+
+
+                    writer.EndObject();
+                writer.EndObject();
+            }
+        writer.EndArray();
+
+
     writer.EndObject();
 }
 
@@ -235,39 +366,13 @@ void display_node(std::shared_ptr<tree_node> node, Writer& writer){
             }
         writer.EndArray();
 
-        writer.Key("have_message");
-        writer.StartArray();
-            for(const auto& msg : node->have_message){
-                writer.StartObject();
-                writer.Key("count_send");
-                writer.Uint64(msg.second->count_send);
-                writer.Key("count_recv");
-                writer.Uint64(msg.second->count_recv);
-                writer.Key("bytes_send");
-                writer.Uint64(msg.second->bytes_send);
-                writer.Key("bytes_recv");
-                writer.Uint64(msg.second->bytes_recv);
-                writer.EndObject();
-            }
-        writer.EndArray();
+        writer.Key("has_p2p");
+        writer.Bool(node->has_p2p);
 
-        writer.Key("have_collop");
-        writer.StartArray();
-            for(const auto& collop : node->have_collop){
-                writer.StartObject();
-                writer.Key("count_send");
-                writer.Uint64(collop.second->count_send);
-                writer.Key("count_recv");
-                writer.Uint64(collop.second->count_recv);
-                writer.Key("bytes_send");
-                writer.Uint64(collop.second->bytes_send);
-                writer.Key("bytes_recv");
-                writer.Uint64(collop.second->bytes_recv);
-                writer.EndObject();
+        writer.Key("has_collop");
+        writer.Bool(node->has_collop);
 
-            }
-        writer.EndArray();
-    writer.EndObject();
+        writer.EndObject();
 }
 
 template <typename Writer>
@@ -294,9 +399,7 @@ void display_meta_data(AllData alldata, Writer& writer){
         writer.StartArray();
             for(const auto& comm : alldata.metaData.communicators){
                 writer.StartObject();
-                writer.Key("key");
-                writer.Uint64(comm.first);
-                writer.Key("value");
+                writer.Key(std::to_string(comm.first).c_str());
                 writer.Uint64(comm.second);
                 writer.EndObject();
             }
@@ -306,9 +409,7 @@ void display_meta_data(AllData alldata, Writer& writer){
         writer.StartArray();
             for(const auto& procs : alldata.metaData.processIdToName){
                 writer.StartObject();
-                writer.Key("processID");
-                writer.Uint64(procs.first);
-                writer.Key("name");
+                writer.Key(std::to_string(procs.first).c_str());
                 writer.String(procs.second.c_str());
                 writer.EndObject();
             }
@@ -318,9 +419,7 @@ void display_meta_data(AllData alldata, Writer& writer){
         writer.StartArray();
             for(const auto& metric : alldata.metaData.metricIdToName){
                 writer.StartObject();
-                writer.Key("metricID");
-                writer.Uint64(metric.first);
-                writer.Key("value");
+                writer.Key(std::to_string(metric.first).c_str());
                 writer.String(metric.second.c_str());
                 writer.EndObject();
             }
@@ -358,5 +457,98 @@ void display_meta_data(AllData alldata, Writer& writer){
             writer.Key("packBuffer");
             writer.String(alldata.metaData.Buffer);
         #endif
+    writer.EndObject();
+}
+
+
+template <typename Writer>
+void display_params(AllData alldata, Writer& writer){
+    writer.Key("Params");
+    writer.StartObject();
+        writer.Key("max_file_handles");
+        writer.Uint(alldata.params.max_file_handles);
+        writer.Key("buffer_size");
+        writer.Uint(alldata.params.buffer_size);
+        writer.Key("verbose_level");
+        writer.Uint(alldata.params.verbose_level);
+        writer.Key("read_metrics");
+        writer.Bool(alldata.params.read_metrics);
+        writer.Key("output_type_set");
+        writer.Bool(alldata.params.output_type_set);
+        writer.Key("create_cube");
+        writer.Bool(alldata.params.create_cube);
+        writer.Key("create_json");
+        writer.Bool(alldata.params.create_json);
+        writer.Key("data_out");
+        writer.Bool(alldata.params.data_out);
+        writer.Key("summarize_it");
+        writer.Bool(alldata.params.summarize_it);
+        writer.Key("input_file_name");
+        writer.String(alldata.params.input_file_name.c_str());
+        writer.Key("input_file_prefix");
+        writer.String(alldata.params.input_file_prefix.c_str());
+        writer.Key("output_file_prefix");
+        writer.String(alldata.params.output_file_prefix.c_str());
+    writer.EndObject();
+}
+
+template <typename Writer>
+void display_system_node(std::shared_ptr<definitions::SystemTree::SystemNode> node, AllData alldata, Writer& writer){
+    writer.StartObject();
+        writer.Key("parent");
+        if(node->parent == nullptr)
+            writer.Uint(static_cast<uint32_t>(-1));
+        else
+            writer.Uint(node->parent->data.node_id);
+
+        writer.Key("data");
+        writer.StartObject();
+            writer.Key("node_id");
+            writer.Uint(node->data.node_id);
+            writer.Key("name");
+            writer.String(node->data.name.c_str());
+            writer.Key("class_id");
+            writer.Uint(static_cast<uint8_t> (node->data.class_id));
+            writer.Key("location_id");
+            writer.Uint64(node->data.location_id);
+            writer.Key("level");
+            writer.Uint(node->data.level);
+        writer.EndObject();
+
+        writer.Key("children");
+        writer.StartArray();
+            for(const auto& child : node->children){
+                // if(child.second->data.class_id == definitions::SystemClass::NODE){
+                    // writer.StartObject();
+                        // writer.Key(std::to_string(child.first).c_str());
+                        display_system_node(child.second, alldata, writer);
+                    // writer.EndObject();
+                // }
+                // if(child.second->data.class_id == definitions::SystemClass::LOCATION_GROUP){
+
+                // }
+
+            }
+        writer.EndArray();
+    writer.EndObject();
+}
+
+template <typename Writer>
+void display_system_tree(AllData alldata, Writer& writer){
+    writer.Key("system_tree");
+    writer.StartObject();
+        writer.Key("system_nodes");
+        display_system_node(alldata.definitions.system_tree.get_root(), alldata, writer);
+        writer.Key("_size");
+        writer.Uint(alldata.definitions.system_tree.size());
+        writer.Key("num_nodes_per_level");
+        writer.StartArray();
+            for(const auto& num : alldata.definitions.system_tree.all_level()){
+                writer.Uint(num);
+            }
+        writer.EndArray();
+
+
+
     writer.EndObject();
 }

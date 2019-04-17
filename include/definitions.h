@@ -53,7 +53,7 @@ struct Metric_Class {
     uint8_t                     num_of_metrics;
     std::map<uint8_t, uint32_t> metric_member;
     MetricOccurrence            metric_occurrence;
-    RecorderKind                recorderKind;
+    RecorderKind                recorder_kind;
 };
 
 struct Paradigm {
@@ -63,7 +63,7 @@ struct Paradigm {
 
 struct Group {
     std::string           name;
-    uint16_t              type;
+    uint8_t               type;
     paradigm_id_t         paradigm_id;
     std::vector<uint64_t> members;
 };

@@ -53,7 +53,7 @@ unique_ptr<TraceReader> getTraceReader(AllData& alldata) {
         return nullptr;
 #else
     #define HAVE_DATA_IN
-        return unique_ptr<JSONReader>(new JSONReader);
+        return unique_ptr<JsonReader>(new JsonReader);
 #endif
     } else
         cerr << "ERROR: Unknown file type!" << endl;
