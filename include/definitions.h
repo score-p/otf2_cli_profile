@@ -158,7 +158,7 @@ class SystemTree {
         else if (parent_id != static_cast<uint32_t>(-1))
             parent = system_nodes[parent_id];
 
-        auto new_node = std::make_shared<SystemNode_t>(SystemNode_t(parent, {}, {_size, name, class_id, id}));
+        auto new_node = std::make_shared<SystemNode_t>(SystemNode_t(parent, {}, {_size, name, class_id, id, 0}));
 
         if (parent != nullptr) {
             parent->children.insert(std::make_pair(_size, new_node));
@@ -169,7 +169,6 @@ class SystemTree {
             else
                 num_nodes_per_level.push_back(1);
         } else {
-            new_node->data.level = 0;
             num_nodes_per_level.push_back(1);
             root = new_node;
         }
@@ -345,7 +344,7 @@ struct Definitions {
     DefinitionType<paradigm_id_t, Paradigm> io_paradigms;
     DefinitionType<uint64_t, IoHandle>      iohandles;
     DefinitionType<uint64_t, Group>         groups;
-    SystemTree system_tree{};
+    SystemTree                              system_tree{};
 };
 }  // namespace definitions
 
