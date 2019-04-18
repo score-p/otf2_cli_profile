@@ -75,7 +75,7 @@ bool JsonReader::readDefinitions(AllData& alldata){
         const rapidjson::Value& class_data = metric_class.MemberBegin()->value;
 
         definitions::Metric_Class new_metric_class {
-            class_data["num_of_metrics"].GetUint(),
+            static_cast<uint8_t>(class_data["num_of_metrics"].GetUint()),
             std::map<uint8_t, uint32_t>(),
             static_cast<MetricOccurrence> (class_data["metric_occurrence"].GetUint()),
             static_cast<RecorderKind> (class_data["recorder_kind"].GetUint())
@@ -119,7 +119,7 @@ bool JsonReader::readDefinitions(AllData& alldata){
 
         definitions::Group new_group{
             group_data["name"].GetString(),
-            group_data["type"].GetUint(),
+            static_cast<uint8_t>(group_data["type"].GetUint()),
             group_data["paradigm_id"].GetUint(),
             members
         };
@@ -203,12 +203,8 @@ bool JsonReader::readEvents(AllData& alldata){
     assert(root_nodes.IsArray());
     for(auto& node : root_nodes.GetArray()){
         assert(node.IsObject());
-        // element/node in the array is wrapped in an object
-        // they are the only element in the object
-        // therefore there is no need to iterate through the object -> object.Memberbegin()
         read_node(node.MemberBegin(), alldata, nullptr);
     }
-
     return true;
 
 }
@@ -264,58 +260,23 @@ bool JsonReader::readStatistics(AllData& alldata){
 
 }
 
-// read system_nodes and locationgroups
-void JsonReader::read_system_node(const rapidjson::Value& node, uint64_t parent_id, AllData& alldata){
-
-    std::string     name     = node["data"]["name"].GetString();
-    uint64_t        id       = node["data"]["node_id"].GetUint64();
-    uint64_t    location_id = node["data"]["location_id"].GetUint64();
-    uint8_t         class_id = node["data"]["class_id"].GetUint();
-    definitions::SystemClass systemclass = static_cast<definitions::SystemClass> (class_id);
-
-    if(systemclass != definitions::SystemClass::LOCATION &&
-       systemclass != definitions::SystemClass::LOCATION_GROUP)
-        alldata.definitions.system_tree.insert_node(name, id, systemclass, parent_id);
-    if(systemclass == definitions::SystemClass::LOCATION_GROUP)
-        alldata.definitions.system_tree.insert_node(name, location_id, systemclass, parent_id);
-
-    for(const auto& child : node["children"].GetArray())
-            read_system_node(child, id, alldata);
-}
-
-void read_location(const rapidjson::Value& node, uint64_t parent_id, AllData& alldata){
+// read system_nodes, locationgroups and locations
+void readSystemNode(const rapidjson::Value& node, uint64_t parent_id, AllData& alldata){
 
     std::string name        = node["data"]["name"].GetString();
-    uint64_t    id          = node["data"]["node_id"].GetUint64();
+    uint64_t    node_id     = node["data"]["node_id"].GetUint64();
     uint64_t    location_id = node["data"]["location_id"].GetUint64();
     uint8_t     class_id    = node["data"]["class_id"].GetUint();
     definitions::SystemClass systemclass = static_cast<definitions::SystemClass> (class_id);
 
-    if(systemclass == definitions::SystemClass::LOCATION)
-        alldata.definitions.system_tree.insert_node(name, location_id, systemclass, location_id);
-    else
-        for(const auto& child : node["children"].GetArray())
-            read_location(child, id, alldata);
+    alldata.definitions.system_tree.insert_node(name, node_id, systemclass, parent_id, location_id);
+
+    for(const auto& child : node["children"].GetArray())
+        readSystemNode(child, node_id, alldata);
 }
-
-
-// void _readSystemTree(const rapidjson::Value& node, AllData& alldata){
-//     std::string name        = node["data"]["name"].GetString();
-//     uint64_t    id          = node["data"]["node_id"].GetUint64();
-//     uint64_t    location_id = node["data"]["location_id"].GetUint64();
-//     uint8_t     class_id    = node["data"]["class_id"].GetUint();
-//     definitions::SystemClass systemclass = static_cast<definitions::SystemClass> (class_id);
-
-//     alldata.definitions.system_tree.insert_node(name, id, systemclass, parent_id, );
-
-//     for(const auto& child : node["children"].GetArray()){
-//         _readSystemTree(child, alldata);
-//     }
-// }
 
 bool JsonReader::readSystemTree(AllData& alldata){
     rapidjson::Value& node = document["system_tree"]["system_nodes"];
     uint64_t parent_id = node["parent"].GetUint64();
-    read_system_node(node, parent_id, alldata);
-    read_location(node, parent_id, alldata);
+    readSystemNode(node, parent_id, alldata);
 }

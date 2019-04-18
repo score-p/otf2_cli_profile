@@ -188,6 +188,47 @@ class SystemTree {
         return new_node;
     }
 
+    const std::shared_ptr<SystemNode_t> insert_node(std::string name, uint32_t node_id, SystemClass class_id, uint64_t parent_id, uint64_t location_id) {
+
+        SystemNode* parent = nullptr;
+
+        if (class_id == SystemClass::LOCATION)
+            parent = location_grps[location_id];
+        else if (parent_id != static_cast<uint32_t>(-1))
+            parent = system_nodes[parent_id];
+
+        auto new_node = std::make_shared<SystemNode_t>(SystemNode_t(parent, {}, {node_id, name, class_id, location_id, 0}));
+
+        if (parent != nullptr) {
+            parent->children.insert(std::make_pair(node_id, new_node));
+            new_node->data.level = parent->data.level + 1;
+
+            if (new_node->data.level < num_nodes_per_level.size())
+                ++num_nodes_per_level[new_node->data.level];
+            else
+                num_nodes_per_level.push_back(1);
+        } else {
+            num_nodes_per_level.push_back(1);
+            root = new_node;
+        }
+
+        ++_size;
+
+        switch(class_id){
+            case SystemClass::LOCATION_GROUP :
+                location_grps.push_back(new_node.get());
+                break;
+            case SystemClass::LOCATION :
+                locations[location_id] = new_node.get();
+                break;
+            default :
+                system_nodes.push_back(new_node.get());
+        }
+
+        return new_node;
+
+    }
+
     std::pair<uint8_t, std::unique_ptr<SystemTree>> summarize(const SystemTree& sys_tree, uint64_t limit) {
         // find the level where the count of nodes is bigger then the set limit
         bool   do_it = false;

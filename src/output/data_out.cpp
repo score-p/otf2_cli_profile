@@ -7,7 +7,7 @@
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
-#include "rapidjson/prettywriter.h" // human readable json
+#include "rapidjson/prettywriter.h"
 #include "definitions.h"
 #include "main_structs.h"
 
@@ -100,7 +100,6 @@ void display(Writer& writer, Data_map data, AllData alldata){
         display_definitions(alldata, writer);
         display_params(alldata, writer);
         display_system_tree(alldata, writer);
-        // time measurement
     writer.EndObject();
 }
 
@@ -425,7 +424,6 @@ void display_meta_data(AllData alldata, Writer& writer){
             }
         writer.EndArray();
 
-        //does this even work??
         writer.Key("metricClassToMetric");
         writer.StartArray();
             for(const auto& class_id : alldata.metaData.metricClassToMetric){
@@ -517,18 +515,8 @@ void display_system_node(std::shared_ptr<definitions::SystemTree::SystemNode> no
 
         writer.Key("children");
         writer.StartArray();
-            for(const auto& child : node->children){
-                // if(child.second->data.class_id == definitions::SystemClass::NODE){
-                    // writer.StartObject();
-                        // writer.Key(std::to_string(child.first).c_str());
-                        display_system_node(child.second, alldata, writer);
-                    // writer.EndObject();
-                // }
-                // if(child.second->data.class_id == definitions::SystemClass::LOCATION_GROUP){
-
-                // }
-
-            }
+            for(const auto& child : node->children)
+                display_system_node(child.second, alldata, writer);
         writer.EndArray();
     writer.EndObject();
 }
@@ -543,9 +531,8 @@ void display_system_tree(AllData alldata, Writer& writer){
         writer.Uint(alldata.definitions.system_tree.size());
         writer.Key("num_nodes_per_level");
         writer.StartArray();
-            for(const auto& num : alldata.definitions.system_tree.all_level()){
+            for(const auto& num : alldata.definitions.system_tree.all_level())
                 writer.Uint(num);
-            }
         writer.EndArray();
 
 
