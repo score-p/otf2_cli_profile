@@ -352,7 +352,7 @@ void display_node(std::shared_ptr<tree_node> node, Writer& writer){
                             writer.StartArray();
                                 for(const auto& metricData : data.second.metrics){
                                     writer.StartObject();
-                                        writer.Key(std::to_string(data.first).c_str());
+                                        writer.Key(std::to_string(metricData.first).c_str());
                                             writer.StartObject();
                                                 writer.Key("MetricDataType");
                                                 writer.Uint(static_cast<uint8_t>(metricData.second.type));
@@ -364,6 +364,15 @@ void display_node(std::shared_ptr<tree_node> node, Writer& writer){
                                                     writer.Int64(metricData.second.data_incl.s);
                                                     writer.Key("d");
                                                     writer.Double(metricData.second.data_incl.d);
+                                                writer.EndObject();
+                                                writer.Key("data_excl");
+                                                writer.StartObject();
+                                                    writer.Key("u");
+                                                    writer.Uint64(metricData.second.data_excl.u);
+                                                    writer.Key("s");
+                                                    writer.Int64(metricData.second.data_excl.s);
+                                                    writer.Key("d");
+                                                    writer.Double(metricData.second.data_excl.d);
                                                 writer.EndObject();
                                             writer.EndObject();
                                     writer.EndObject();
