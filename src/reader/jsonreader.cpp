@@ -180,6 +180,20 @@ void read_node(rapidjson::Value::ConstMemberIterator node, AllData& alldata, std
                 c_data["bytes_recv"].GetUint64()
             }
         );
+
+        const rapidjson::Value& metrics = data.MemberBegin()->value["metrics"];
+        for(const auto& metric : metrics.GetArray()){
+            auto metric_id = std::stoi(metric.MemberBegin()->name.GetString());
+            tmp_node->add_data(
+                location_id,
+                metric_id,
+                {
+                    static_cast<MetricDataType> (metric.MemberBegin()->value["MetricDataType"].GetUint()),
+                    {metric.MemberBegin()->value["data_incl"]["u"].GetUint64()},
+                    {metric.MemberBegin()->value["data_excl"]["u"].GetUint64()}
+                }
+            );
+        }
     }
 
 
