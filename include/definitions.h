@@ -188,12 +188,18 @@ class SystemTree {
         return new_node;
     }
 
-    const std::shared_ptr<SystemNode_t> insert_node(std::string name, uint32_t node_id, SystemClass class_id, uint64_t parent_id, uint64_t location_id) {
+    const std::shared_ptr<SystemNode_t> insert_node(std::string name,
+                                                    uint32_t    node_id,
+                                                    SystemClass class_id,
+                                                    uint64_t    parent_id,
+                                                    uint64_t    location_id,
+                                                    uint64_t    parent_location_id
+                                                    ) {
 
         SystemNode* parent = nullptr;
 
         if (class_id == SystemClass::LOCATION)
-            parent = location_grps[location_id];
+            parent = location_grps[parent_location_id];
         else if (parent_id != static_cast<uint32_t>(-1))
             parent = system_nodes[parent_id];
 

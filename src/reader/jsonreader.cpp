@@ -275,7 +275,7 @@ bool JsonReader::readStatistics(AllData& alldata){
 }
 
 // read system_nodes, locationgroups and locations
-void readSystemNode(const rapidjson::Value& node, uint64_t parent_id, AllData& alldata){
+void readSystemNode(const rapidjson::Value& node, uint64_t parent_id, uint64_t parent_location_id, AllData& alldata){
 
     std::string name        = node["data"]["name"].GetString();
     uint64_t    node_id     = node["data"]["node_id"].GetUint64();
@@ -283,14 +283,16 @@ void readSystemNode(const rapidjson::Value& node, uint64_t parent_id, AllData& a
     uint8_t     class_id    = node["data"]["class_id"].GetUint();
     definitions::SystemClass systemclass = static_cast<definitions::SystemClass> (class_id);
 
-    alldata.definitions.system_tree.insert_node(name, node_id, systemclass, parent_id, location_id);
+    alldata.definitions.system_tree.insert_node(name, node_id, systemclass, parent_id, location_id, parent_location_id);
 
     for(const auto& child : node["children"].GetArray())
-        readSystemNode(child, node_id, alldata);
+        readSystemNode(child, node_id, location_id, alldata);
 }
 
 bool JsonReader::readSystemTree(AllData& alldata){
     rapidjson::Value& node = document["system_tree"]["system_nodes"];
     uint64_t parent_id = node["parent"].GetUint64();
-    readSystemNode(node, parent_id, alldata);
+    uint64_t location_id = node["data"]["location_id"].GetUint64();
+
+    readSystemNode(node, parent_id, 0, alldata);
 }
