@@ -50,7 +50,7 @@ bool JsonReader::readDefinitions(AllData& alldata){
     const rapidjson::Value& metrics = document["Definitions"]["metrics"];
     for(const auto& metric : metrics.GetArray()){
 
-        uint location = std::stoi(metric.MemberBegin()->name.GetString());
+        uint location = std::stoul(metric.MemberBegin()->name.GetString());
         const rapidjson::Value& value = metric.MemberBegin()->value;
         definitions::Metric new_metric {
             value["name"].GetString(),
@@ -71,7 +71,7 @@ bool JsonReader::readDefinitions(AllData& alldata){
     const rapidjson::Value& metric_classes = document["Definitions"]["metric_classes"];
     for(const auto& metric_class : metric_classes.GetArray()){
 
-        uint location = std::stoi(metric_class.MemberBegin()->name.GetString());
+        uint location = std::stoul(metric_class.MemberBegin()->name.GetString());
         const rapidjson::Value& class_data = metric_class.MemberBegin()->value;
 
         definitions::Metric_Class new_metric_class {
@@ -82,7 +82,7 @@ bool JsonReader::readDefinitions(AllData& alldata){
         };
 
         for(const auto& member : class_data["metric_member"].GetArray()){
-            uint32_t key = std::stoi(member.MemberBegin()->name.GetString());
+            uint32_t key = std::stoul(member.MemberBegin()->name.GetString());
             uint32_t value = member.MemberBegin()->value.GetUint();
             new_metric_class.metric_member[key] = value;
 
@@ -94,7 +94,7 @@ bool JsonReader::readDefinitions(AllData& alldata){
     // parse definitions::paradigms
     const rapidjson::Value& paradigms = document["Definitions"]["paradigms"];
     for(const auto& paradigm : paradigms.GetArray()){
-        uint32_t key = std::stoi(paradigm.MemberBegin()->name.GetString());
+        uint32_t key = std::stoul(paradigm.MemberBegin()->name.GetString());
         std::string value = paradigm.MemberBegin()->value.GetString();
 
         // key is paradigm_id
@@ -109,12 +109,12 @@ bool JsonReader::readDefinitions(AllData& alldata){
     const rapidjson::Value& groups = document["Definitions"]["groups"];
     for(const auto& group : groups.GetArray()){
 
-        uint32_t location = std::stoi(group.MemberBegin()->name.GetString());
+        uint32_t location = std::stoul(group.MemberBegin()->name.GetString());
 
         const rapidjson::Value& group_data = group.MemberBegin()->value;
         std::vector<uint64_t> members;
         for(const auto& member : group_data["members"].GetArray()){
-            members.push_back(member.GetUint());
+            members.push_back(member.GetUint64());
         }
 
         definitions::Group new_group{
@@ -135,7 +135,7 @@ bool JsonReader::readDefinitions(AllData& alldata){
 
 void read_node(rapidjson::Value::ConstMemberIterator node, AllData& alldata, std::shared_ptr<tree_node> parent){
 
-    uint64_t functionId = std::stoi(node->name.GetString());
+    uint64_t functionId = std::stoull(node->name.GetString());
     auto tmp_node = std::make_shared<tree_node>(functionId);
 
     tmp_node->parent = parent.get();
@@ -144,7 +144,7 @@ void read_node(rapidjson::Value::ConstMemberIterator node, AllData& alldata, std
 
     for(auto& data : node->value["node_data"].GetArray()){
 
-        uint64_t location_id = std::stoi(data.MemberBegin()->name.GetString());
+        uint64_t location_id = std::stoull(data.MemberBegin()->name.GetString());
 
         NodeData& node_data = tmp_node->node_data[location_id];
 
@@ -183,7 +183,7 @@ void read_node(rapidjson::Value::ConstMemberIterator node, AllData& alldata, std
 
         const rapidjson::Value& metrics = data.MemberBegin()->value["metrics"];
         for(const auto& metric : metrics.GetArray()){
-            auto metric_id = std::stoi(metric.MemberBegin()->name.GetString());
+            auto metric_id = std::stoull(metric.MemberBegin()->name.GetString());
             tmp_node->add_data(
                 location_id,
                 metric_id,
@@ -232,7 +232,7 @@ bool JsonReader::readStatistics(AllData& alldata){
     assert(comm.IsArray());
 
     for(const auto& var : comm.GetArray()){
-        uint64_t key = std::stoi(var.MemberBegin()->name.GetString());
+        uint64_t key = std::stoull(var.MemberBegin()->name.GetString());
         uint64_t value = var.MemberBegin()->value.GetUint();
         communicators[key] = value;
     }
