@@ -102,7 +102,7 @@ struct Params {
     bool        output_type_set    = false;
     bool        create_cube        = false;
     bool        create_json        = false;
-    bool        data_out           = false;
+    bool        data_dump           = false;
     bool        summarize_it       = false;  // TODO added for testing
     std::string input_file_name    = "";
     std::string input_file_prefix  = "";
@@ -125,8 +125,8 @@ struct Params {
                           << "      -h, --help          show this help message" << std::endl
                           << std::endl
                           << "      --cube              generates CUBE xml profile" << std::endl
-                          << "      --json              generates json ouptut file" << std::endl
-                          << "      --dataout           export all data into json format" << std::endl
+                          << "      --json              generates json output file" << std::endl
+                          << "      --datadump          dump all data into json format" << std::endl
                           << std::endl
                           << "      -b <size>           set buffersize of the reader in Byte" << std::endl
                           << "                          (default: 1 M)" << std::endl
@@ -159,8 +159,8 @@ struct Params {
             } else if (arguments[i] == "--json") {
                 create_json = true;
                 output_type_set = true;
-            } else if (arguments[i] == "--dataout") {
-                data_out = true;
+            } else if (arguments[i] == "--datadump") {
+                data_dump = true;
                 output_type_set = true;
             } else if (arguments[i] == "-i") {
                 if (!checkNext(arguments, i))

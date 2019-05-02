@@ -148,7 +148,7 @@ int main(int argc, char** argv) {
 #endif
 
 #ifdef HAVE_DATA_OUT
-    if (alldata.params.data_out) {
+    if (alldata.params.data_dump) {
         alldata.tm.start(ScopeID::JSON);
         DataOut(alldata);
         alldata.tm.stop(ScopeID::JSON);

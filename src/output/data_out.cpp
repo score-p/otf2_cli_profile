@@ -402,8 +402,8 @@ void display_params(AllData alldata, Writer& writer){
         writer.Bool(alldata.params.create_cube);
         writer.Key("create_json");
         writer.Bool(alldata.params.create_json);
-        writer.Key("data_out");
-        writer.Bool(alldata.params.data_out);
+        writer.Key("data_dump");
+        writer.Bool(alldata.params.data_dump);
         writer.Key("summarize_it");
         writer.Bool(alldata.params.summarize_it);
         writer.Key("input_file_name");
