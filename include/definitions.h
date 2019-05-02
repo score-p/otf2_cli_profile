@@ -27,14 +27,6 @@ struct Region {
     std::string   file_name;
 };
 
-// struct Metric {
-//     std::string    name;
-//     std::string    description;
-//     std::string    unit;
-//     MetricDataType type; /*OTF2_TYPE_UINT64*/
-//     bool           allowed;
-// };
-
 /*OTF2 Metric */
 
 struct Metric {

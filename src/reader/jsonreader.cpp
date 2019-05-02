@@ -7,21 +7,13 @@
 #include "rapidjson/prettywriter.h"
 // using namespace rapidjson;
 void JsonReader::close(){
-
 }
 
 bool JsonReader::initialize(AllData& alldata){
     auto fname = alldata.params.input_file_name;
 
-    FILE* file = fopen(fname.c_str(), "r");
+    FILE* file = fopen(fname.c_str(), "r"); // r - read
 
-    // TODO
-    // determine wether file is open or not
-    // if(!file->is_open()){
-    //     std::cerr << "Unable to open file";
-    //     return false;
-
-    // }
     char readBuffer[65536];
     rapidjson::FileReadStream is(file, readBuffer, sizeof(readBuffer));
 
@@ -82,8 +74,8 @@ bool JsonReader::readDefinitions(AllData& alldata){
         };
 
         for(const auto& member : class_data["metric_member"].GetArray()){
-            uint32_t key = std::stoul(member.MemberBegin()->name.GetString());
-            uint32_t value = member.MemberBegin()->value.GetUint();
+            uint32_t key    = std::stoul(member.MemberBegin()->name.GetString());
+            uint32_t value  = member.MemberBegin()->value.GetUint();
             new_metric_class.metric_member[key] = value;
 
         }
@@ -94,16 +86,34 @@ bool JsonReader::readDefinitions(AllData& alldata){
     // parse definitions::paradigms
     const rapidjson::Value& paradigms = document["Definitions"]["paradigms"];
     for(const auto& paradigm : paradigms.GetArray()){
-        uint32_t key = std::stoul(paradigm.MemberBegin()->name.GetString());
-        std::string value = paradigm.MemberBegin()->value.GetString();
+        uint32_t paradigm_id = std::stoul(paradigm.MemberBegin()->name.GetString());
+        std::string value    = paradigm.MemberBegin()->value.GetString();
 
-        // key is paradigm_id
-        alldata.definitions.paradigms.add(key, definitions::Paradigm{value});
+        alldata.definitions.paradigms.add(paradigm_id, definitions::Paradigm{value});
     }
 
-    // TODO parse io_paradigms
+    // parse definitions::io_paradigms
+    const rapidjson::Value& io_paradigms = document["Definitions"]["io_paradigms"];
+    for(const auto& io_paradigm : io_paradigms.GetArray()){
+        uint32_t paradigm_id = std::stoul(io_paradigm.MemberBegin()->name.GetString());
+        std::string value    = io_paradigm.MemberBegin()->value.GetString();
 
-    // TODO parse iohandles
+        alldata.definitions.io_paradigms.add(paradigm_id, definitions::Paradigm{value});
+    }
+
+
+    // parse definitions::iohandles
+
+    const rapidjson::Value& iohandles = document["Definitions"]["iohandles"];
+    for(const auto& iohandle : iohandles.GetArray()){
+        uint64_t    iohandle_id = std::stoll(iohandle.MemberBegin()->name.GetString());
+        std::string name           = iohandle.MemberBegin()->value["name"].GetString();
+        uint32_t    io_paradigm    = iohandle.MemberBegin()->value["io_paradigm"].GetUint();
+        uint64_t    file           = iohandle.MemberBegin()->value["file"].GetUint64();
+        uint64_t    parent         = iohandle.MemberBegin()->value["parent"].GetUint64();
+
+        alldata.definitions.iohandles.add(iohandle_id, definitions::IoHandle{name, io_paradigm, file, parent});
+    }
 
     // parse definitions::groups
     const rapidjson::Value& groups = document["Definitions"]["groups"];
@@ -130,7 +140,6 @@ bool JsonReader::readDefinitions(AllData& alldata){
     readSystemTree(alldata);
 
     return true;
-
 }
 
 void read_node(rapidjson::Value::ConstMemberIterator node, AllData& alldata, std::shared_ptr<tree_node> parent){
@@ -140,13 +149,12 @@ void read_node(rapidjson::Value::ConstMemberIterator node, AllData& alldata, std
 
     tmp_node->parent = parent.get();
 
-    // node_data
+    // parse node_data
 
     for(auto& data : node->value["node_data"].GetArray()){
 
         uint64_t location_id = std::stoull(data.MemberBegin()->name.GetString());
-
-        NodeData& node_data = tmp_node->node_data[location_id];
+        NodeData& node_data  = tmp_node->node_data[location_id];
 
         const rapidjson::Value& f_data = data.MemberBegin()->value["f_data"];
         tmp_node->add_data(
@@ -203,7 +211,7 @@ void read_node(rapidjson::Value::ConstMemberIterator node, AllData& alldata, std
         read_node(child.MemberBegin(), alldata, tmp_node);
     }
 
-    tmp_node->has_p2p = node->value["has_p2p"].GetBool();
+    tmp_node->has_p2p    = node->value["has_p2p"].GetBool();
     tmp_node->has_collop = node->value["has_collop"].GetBool();
 
 
@@ -220,10 +228,9 @@ bool JsonReader::readEvents(AllData& alldata){
         read_node(node.MemberBegin(), alldata, nullptr);
     }
     return true;
-
 }
 
-// read Metadata
+// parse Metadata
 bool JsonReader::readStatistics(AllData& alldata){
 
     std::map<uint64_t, uint64_t>& communicators = alldata.metaData.communicators;
@@ -232,24 +239,24 @@ bool JsonReader::readStatistics(AllData& alldata){
     assert(comm.IsArray());
 
     for(const auto& var : comm.GetArray()){
-        uint64_t key = std::stoull(var.MemberBegin()->name.GetString());
-        uint64_t value = var.MemberBegin()->value.GetUint();
+        uint64_t key       = std::stoull(var.MemberBegin()->name.GetString());
+        uint64_t value     = var.MemberBegin()->value.GetUint();
         communicators[key] = value;
     }
 
-    // read processIdToName
+    // parse processIdToName
     const rapidjson::Value& procs = document["meta_data"]["processIdToName"];
     assert(procs.IsArray());
 
     std::map<uint64_t, std::string>& processId_data = alldata.metaData.processIdToName;
 
-    for(rapidjson::SizeType i = 0; i < procs.Size(); ++i){
-        uint64_t processID = procs[i]["processId"].GetUint();
-        std::string name = procs[i]["name"].GetString();
+    for(rapidjson::SizeType i     = 0; i < procs.Size(); ++i){
+        uint64_t processID        = procs[i]["processId"].GetUint();
+        std::string name          = procs[i]["name"].GetString();
         processId_data[processID] = name;
     }
 
-    // read metricIdToName
+    // parse metricIdToName
 
     const rapidjson::Value& metric = document["meta_data"]["metricIdToName"];
     assert(metric.IsArray());
@@ -257,24 +264,39 @@ bool JsonReader::readStatistics(AllData& alldata){
     std::map<uint64_t, std::string>& metricId_data = alldata.metaData.metricIdToName;
 
     for(rapidjson::SizeType i = 0; i < metric.Size(); ++i){
-        uint64_t metricID = metric[i]["metricId"].GetUint();
-        std::string name = metric[i]["name"].GetString();
+        uint64_t metricID       = metric[i]["metricId"].GetUint();
+        std::string name        = metric[i]["name"].GetString();
         metricId_data[metricID] = name;
     }
 
-    // TODO metricclassToMetric
+    // parse metricClassToMetric
+
+    const rapidjson::Value& metricClassToMetric = document["meta_data"]["metricClassToMetric"];
+
+    for(rapidjson::SizeType i = 0; i < metricClassToMetric.Size(); ++i){
+        uint64_t metricClassId   = metricClassToMetric[i]["metricClassId"].GetUint64();
+
+        const rapidjson::Value& metricMembers = metricMembers;
+        for (rapidjson::SizeType j = 0; j < metricMembers.Size(); ++j) {
+            uint64_t numberOfMetrics = metricMembers[j]["numberOfMetrics"].GetUint64();
+            uint64_t metricMember    = metricMembers[j]["metricMember"].GetUint64();
+            alldata.metaData.metricClassToMetric[metricClassId][numberOfMetrics] = metricMember;
+        }
+    }
 
 
-    // read rest of meta_data
+    // parse rest of meta_data
     alldata.metaData.timerResolution = document["meta_data"]["timerResolution"].GetUint();
-    alldata.metaData.myRank = document["meta_data"]["myRank"].GetUint();
+    alldata.metaData.myRank   = document["meta_data"]["myRank"].GetUint();
     alldata.metaData.numRanks = document["meta_data"]["numRanks"].GetUint();
-
+    #ifdef OTFPROFILER_MPI
+        alldata.metaData.packBufferSize = document["meta_data"]["packBufferSize"].GetUint64();
+        alldata.metaData.Buffer         = document["meta_data"]["packBuffer"].GetUint64();
+    #endif
     return true;
-
 }
 
-// read system_nodes, locationgroups and locations
+// parse system_nodes, locationgroups and locations
 void readSystemNode(const rapidjson::Value& node, uint64_t parent_id, uint64_t parent_location_id, AllData& alldata){
 
     std::string name        = node["data"]["name"].GetString();
@@ -291,8 +313,8 @@ void readSystemNode(const rapidjson::Value& node, uint64_t parent_id, uint64_t p
 
 bool JsonReader::readSystemTree(AllData& alldata){
     rapidjson::Value& node = document["system_tree"]["system_nodes"];
-    uint64_t parent_id = node["parent"].GetUint64();
-    uint64_t location_id = node["data"]["location_id"].GetUint64();
+    uint64_t parent_id     = node["parent"].GetUint64();
+    uint64_t location_id   = node["data"]["location_id"].GetUint64();
 
     readSystemNode(node, parent_id, 0, alldata);
 }

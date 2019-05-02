@@ -10,8 +10,9 @@ public:
 
     ~JsonReader() { close();}
 
-    void close();
     bool initialize(AllData& alldata);
+    void close();
+
     bool readDefinitions(AllData& alldata);
     bool readEvents(AllData& alldata);
     bool readStatistics(AllData& alldata);
