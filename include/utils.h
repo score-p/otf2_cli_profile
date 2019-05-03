@@ -126,13 +126,13 @@ struct Params {
                           << std::endl
                           << "      --cube              generates CUBE xml profile" << std::endl
                           << "      --json              generates json output file" << std::endl
-                          << "      --datadump          dump all data into json format" << std::endl
+                          << "      --datadump          dump all data into json file" << std::endl
                           << std::endl
                           << "      -b <size>           set buffersize of the reader in Byte" << std::endl
                           << "                          (default: 1 M)" << std::endl
                           << "      -f <n>              max. number of filehandles available per rank" << std::endl
                           << "                          (default: 50)" << std::endl
-                          << "      -i <file>           specify the input tracefile name" << std::endl
+                          << "      -i <file>           specify the input tracefile name or json dump file" << std::endl
                           << "      -nm, --no-metrics   neglect metric events" << std::endl
                           << "      -o <prefix>         specify the prefix of output file(s)" << std::endl
                           << "                          (default: result)" << std::endl

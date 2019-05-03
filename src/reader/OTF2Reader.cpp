@@ -311,20 +311,7 @@ OTF2_CallbackCode OTF2Reader::handle_def_metric_class(  void*                   
                                                         const OTF2_MetricMemberRef* metricMembers,
                                                         OTF2_MetricOccurrence       metricOccurrence,
                                                         OTF2_RecorderKind           recorderKind) {
-    // auto* alldata = static_cast<AllData*>(userData);
 
-    // if (metricOccurrence == OTF2_METRIC_SYNCHRONOUS_STRICT) {
-    //     alldata->metaData.metricClassToMetric.insert(make_pair(self, map<uint64_t, uint64_t>()));
-
-    //     for (int i = 0; i < numberOfMetrics; i++) {
-    //         auto* def_ref = alldata->definitions.metrics.get(metricMembers[i]);
-    //         if (def_ref != nullptr) {
-    //             alldata->metaData.metricClassToMetric[self].insert(make_pair(i, metricMembers[i]));
-    //             const_cast<definitions::Metric*>(def_ref)->allowed =
-    //                 true;  // allowed -> nur strict_sync, beschränkt aber nicht auf accumulated_start
-    //         }
-    //     }
-    // }
 
 
     auto* alldata = static_cast<AllData*>(userData);
@@ -587,8 +574,6 @@ OTF2_CallbackCode OTF2Reader::handle_metric(OTF2_LocationRef locationID, OTF2_Ti
                                             const OTF2_MetricValue* metricValues) {
     auto* alldata = static_cast<AllData*>(userData);
 
-    // auto class_mapping = alldata->metaData.metricClassToMetric.find(metric);
-    // if (class_mapping != alldata->metaData.metricClassToMetric.end()) {
     auto class_mapping = alldata->definitions.metric_classes.get(metric);
     if (class_mapping != nullptr) {
         auto* metric_class_def = alldata->definitions.metric_classes.get(metric);
@@ -598,10 +583,8 @@ OTF2_CallbackCode OTF2Reader::handle_metric(OTF2_LocationRef locationID, OTF2_Ti
             MetricDataType a_type;
 
             for (uint8_t i = 0; i < numberOfMetrics; i++) {
-                // auto  metric_ref = class_mapping->second.find(i);
                 auto  metric_ref = class_mapping->metric_member.find(i);
                 auto* metric_def = alldata->definitions.metrics.get(metric_ref->second);
-                // if (metric_ref != class_mapping->second.end() && metric_def != nullptr && metric_def->allowed) {
                 if (metric_ref != class_mapping->metric_member.end() && metric_def != nullptr && metric_def->allowed) {
                     MetricData md;
 

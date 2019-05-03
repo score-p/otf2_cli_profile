@@ -1,9 +1,7 @@
-
 #include <fstream>
 #include <iostream>
 #include <string>
 #include "data_out.h"
-#include "all_data.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
@@ -49,7 +47,7 @@ void display_data_tree(AllData alldata, Writer& writer){
         writer.Key("root_nodes");
         writer.StartArray();
             for(const auto& node : alldata.call_path_tree.root_nodes){
-                    display_node(node.second, writer);
+                display_node(node.second, writer);
             }
         writer.EndArray();
     writer.EndObject();
@@ -71,69 +69,69 @@ void display_node(std::shared_ptr<tree_node> node, Writer& writer){
         writer.StartArray();
             for(const auto& data : node->node_data){
                 writer.StartObject();
-                        writer.Key("location_id");
-                        writer.Uint64(data.first);
-                        writer.Key("f_data");
-                        writer.StartObject();
-                            writer.Key("count");
-                            writer.Uint64(data.second.f_data.count);
-                            writer.Key("incl_time");
-                            writer.Uint64(data.second.f_data.incl_time);
-                            writer.Key("excl_time");
-                            writer.Uint64(data.second.f_data.excl_time);
-                        writer.EndObject();
-                        writer.Key("m_data");
-                        writer.StartObject();
-                            writer.Key("count_send");
-                            writer.Uint64(data.second.m_data.count_send);
-                            writer.Key("count_recv");
-                            writer.Uint64(data.second.m_data.count_recv);
-                            writer.Key("bytes_send");
-                            writer.Uint64(data.second.m_data.bytes_send);
-                            writer.Key("bytes_recv");
-                            writer.Uint64(data.second.m_data.bytes_recv);
-                        writer.EndObject();
-                        writer.Key("c_data");
-                        writer.StartObject();
-                            writer.Key("count_send");
-                            writer.Uint64(data.second.c_data.count_send);
-                            writer.Key("count_recv");
-                            writer.Uint64(data.second.c_data.count_recv);
-                            writer.Key("bytes_send");
-                            writer.Uint64(data.second.c_data.bytes_send);
-                            writer.Key("bytes_recv");
-                            writer.Uint64(data.second.c_data.bytes_recv);
-                        writer.EndObject();
-                        writer.Key("metrics");
-                            writer.StartArray();
-                                for(const auto& metricData : data.second.metrics){
+                    writer.Key("location_id");
+                    writer.Uint64(data.first);
+                    writer.Key("f_data");
+                    writer.StartObject();
+                        writer.Key("count");
+                        writer.Uint64(data.second.f_data.count);
+                        writer.Key("incl_time");
+                        writer.Uint64(data.second.f_data.incl_time);
+                        writer.Key("excl_time");
+                        writer.Uint64(data.second.f_data.excl_time);
+                    writer.EndObject();
+                    writer.Key("m_data");
+                    writer.StartObject();
+                        writer.Key("count_send");
+                        writer.Uint64(data.second.m_data.count_send);
+                        writer.Key("count_recv");
+                        writer.Uint64(data.second.m_data.count_recv);
+                        writer.Key("bytes_send");
+                        writer.Uint64(data.second.m_data.bytes_send);
+                        writer.Key("bytes_recv");
+                        writer.Uint64(data.second.m_data.bytes_recv);
+                    writer.EndObject();
+                    writer.Key("c_data");
+                    writer.StartObject();
+                        writer.Key("count_send");
+                        writer.Uint64(data.second.c_data.count_send);
+                        writer.Key("count_recv");
+                        writer.Uint64(data.second.c_data.count_recv);
+                        writer.Key("bytes_send");
+                        writer.Uint64(data.second.c_data.bytes_send);
+                        writer.Key("bytes_recv");
+                        writer.Uint64(data.second.c_data.bytes_recv);
+                    writer.EndObject();
+                    writer.Key("metrics");
+                    writer.StartArray();
+                        for(const auto& metricData : data.second.metrics){
+                            writer.StartObject();
+                                writer.Key(std::to_string(metricData.first).c_str());
+                                writer.StartObject();
+                                    writer.Key("MetricDataType");
+                                    writer.Uint(static_cast<uint8_t>(metricData.second.type));
+                                    writer.Key("data_incl");
                                     writer.StartObject();
-                                        writer.Key(std::to_string(metricData.first).c_str());
-                                            writer.StartObject();
-                                                writer.Key("MetricDataType");
-                                                writer.Uint(static_cast<uint8_t>(metricData.second.type));
-                                                writer.Key("data_incl");
-                                                writer.StartObject();
-                                                    writer.Key("u");
-                                                    writer.Uint64(metricData.second.data_incl.u);
-                                                    writer.Key("s");
-                                                    writer.Int64(metricData.second.data_incl.s);
-                                                    writer.Key("d");
-                                                    writer.Double(metricData.second.data_incl.d);
-                                                writer.EndObject();
-                                                writer.Key("data_excl");
-                                                writer.StartObject();
-                                                    writer.Key("u");
-                                                    writer.Uint64(metricData.second.data_excl.u);
-                                                    writer.Key("s");
-                                                    writer.Int64(metricData.second.data_excl.s);
-                                                    writer.Key("d");
-                                                    writer.Double(metricData.second.data_excl.d);
-                                                writer.EndObject();
-                                            writer.EndObject();
+                                        writer.Key("u");
+                                        writer.Uint64(metricData.second.data_incl.u);
+                                        writer.Key("s");
+                                        writer.Int64(metricData.second.data_incl.s);
+                                        writer.Key("d");
+                                        writer.Double(metricData.second.data_incl.d);
                                     writer.EndObject();
-                                }
-                            writer.EndArray();
+                                    writer.Key("data_excl");
+                                    writer.StartObject();
+                                        writer.Key("u");
+                                        writer.Uint64(metricData.second.data_excl.u);
+                                        writer.Key("s");
+                                        writer.Int64(metricData.second.data_excl.s);
+                                        writer.Key("d");
+                                        writer.Double(metricData.second.data_excl.d);
+                                    writer.EndObject();
+                                writer.EndObject();
+                            writer.EndObject();
+                        }
+                    writer.EndArray();
                 writer.EndObject();
             }
         writer.EndArray();

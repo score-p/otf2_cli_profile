@@ -180,6 +180,7 @@ class SystemTree {
         return new_node;
     }
 
+    // insert node with predetermined IDs, necessary for jsonreader
     const std::shared_ptr<SystemNode_t> insert_node(std::string name,
                                                     uint32_t    node_id,
                                                     SystemClass class_id,

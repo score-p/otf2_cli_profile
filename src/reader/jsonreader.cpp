@@ -5,7 +5,6 @@
 #include <rapidjson/filereadstream.h>
 #include "rapidjson/filewritestream.h"
 #include "rapidjson/prettywriter.h"
-// using namespace rapidjson;
 void JsonReader::close(){
 }
 
@@ -200,7 +199,7 @@ void read_node(const rapidjson::Value& node, AllData& alldata, std::shared_ptr<t
         }
     }
 
-    // Children
+    // parse children
     const rapidjson::Value& children = node["children"];
     for(auto& child : node["children"].GetArray()){
         read_node(child, alldata, tmp_node);
