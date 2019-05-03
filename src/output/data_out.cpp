@@ -49,10 +49,7 @@ void display_data_tree(AllData alldata, Writer& writer){
         writer.Key("root_nodes");
         writer.StartArray();
             for(const auto& node : alldata.call_path_tree.root_nodes){
-                writer.StartObject();
-                    writer.Key(std::to_string(node.first).c_str());
                     display_node(node.second, writer);
-                writer.EndObject();
             }
         writer.EndArray();
     writer.EndObject();
@@ -74,8 +71,8 @@ void display_node(std::shared_ptr<tree_node> node, Writer& writer){
         writer.StartArray();
             for(const auto& data : node->node_data){
                 writer.StartObject();
-                    writer.Key(std::to_string(data.first).c_str());
-                    writer.StartObject();
+                        writer.Key("location_id");
+                        writer.Uint64(data.first);
                         writer.Key("f_data");
                         writer.StartObject();
                             writer.Key("count");
@@ -137,7 +134,6 @@ void display_node(std::shared_ptr<tree_node> node, Writer& writer){
                                     writer.EndObject();
                                 }
                             writer.EndArray();
-                    writer.EndObject();
                 writer.EndObject();
             }
         writer.EndArray();
@@ -145,10 +141,7 @@ void display_node(std::shared_ptr<tree_node> node, Writer& writer){
         writer.Key("children");
         writer.StartArray();
             for(const auto& child : node->children){
-                writer.StartObject();
-                writer.Key(std::to_string(child.first).c_str());
                 display_node(child.second, writer);
-                writer.EndObject();
             }
         writer.EndArray();
 
@@ -169,7 +162,7 @@ void display_definitions(AllData alldata, Writer& writer){
         writer.StartArray();
             for(const auto& region : alldata.definitions.regions.get_all()){
                 writer.StartObject();
-                    writer.Key("id");
+                    writer.Key("region_id");
                     writer.Uint(region.first);
                     writer.Key("name");
                     writer.String(region.second.name.c_str());
@@ -188,8 +181,8 @@ void display_definitions(AllData alldata, Writer& writer){
             for(const auto& it : alldata.definitions.metrics.get_all()){
                 const definitions::Metric& metric = it.second;
                 writer.StartObject();
-                    writer.Key(std::to_string(it.first).c_str());
-                    writer.StartObject();
+                        writer.Key("metric_id");
+                        writer.Uint64(it.first);
                         writer.Key("name");
                         writer.String(metric.name.c_str());
                         writer.Key("description");
@@ -208,7 +201,6 @@ void display_definitions(AllData alldata, Writer& writer){
                         writer.String(metric.unit.c_str());
                         writer.Key("allowed");
                         writer.Bool(metric.allowed);
-                    writer.EndObject();
                 writer.EndObject();
             }
         writer.EndArray();
@@ -219,8 +211,8 @@ void display_definitions(AllData alldata, Writer& writer){
                 const definitions::Metric_Class& metric_class = it.second;
 
                 writer.StartObject();
-                    writer.Key(std::to_string(it.first).c_str());
-                    writer.StartObject();
+                        writer.Key("metric_class_id");
+                        writer.Uint64(it.first);
                         writer.Key("num_of_metrics");
                         writer.Uint(metric_class.num_of_metrics);
                         writer.Key("metric_member");
@@ -236,7 +228,6 @@ void display_definitions(AllData alldata, Writer& writer){
                         writer.Uint(static_cast<uint> (metric_class.metric_occurrence));
                         writer.Key("recorder_kind");
                         writer.Uint(static_cast<uint> (metric_class.recorder_kind));
-                    writer.EndObject();
                 writer.EndObject();
             }
         writer.EndArray();
@@ -285,27 +276,19 @@ void display_definitions(AllData alldata, Writer& writer){
             for(const auto& it : alldata.definitions.groups.get_all()){
                 const definitions::Group& group = it.second;
                 writer.StartObject();
-
-                    writer.Key(std::to_string(it.first).c_str());
-                    writer.StartObject();
-
-                        writer.Key("name");
-                        writer.String(group.name.c_str());
-
-                        writer.Key("type");
-                        writer.Uint(group.type);
-
-                        writer.Key("paradigm_id");
-                        writer.Uint(group.paradigm_id);
-
-                        writer.Key("members");
-                        writer.StartArray();
-                            for(const auto& member : group.members)
-                                writer.Uint64(member);
-                        writer.EndArray();
-
-
-                    writer.EndObject();
+                    writer.Key("group_id");
+                    writer.Uint64(it.first);
+                    writer.Key("name");
+                    writer.String(group.name.c_str());
+                    writer.Key("type");
+                    writer.Uint(group.type);
+                    writer.Key("paradigm_id");
+                    writer.Uint(group.paradigm_id);
+                    writer.Key("members");
+                    writer.StartArray();
+                        for(const auto& member : group.members)
+                            writer.Uint64(member);
+                    writer.EndArray();
                 writer.EndObject();
             }
         writer.EndArray();

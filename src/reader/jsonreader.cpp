@@ -10,10 +10,9 @@ void JsonReader::close(){
 }
 
 bool JsonReader::initialize(AllData& alldata){
+
     auto fname = alldata.params.input_file_name;
-
     FILE* file = fopen(fname.c_str(), "r"); // r - read
-
     char readBuffer[65536];
     rapidjson::FileReadStream is(file, readBuffer, sizeof(readBuffer));
 
@@ -29,58 +28,58 @@ bool JsonReader::readDefinitions(AllData& alldata){
     const rapidjson::Value& regions = document["Definitions"]["regions"];
     assert(regions.IsArray());
     for(rapidjson::SizeType i = 0; i < regions.Size(); ++i){
+        uint64_t region_id = regions[i]["region_id"].GetUint64();
         definitions::Region region{
             regions[i]["name"].GetString(),
             regions[i]["paradigm_id"].GetUint(),
             regions[i]["source_line"].GetUint(),
             regions[i]["file_name"].GetString()
         };
-        alldata.definitions.regions.add(i, region);
+        alldata.definitions.regions.add(region_id, region);
     }
 
     // parse definitions::metrics
     const rapidjson::Value& metrics = document["Definitions"]["metrics"];
     for(const auto& metric : metrics.GetArray()){
 
-        uint location = std::stoul(metric.MemberBegin()->name.GetString());
-        const rapidjson::Value& value = metric.MemberBegin()->value;
+        uint64_t metric_id = metric["metric_id"].GetUint64();
+
         definitions::Metric new_metric {
-            value["name"].GetString(),
-            value["description"].GetString(),
-            static_cast<MetricType> (value["metricType"].GetUint()),
-            static_cast<MetricMode> (value["metricMode"].GetUint()),
-            static_cast<MetricDataType> (value["type"].GetUint()),
-            static_cast<MetricBase> (value["base"].GetUint()),
-            value["exponent"].GetInt64(),
-            value["unit"].GetString(),
-            value["allowed"].GetBool()
+            metric["name"].GetString(),
+            metric["description"].GetString(),
+            static_cast<MetricType> (metric["metricType"].GetUint()),
+            static_cast<MetricMode> (metric["metricMode"].GetUint()),
+            static_cast<MetricDataType> (metric["type"].GetUint()),
+            static_cast<MetricBase> (metric["base"].GetUint()),
+            metric["exponent"].GetInt64(),
+            metric["unit"].GetString(),
+            metric["allowed"].GetBool()
         };
 
-    alldata.definitions.metrics.add(location, new_metric);
+    alldata.definitions.metrics.add(metric_id, new_metric);
     }
 
     // parse definitions::metric_classes
     const rapidjson::Value& metric_classes = document["Definitions"]["metric_classes"];
     for(const auto& metric_class : metric_classes.GetArray()){
 
-        uint location = std::stoul(metric_class.MemberBegin()->name.GetString());
-        const rapidjson::Value& class_data = metric_class.MemberBegin()->value;
+        uint64_t metric_class_id = metric_class["metric_class_id"].GetUint64();
 
         definitions::Metric_Class new_metric_class {
-            static_cast<uint8_t>(class_data["num_of_metrics"].GetUint()),
+            static_cast<uint8_t>(metric_class["num_of_metrics"].GetUint()),
             std::map<uint8_t, uint32_t>(),
-            static_cast<MetricOccurrence> (class_data["metric_occurrence"].GetUint()),
-            static_cast<RecorderKind> (class_data["recorder_kind"].GetUint())
+            static_cast<MetricOccurrence> (metric_class["metric_occurrence"].GetUint()),
+            static_cast<RecorderKind> (metric_class["recorder_kind"].GetUint())
         };
 
-        for(const auto& member : class_data["metric_member"].GetArray()){
+        for(const auto& member : metric_class["metric_member"].GetArray()){
             uint32_t key    = std::stoul(member.MemberBegin()->name.GetString());
             uint32_t value  = member.MemberBegin()->value.GetUint();
             new_metric_class.metric_member[key] = value;
 
         }
 
-        alldata.definitions.metric_classes.add(location, new_metric_class);
+        alldata.definitions.metric_classes.add(metric_class_id, new_metric_class);
     }
 
     // parse definitions::paradigms
@@ -106,7 +105,7 @@ bool JsonReader::readDefinitions(AllData& alldata){
 
     const rapidjson::Value& iohandles = document["Definitions"]["iohandles"];
     for(const auto& iohandle : iohandles.GetArray()){
-        uint64_t    iohandle_id = std::stoll(iohandle.MemberBegin()->name.GetString());
+        uint64_t    iohandle_id    = std::stoll(iohandle.MemberBegin()->name.GetString());
         std::string name           = iohandle.MemberBegin()->value["name"].GetString();
         uint32_t    io_paradigm    = iohandle.MemberBegin()->value["io_paradigm"].GetUint();
         uint64_t    file           = iohandle.MemberBegin()->value["file"].GetUint64();
@@ -119,22 +118,20 @@ bool JsonReader::readDefinitions(AllData& alldata){
     const rapidjson::Value& groups = document["Definitions"]["groups"];
     for(const auto& group : groups.GetArray()){
 
-        uint32_t location = std::stoul(group.MemberBegin()->name.GetString());
-
-        const rapidjson::Value& group_data = group.MemberBegin()->value;
+        uint32_t group_id = group["group_id"].GetUint64();
         std::vector<uint64_t> members;
-        for(const auto& member : group_data["members"].GetArray()){
+        for(const auto& member : group["members"].GetArray()){
             members.push_back(member.GetUint64());
         }
 
         definitions::Group new_group{
-            group_data["name"].GetString(),
-            static_cast<uint8_t>(group_data["type"].GetUint()),
-            group_data["paradigm_id"].GetUint(),
+            group["name"].GetString(),
+            static_cast<uint8_t>(group["type"].GetUint()),
+            group["paradigm_id"].GetUint(),
             members
         };
 
-        alldata.definitions.groups.add(location, new_group);
+        alldata.definitions.groups.add(group_id, new_group);
     }
 
     readSystemTree(alldata);
@@ -142,21 +139,20 @@ bool JsonReader::readDefinitions(AllData& alldata){
     return true;
 }
 
-void read_node(rapidjson::Value::ConstMemberIterator node, AllData& alldata, std::shared_ptr<tree_node> parent){
+void read_node(const rapidjson::Value& node, AllData& alldata, std::shared_ptr<tree_node> parent){
 
-    uint64_t functionId = std::stoull(node->name.GetString());
-    auto tmp_node = std::make_shared<tree_node>(functionId);
-
-    tmp_node->parent = parent.get();
+    uint64_t function_id = node["function_id"].GetUint64();
+    auto tmp_node        = std::make_shared<tree_node>(function_id);
+    tmp_node->parent     = parent.get();
 
     // parse node_data
 
-    for(auto& data : node->value["node_data"].GetArray()){
+    for(auto& data : node["node_data"].GetArray()){
 
-        uint64_t location_id = std::stoull(data.MemberBegin()->name.GetString());
+        uint64_t location_id = data["location_id"].GetUint64();
         NodeData& node_data  = tmp_node->node_data[location_id];
 
-        const rapidjson::Value& f_data = data.MemberBegin()->value["f_data"];
+        const rapidjson::Value& f_data = data["f_data"];
         tmp_node->add_data(
             location_id,
             FunctionData{
@@ -166,7 +162,7 @@ void read_node(rapidjson::Value::ConstMemberIterator node, AllData& alldata, std
             }
         );
 
-        const rapidjson::Value& m_data = data.MemberBegin()->value["m_data"];
+        const rapidjson::Value& m_data = data["m_data"];
         tmp_node->add_data(
             location_id,
             MessageData{
@@ -177,7 +173,7 @@ void read_node(rapidjson::Value::ConstMemberIterator node, AllData& alldata, std
             }
         );
 
-        const rapidjson::Value& c_data = data.MemberBegin()->value["c_data"];
+        const rapidjson::Value& c_data = data["c_data"];
 
         tmp_node->add_data(
             location_id,
@@ -189,7 +185,7 @@ void read_node(rapidjson::Value::ConstMemberIterator node, AllData& alldata, std
             }
         );
 
-        const rapidjson::Value& metrics = data.MemberBegin()->value["metrics"];
+        const rapidjson::Value& metrics = data["metrics"];
         for(const auto& metric : metrics.GetArray()){
             auto metric_id = std::stoull(metric.MemberBegin()->name.GetString());
             tmp_node->add_data(
@@ -204,15 +200,14 @@ void read_node(rapidjson::Value::ConstMemberIterator node, AllData& alldata, std
         }
     }
 
-
     // Children
-    const rapidjson::Value& children = node->value["children"];
-    for(auto& child : children.GetArray()){
-        read_node(child.MemberBegin(), alldata, tmp_node);
+    const rapidjson::Value& children = node["children"];
+    for(auto& child : node["children"].GetArray()){
+        read_node(child, alldata, tmp_node);
     }
 
-    tmp_node->has_p2p    = node->value["has_p2p"].GetBool();
-    tmp_node->has_collop = node->value["has_collop"].GetBool();
+    tmp_node->has_p2p    = node["has_p2p"].GetBool();
+    tmp_node->has_collop = node["has_collop"].GetBool();
 
 
     alldata.call_path_tree.insert_node(tmp_node);
@@ -224,8 +219,8 @@ bool JsonReader::readEvents(AllData& alldata){
 
     assert(root_nodes.IsArray());
     for(auto& node : root_nodes.GetArray()){
-        assert(node.IsObject());
-        read_node(node.MemberBegin(), alldata, nullptr);
+        read_node(node, alldata, nullptr);
+
     }
     return true;
 }
@@ -287,8 +282,8 @@ bool JsonReader::readStatistics(AllData& alldata){
 
     // parse rest of meta_data
     alldata.metaData.timerResolution = document["meta_data"]["timerResolution"].GetUint();
-    alldata.metaData.myRank   = document["meta_data"]["myRank"].GetUint();
-    alldata.metaData.numRanks = document["meta_data"]["numRanks"].GetUint();
+    alldata.metaData.myRank          = document["meta_data"]["myRank"].GetUint();
+    alldata.metaData.numRanks        = document["meta_data"]["numRanks"].GetUint();
     #ifdef OTFPROFILER_MPI
         alldata.metaData.packBufferSize = document["meta_data"]["packBufferSize"].GetUint64();
         alldata.metaData.Buffer         = document["meta_data"]["packBuffer"].GetUint64();
