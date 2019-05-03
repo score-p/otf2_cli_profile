@@ -102,6 +102,7 @@ struct Params {
     int32_t     rank               = -1;
     uint32_t    top_nodes          = 0;
     bool        read_metrics       = true;  // counter
+    bool        output_type_set    = false;
     bool        create_cube        = false;
     bool        create_json        = false;
     bool        create_dot         = false;
@@ -126,17 +127,17 @@ struct Params {
                           << "   options:" << std::endl
                           << "      -h, --help          show this help message" << std::endl
                           << std::endl
-                          << "      --cube              generate CUBE xml profile" << std::endl
-                          << "      --xlsx              generate XLSX ouptut file" << std::endl
-                          << "      --dot               generate dot file for drawing graphs" << std::endl
+                          << "      --cube              generates CUBE xml profile" << std::endl
+                          << "      --json              generates json ouptut file" << std::endl
+                          << "      --dot               generates dot file for drawing graphs" << std::endl
                           << "        --filter <percent> only show path, where nodes took at least num \% of total time" << std::endl
                           << "        --top <n>          only show top num nodes" << std::endl
                           << "        --rank <n>         only show specific rank" << std::endl
                           << std::endl
-                          << "                          (default: 50)" << std::endl
                           << "      -b <size>           set buffersize of the reader in Byte" << std::endl
                           << "                          (default: 1 M)" << std::endl
                           << "      -f <n>              max. number of filehandles available per rank" << std::endl
+                          << "                          (default: 50)" << std::endl
                           << "      -i <file>           specify the input tracefile name" << std::endl
                           << "      -nm, --no-metrics   neglect metric events" << std::endl
                           << "      -o <prefix>         specify the prefix of output file(s)" << std::endl
@@ -159,10 +160,12 @@ struct Params {
             } else if (arguments[i] == "--summarize" || arguments[i] == "-s") {
                 summarize_it = true;
             } else if (arguments[i] == "--cube") {
-                create_cube = true;
+                create_cube     = true;
+                output_type_set = true;
             } else if (arguments[i] == "--json") {
+<<<<<<< HEAD
                 create_json = true;
-            
+
             } else if (arguments[i] == "--dot") {
                 create_dot = true;
 
@@ -188,6 +191,10 @@ struct Params {
             top_nodes = value;
             ++i;
             create_dot = true;
+=======
+                create_json     = true;
+                output_type_set = true;
+>>>>>>> master
             } else if (arguments[i] == "-i") {
                 if (!checkNext(arguments, i))
                     return false;

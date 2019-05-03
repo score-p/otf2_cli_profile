@@ -21,18 +21,18 @@ class data_tree {
 
     data_tree(std::map<uint64_t, std::tuple<uint64_t, uint64_t, std::shared_ptr<tree_node>>>& mapping);
 
-    tree_node* insert_node(uint64_t function_id, tree_node* parent);
+    tree_node*                 insert_node(uint64_t function_id, tree_node* parent);
     std::shared_ptr<tree_node> insert_node(uint64_t function_id, std::shared_ptr<tree_node> parent);
-    void insert_node(std::shared_ptr<tree_node> aNode);
+    void                       insert_node(std::shared_ptr<tree_node> aNode);
 
     void merge_tree(data_tree& rhs_tree);
     void insert_sub_tree(std::shared_ptr<tree_node>& parent, std::shared_ptr<tree_node>& n_node);
 
     /* map< node,parent > */  // mapping darf !NICHT! unordered sein -> Reihenfolge ist wichtig!
-    void serialize_data(std::map<uint64_t, std::pair<uint64_t, uint64_t>>&         mapping,
-                        std::deque<std::tuple<uint64_t, uint64_t, FunctionData*>>& f_data,
-                        std::deque<std::tuple<uint64_t, uint64_t, MessageData*>>&  m_data,
-                        std::deque<std::tuple<uint64_t, uint64_t, CollopData*>>&   c_data,
+    void serialize_data(std::map<uint64_t, std::pair<uint64_t, uint64_t>>&                 mapping,
+                        std::deque<std::tuple<uint64_t, uint64_t, FunctionData*>>&         f_data,
+                        std::deque<std::tuple<uint64_t, uint64_t, MessageData*>>&          m_data,
+                        std::deque<std::tuple<uint64_t, uint64_t, CollopData*>>&           c_data,
                         std::deque<std::tuple<uint64_t, uint64_t, uint64_t, MetricData*>>& met_data);
 
     /* functionId , node* */
@@ -81,7 +81,7 @@ class tree_node {
     std::map<uint64_t, NodeData> node_data;
 
     std::map<uint64_t, MessageData*> have_message;  // TODO raus damit -> sinnlos und fehleranfällig
-    std::map<uint64_t, CollopData*> have_collop;    // TODO raus damit -> sinnlos und fehleranfällig
+    std::map<uint64_t, CollopData*>  have_collop;   // TODO raus damit -> sinnlos und fehleranfällig
     // TODO workaround
     //--->TODO funktion implementieren die aus node_data heraus findet ob collop bzw p2p da ist -> umständlich
     bool has_p2p    = false;

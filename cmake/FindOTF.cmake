@@ -27,86 +27,76 @@
 # Find Open Trace Format library
 if (OTF_LIBRARIES AND OTF_INCLUDE_DIRS)
   set (OTF_FIND_QUIETLY TRUE)
-endif (OTF_LIBRARIES AND OTF_INCLUDE_DIRS)
+endif()
 
-FIND_PROGRAM(OTF_CONFIG NAMES otfconfig
+find_program(OTF_CONFIG NAMES otfconfig
     PATHS
     /opt/otf/bin
     HINTS
     ${PATH}
 )
 
-IF(NOT OTF_CONFIG OR NOT EXISTS ${OTF_CONFIG})
-    MESSAGE(STATUS "OTF: No otfconfig found. Try to find OTF manually by setting OTF_INC_DIR, OTF_LIB_DIR and OTF_LIBS.")
+if(NOT OTF_CONFIG OR NOT EXISTS ${OTF_CONFIG})
 
     if (OTF_INC_DIR AND OTF_LIBS AND OTF_LIB_DIR)
         find_path(OTF_INCLUDE_DIRS NAMES otf.h HINTS ${OTF_INC_DIR})
 
-        STRING( REPLACE " " ";" _OTF_LIBS ${OTF_LIBS} )
-        FOREACH( _ARG ${_OTF_LIBS} )
-            IF(${_ARG} MATCHES "^-l")
-                STRING(REGEX REPLACE "^-l" "" _ARG "${_ARG}")
-                STRING(STRIP "${_ARG}" _ARG)
-            ENDIF(${_ARG} MATCHES "^-l")
-            FIND_LIBRARY(_OTF_LIB_FROM_ARG NAMES ${_ARG}
+        string( REPLACE " " ";" _OTF_LIBS ${OTF_LIBS} )
+        foreach( _ARG ${_OTF_LIBS} )
+            if(${_ARG} MATCHES "^-l")
+                string(REGEX REPLACE "^-l" "" _ARG "${_ARG}")
+                string(STRIP "${_ARG}" _ARG)
+            endif()
+            find_library(_OTF_LIB_FROM_ARG NAMES ${_ARG}
                 HINTS ${OTF_LIB_DIR} NO_DEFAULT_PATH
             )
-            IF(_OTF_LIB_FROM_ARG)
-                SET(OTF_LIBRARIES ${OTF_LIBRARIES} ${_OTF_LIB_FROM_ARG})
-            ENDIF(_OTF_LIB_FROM_ARG)
-            UNSET(_OTF_LIB_FROM_ARG CACHE)
-        ENDFOREACH(_ARG)
-        UNSET(_OTF_LIBS CACHE)
-    endif(OTF_INC_DIR AND OTF_LIBS AND OTF_LIB_DIR)
+            if(_OTF_LIB_FROM_ARG)
+                set(OTF_LIBRARIES ${OTF_LIBRARIES} ${_OTF_LIB_FROM_ARG})
+            endif()
+            unset(_OTF_LIB_FROM_ARG CACHE)
+        endforeach(_ARG)
+        unset(_OTF_LIBS CACHE)
+    endif()
 
-ELSE()
-    message(STATUS "OTF: otfconfig found. (using ${OTF_CONFIG})")
+else()
 
     execute_process(COMMAND ${OTF_CONFIG} "--version" OUTPUT_VARIABLE OTF_VERSION)
-    STRING(STRIP ${OTF_VERSION} OTF_VERSION)
+    string(STRIP ${OTF_VERSION} OTF_VERSION)
 
     execute_process(COMMAND ${OTF_CONFIG} "--includes" OUTPUT_VARIABLE OTF_INCLUDE_DIRS)
-    STRING(REPLACE "\n" "" OTF_INCLUDE_DIRS ${OTF_INCLUDE_DIRS})
-    STRING(REPLACE "-I" ";" OTF_INCLUDE_DIRS ${OTF_INCLUDE_DIRS})
+    string(REPLACE "\n" "" OTF_INCLUDE_DIRS ${OTF_INCLUDE_DIRS})
+    string(REPLACE "-I" ";" OTF_INCLUDE_DIRS ${OTF_INCLUDE_DIRS})
 
     execute_process(COMMAND ${OTF_CONFIG} "--libs" OUTPUT_VARIABLE _LINK_LD_ARGS)
-    STRING( REPLACE " " ";" _LINK_LD_ARGS ${_LINK_LD_ARGS} )
-    FOREACH( _ARG ${_LINK_LD_ARGS} )
-        IF(${_ARG} MATCHES "^-L")
-            STRING(REGEX REPLACE "^-L" "" _ARG ${_ARG})
-            STRING(STRIP "${_ARG}" _ARG)
-            SET(OTF_LINK_DIRS ${OTF_LINK_DIRS} ${_ARG})
-        ENDIF(${_ARG} MATCHES "^-L")
+    string( REPLACE " " ";" _LINK_LD_ARGS ${_LINK_LD_ARGS} )
+    foreach( _ARG ${_LINK_LD_ARGS} )
+        if(${_ARG} MATCHES "^-L")
+            string(REGEX REPLACE "^-L" "" _ARG ${_ARG})
+            string(STRIP "${_ARG}" _ARG)
+            set(OTF_LINK_DIRS ${OTF_LINK_DIRS} ${_ARG})
+        endif()
 
-        IF(${_ARG} MATCHES "^-l")
-            STRING(REGEX REPLACE "^-l" "" _ARG "${_ARG}")
-            STRING(STRIP "${_ARG}" _ARG)
+        if(${_ARG} MATCHES "^-l")
+            string(REGEX REPLACE "^-l" "" _ARG "${_ARG}")
+            string(STRIP "${_ARG}" _ARG)
             # NO_DEFAULT_PATH - We have to "filter" -lm, as g++ links it anyways. And then stuff explodes
-            FIND_LIBRARY(_OTF_LIB_FROM_ARG NAMES ${_ARG}
+            find_library(_OTF_LIB_FROM_ARG NAMES ${_ARG}
                 HINTS ${OTF_LINK_DIRS} NO_DEFAULT_PATH
             )
-            IF(_OTF_LIB_FROM_ARG)
-                SET(OTF_LIBRARIES ${OTF_LIBRARIES} ${_OTF_LIB_FROM_ARG})
-            ENDIF(_OTF_LIB_FROM_ARG)
-            UNSET(_OTF_LIB_FROM_ARG CACHE)
-        ENDIF(${_ARG} MATCHES "^-l")
-    ENDFOREACH(_ARG)
+            if(_OTF_LIB_FROM_ARG)
+                set(OTF_LIBRARIES ${OTF_LIBRARIES} ${_OTF_LIB_FROM_ARG})
+            endif()
+            unset(_OTF_LIB_FROM_ARG CACHE)
+        endif()
+    endforeach(_ARG)
 
 
-ENDIF()
+endif()
 
 include (FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(OTF
-    FOUND_VAR OTF_FOUND
+find_package_handle_standard_args(OTF
     REQUIRED_VARS OTF_LIBRARIES OTF_INCLUDE_DIRS
+    FAIL_MESSAGE "OTF: No otfconfig found. Try to find OTF manually by setting OTF_INC_DIR, OTF_LIB_DIR and OTF_LIBS."
 )
 
 mark_as_advanced(OTF_INCLUDE_DIRS OTF_LIBRARIES)
-
-if(OTF_FOUND)
-    message(STATUS "OTF: Open Trace Format library found.")
-else()
-    message(STATUS "OTF: Open Trace Format library not found.")
-    # unset(OTF_INCLUDE_DIRS)
-    # unset(OTF_LIBRARIES)
-endif()

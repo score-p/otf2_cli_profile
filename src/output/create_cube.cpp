@@ -16,6 +16,20 @@ using namespace std;
 
 using SystemNode_t = typename definitions::SystemTree::SystemNode_t;
 
+template <typename T>
+typename std::map<uint64_t, T>::iterator find_in(std::map<uint64_t, T> obj, uint64_t id, const string& err_file,
+                                                 const int err_line) {
+    auto res = obj.find(id);
+    if (res != obj.end())
+        return res;
+    else {
+        std::cerr << err_file << ":" << err_line << ": error: while creating cube output" << endl;
+        exit(1);
+    }
+}
+// #define FIND(map,id) find_in(map,id,__FILE__, __LINE__)
+#define FIND(...) find_in(__VA_ARGS__, __FILE__, __LINE__)
+
 bool CreateCube(AllData& alldata) {
     if (alldata.metaData.myRank != 0 /*&& !alldata.params.no_reduce*/) {
         return true;
@@ -43,8 +57,8 @@ bool CreateCube(AllData& alldata) {
     map<uint64_t, uint64_t> paradigmToCubeMetric_occ;
     map<uint64_t, uint64_t> paradigmToCubeMetric_time;
     map<uint64_t, uint64_t> metricToCubeMetric;
-    uint64_t p2p_start;
-    uint64_t collop_start;
+    uint64_t                p2p_start;
+    uint64_t                collop_start;
 
     // systemtree engage!
     string name, class_name;
@@ -85,18 +99,21 @@ bool CreateCube(AllData& alldata) {
     string met_time   = "Met_Time";
 
     for (const auto& paradigm : alldata.definitions.paradigms.get_all()) {
-        auto c_met_ref =
-            paradigmToCubeMetric_occ.insert(make_pair(paradigm.first, MapCubeMetrics.size())).first->second;
+        auto id           = MapCubeMetrics.size();
+        auto insert_check = paradigmToCubeMetric_occ.insert(make_pair(paradigm.first, id)).second;
+        if (insert_check) {
+            auto metric        = FIND(MapCubeMetrics, 0)->second;
+            MapCubeMetrics[id] = cube_out.def_met(paradigm.second.name, paradigm.second.name, "UINT64", "occ", "", "",
+                                                  "", metric, cube::CUBE_METRIC_EXCLUSIVE);
+        }
 
-        MapCubeMetrics[c_met_ref] =
-            cube_out.def_met(paradigm.second.name, paradigm.second.name, "UINT64", "occ", "", "", "",
-                             MapCubeMetrics.find(0)->second, cube::CUBE_METRIC_EXCLUSIVE);
-
-        c_met_ref = paradigmToCubeMetric_time.insert(make_pair(paradigm.first, MapCubeMetrics.size())).first->second;
-
-        MapCubeMetrics[c_met_ref] =
-            cube_out.def_met(paradigm.second.name, paradigm.second.name, "DOUBLE", "sec", "", "", "",
-                             MapCubeMetrics.find(1)->second, cube::CUBE_METRIC_EXCLUSIVE);
+        ++id;
+        insert_check = paradigmToCubeMetric_time.insert(make_pair(paradigm.first, id)).second;
+        if (insert_check) {
+            auto metric        = FIND(MapCubeMetrics, 1)->second;
+            MapCubeMetrics[id] = cube_out.def_met(paradigm.second.name, paradigm.second.name, "DOUBLE", "sec", "", "",
+                                                  "", metric, cube::CUBE_METRIC_EXCLUSIVE);
+        }
     }
 
     if (alldata.params.read_metrics) {
@@ -137,7 +154,7 @@ bool CreateCube(AllData& alldata) {
                                                          MapCubeCnodes.find(it->parent)->second);
 
         } else {
-            MapCubeCnodes[it.get()] = cube_out.def_cnode(MapCubeRegions.find(it->function_id)->second, "", 0, NULL);
+            MapCubeCnodes[it.get()] = cube_out.def_cnode(FIND(MapCubeRegions, it->function_id)->second, "", 0, NULL);
         }
 
         if (!have_p2p) {
@@ -182,24 +199,31 @@ bool CreateCube(AllData& alldata) {
 
                 MapCubeMetrics[MapCubeMetrics.size()] = cube_out.def_met(
                     "Collective Communication sent (occ)", "met_collopcomm_send", "UINT64", "occ", "", "", "",
-                    MapCubeMetrics.find(collop_start + 2)->second, cube::CUBE_METRIC_EXCLUSIVE);
+                    FIND(MapCubeMetrics, collop_start + 2)->second, cube::CUBE_METRIC_EXCLUSIVE);
 
                 MapCubeMetrics[MapCubeMetrics.size()] = cube_out.def_met(
                     "Collective Communication received (occ)", "met_collopcomm_recv", "UINT64", "occ", "", "", "",
-                    MapCubeMetrics.find(collop_start + 2)->second, cube::CUBE_METRIC_EXCLUSIVE);
+                    FIND(MapCubeMetrics, collop_start + 2)->second, cube::CUBE_METRIC_EXCLUSIVE);
 
                 have_collop = true;
             }
         }
     }
 
-#if CUBE_REVISION_NUMBER >= 14755
+// since 4.4, initialize() needed
+#ifdef CUBELIB_REVISION_NUMBER
+    cube_out.initialize();
+#endif
 
+// until version 4.4
+#ifdef CUBE_REVISION_NUMBER
+
+#if CUBE_REVISION_NUMBER >= 14755
     // initialize ist needed since rev 14755 (4.3.4)
     // needs to be initialised before nodes/metrics are filled with data -> else "Something is wrong
     // with ..." failure
     cube_out.initialize();
-
+#endif
 #endif
 
     // fill metrics!
@@ -226,68 +250,74 @@ bool CreateCube(AllData& alldata) {
             tmp_thread = MapCubeThreads.find(location)->second;
 
             // function data
-            cube_out.set_sev(MapCubeMetrics.find(0)->second, tmp_cnode, tmp_thread, it_data.second.f_data.count);
+            auto metric = FIND(MapCubeMetrics, 0)->second;
+            cube_out.set_sev(metric, tmp_cnode, tmp_thread, it_data.second.f_data.count);
 
-            id = paradigmToCubeMetric_occ.find(para_id)->second;
+            id = FIND(paradigmToCubeMetric_occ, para_id)->second;
 
-            cube_out.set_sev(MapCubeMetrics.find(id)->second, tmp_cnode, tmp_thread, it_data.second.f_data.count);
+            metric = FIND(MapCubeMetrics, id)->second;
+            cube_out.set_sev(metric, tmp_cnode, tmp_thread, it_data.second.f_data.count);
 
-            cube_out.set_sev(MapCubeMetrics.find(1)->second, tmp_cnode, tmp_thread,
+            metric = FIND(MapCubeMetrics, 0)->second;
+            cube_out.set_sev(metric, tmp_cnode, tmp_thread,
                              (double)it_data.second.f_data.excl_time / (double)alldata.metaData.timerResolution);
 
-            id = paradigmToCubeMetric_time.find(para_id)->second;
+            id = FIND(paradigmToCubeMetric_time, para_id)->second;
 
-            cube_out.set_sev(MapCubeMetrics.find(id)->second, tmp_cnode, tmp_thread,
+            metric = FIND(MapCubeMetrics, id)->second;
+            cube_out.set_sev(metric, tmp_cnode, tmp_thread,
                              (double)it_data.second.f_data.excl_time / (double)alldata.metaData.timerResolution);
 
             // message data
             if (it_data.second.m_data.count_send > 0) {
-                cube_out.set_sev(MapCubeMetrics.find(p2p_start)->second, tmp_cnode, tmp_thread,
-                                 it_data.second.m_data.count_send);
+                metric = FIND(MapCubeMetrics, p2p_start)->second;
+                cube_out.set_sev(metric, tmp_cnode, tmp_thread, it_data.second.m_data.count_send);
 
-                cube_out.set_sev(MapCubeMetrics.find(p2p_start + 2)->second, tmp_cnode, tmp_thread,
-                                 it_data.second.m_data.bytes_send);
+                metric = FIND(MapCubeMetrics, p2p_start + 2)->second;
+                cube_out.set_sev(metric, tmp_cnode, tmp_thread, it_data.second.m_data.bytes_send);
             }
 
             if (it_data.second.m_data.count_recv > 0) {
-                cube_out.set_sev(MapCubeMetrics.find(p2p_start + 1)->second, tmp_cnode, tmp_thread,
-                                 it_data.second.m_data.count_recv);
+                metric = FIND(MapCubeMetrics, p2p_start + 1)->second;
+                cube_out.set_sev(metric, tmp_cnode, tmp_thread, it_data.second.m_data.count_recv);
 
-                cube_out.set_sev(MapCubeMetrics.find(p2p_start + 3)->second, tmp_cnode, tmp_thread,
-                                 it_data.second.m_data.bytes_recv);
+                metric = FIND(MapCubeMetrics, p2p_start + 3)->second;
+                cube_out.set_sev(metric, tmp_cnode, tmp_thread, it_data.second.m_data.bytes_recv);
             }
 
             // collop
             uint64_t sum = 0;
 
             if (it_data.second.c_data.count_send > 0) {
-                cube_out.set_sev(MapCubeMetrics.find(collop_start + 3)->second, tmp_cnode, tmp_thread,
-                                 it_data.second.c_data.count_send);
+                metric = FIND(MapCubeMetrics, collop_start + 3)->second;
+                cube_out.set_sev(metric, tmp_cnode, tmp_thread, it_data.second.c_data.count_send);
 
                 sum += it_data.second.c_data.count_send;
 
-                cube_out.set_sev(MapCubeMetrics.find(collop_start)->second, tmp_cnode, tmp_thread,
+                metric = FIND(MapCubeMetrics, collop_start)->second;
+                cube_out.set_sev(FIND(MapCubeMetrics, collop_start)->second, tmp_cnode, tmp_thread,
                                  it_data.second.c_data.bytes_send);
             }
 
             if (it_data.second.c_data.count_recv > 0) {
-                cube_out.set_sev(MapCubeMetrics.find(collop_start + 4)->second, tmp_cnode, tmp_thread,
-                                 it_data.second.c_data.count_recv);
+                metric = FIND(MapCubeMetrics, collop_start + 4)->second;
+                cube_out.set_sev(metric, tmp_cnode, tmp_thread, it_data.second.c_data.count_recv);
 
                 sum += it_data.second.c_data.count_recv;
 
-                cube_out.set_sev(MapCubeMetrics.find(collop_start + 1)->second, tmp_cnode, tmp_thread,
-                                 it_data.second.c_data.bytes_recv);
+                metric = FIND(MapCubeMetrics, collop_start + 1)->second;
+                cube_out.set_sev(metric, tmp_cnode, tmp_thread, it_data.second.c_data.bytes_recv);
             }
 
             if (sum > 0) {
-                cube_out.set_sev(MapCubeMetrics.find(collop_start + 2)->second, tmp_cnode, tmp_thread, sum);
+                metric = FIND(MapCubeMetrics, collop_start + 2)->second;
+                cube_out.set_sev(metric, tmp_cnode, tmp_thread, sum);
             }
 
             if (!it_data.second.metrics.empty()) {
                 for (auto it_met : it_data.second.metrics) {
                     auto& metric      = it_met.second;
-                    auto* cube_metric = MapCubeMetrics.find(metricToCubeMetric.find(it_met.first)->second)->second;
+                    auto* cube_metric = FIND(MapCubeMetrics, FIND(metricToCubeMetric, it_met.first)->second)->second;
                     switch (metric.type) {
                         case MetricDataType::UINT64:
                             cube_out.set_sev(cube_metric, tmp_cnode, tmp_thread, (uint64_t)metric.data_excl);

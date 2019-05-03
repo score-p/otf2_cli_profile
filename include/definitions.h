@@ -143,7 +143,7 @@ class SystemTree {
             parent->children.insert(std::make_pair(_size, new_node));
             new_node->data.level = parent->data.level + 1;
 
-            if (num_nodes_per_level.size() <= new_node->data.level)
+            if (new_node->data.level < num_nodes_per_level.size())
                 ++num_nodes_per_level[new_node->data.level];
             else
                 num_nodes_per_level.push_back(1);
@@ -215,11 +215,11 @@ class SystemTree {
     SystemTree* copy_reduced(const SystemTree& sys_tree, uint32_t level);
 
    private:
-    std::shared_ptr<SystemNode_t> root;
-    std::vector<SystemNode_t*>    system_nodes{};
-    std::vector<SystemNode_t*>    location_grps{};
+    std::shared_ptr<SystemNode_t>     root;
+    std::vector<SystemNode_t*>        system_nodes{};
+    std::vector<SystemNode_t*>        location_grps{};
     std::map<uint64_t, SystemNode_t*> locations{};
-    uint32_t _size = 0;
+    uint32_t                          _size = 0;
     // test
     std::vector<uint32_t> num_nodes_per_level;
 };
@@ -309,12 +309,24 @@ class SystemIterator {
     std::shared_ptr<SystemNode_t> root_ptr;
 };
 
+struct IoHandle {
+    std::string name;
+    uint32_t    io_paradigm;
+    uint64_t    file;
+    uint64_t    parent;
+    // Defined by events, so we need to allow changes post-handle-definition
+    // Ugly but that's the world we live in
+    mutable std::set<std::string> modes;
+};
+
 struct Definitions {
     DefinitionType<uint64_t, Region>        regions;
     DefinitionType<uint64_t, Metric>        metrics;
     DefinitionType<paradigm_id_t, Paradigm> paradigms;
+    DefinitionType<paradigm_id_t, Paradigm> io_paradigms;
+    DefinitionType<uint64_t, IoHandle>      iohandles;
     DefinitionType<uint64_t, Group>         groups;
-    SystemTree system_tree{};
+    SystemTree                              system_tree{};
 };
 }  // namespace definitions
 
@@ -334,7 +346,7 @@ struct meta_data {
     uint32_t myRank;
     uint32_t numRanks;
 
-#ifdef OTFPROFILE_MPI
+#ifdef OTFPROFILER_MPI
 
     uint32_t packBufferSize;
     char*    packBuffer;
@@ -342,7 +354,7 @@ struct meta_data {
 #endif
 
     meta_data(uint32_t my_rank = 0, uint32_t num_ranks = 1) : myRank(my_rank), numRanks(num_ranks), timerResolution(0) {
-#ifdef OTFPROFILE_MPI
+#ifdef OTFPROFILER_MPI
 
         packBufferSize = 0;
         packBuffer     = NULL;
@@ -351,14 +363,14 @@ struct meta_data {
     }
 
     ~meta_data() {
-#ifdef OTFPROFILE_MPI
+#ifdef OTFPROFILER_MPI
 
         freePackBuffer();
 
 #endif
     }
 
-#ifdef OTFPROFILE_MPI
+#ifdef OTFPROFILER_MPI
     char* guaranteePackBuffer(uint32_t size) {
         if (packBufferSize < size) {
             packBufferSize = size;
@@ -379,7 +391,7 @@ struct meta_data {
 
     char* getPackBuffer() { return packBuffer; }
 
-#endif /* OTFPROFILE_MPI */
+#endif /* OTFPROFILER_MPI */
 };
 
 #endif  // DEFINITIONS_H

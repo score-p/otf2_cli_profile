@@ -9,6 +9,7 @@
 #include <otf2/otf2.h>
 #include "tracereader.h"
 
+template <typename RefT>
 class StringIdentifier {
    public:
     template <typename... Refs>
@@ -17,7 +18,7 @@ class StringIdentifier {
    public:
     StringIdentifier() { string_definitions[OTF2_UNDEFINED_STRING] = ""; }
 
-    void add(OTF2_StringRef ref, const char* string_def) { string_definitions[ref] = string_def; }
+    void add(RefT ref, const char* string_def) { string_definitions[ref] = string_def; }
 
     template <typename... Refs>
     const std::pair<Result_t<Refs...>, OTF2_CallbackCode> get(Refs... refs) {
@@ -38,7 +39,7 @@ class StringIdentifier {
     }
 
    private:
-    std::map<OTF2_StringRef, std::string> string_definitions;
+    std::map<RefT, std::string> string_definitions;
 };
 
 class OTF2Reader : public TraceReader {
@@ -62,6 +63,37 @@ class OTF2Reader : public TraceReader {
     /*                            EVENTS                              */
     /*                                                                */
     /* ************************************************************** */
+
+    static inline OTF2_CallbackCode handle_io_begin(OTF2_LocationRef locationID, OTF2_TimeStamp time,
+                                                    uint64_t eventPosition, void* userData,
+                                                    OTF2_AttributeList* attributeList, OTF2_IoHandleRef handle,
+                                                    OTF2_IoOperationMode mode, OTF2_IoOperationFlag flag,
+                                                    uint64_t bytesRequest, uint64_t matchingId);
+    static inline OTF2_CallbackCode handle_io_end(OTF2_LocationRef locationID, OTF2_TimeStamp time,
+                                                  uint64_t eventPosition, void* userData,
+                                                  OTF2_AttributeList* attributeList, OTF2_IoHandleRef handle,
+                                                  uint64_t bytesResult, uint64_t matchingId);
+    static inline OTF2_CallbackCode handle_io_create_handle(OTF2_LocationRef locationID, OTF2_TimeStamp time,
+                                                            uint64_t eventPosition, void* userData,
+                                                            OTF2_AttributeList* attributeList, OTF2_IoHandleRef handle,
+                                                            OTF2_IoAccessMode mode, OTF2_IoCreationFlag creationFlags,
+                                                            OTF2_IoStatusFlag statusFlags);
+    static inline OTF2_CallbackCode handle_def_io_precreated_handle(void* userData, OTF2_IoHandleRef handle,
+                                                                    OTF2_IoAccessMode mode,
+                                                                    OTF2_IoStatusFlag statusFlags);
+
+    static inline OTF2_CallbackCode handle_def_io_handle(void* userData, OTF2_IoHandleRef self, OTF2_StringRef name,
+                                                         OTF2_IoFileRef file, OTF2_IoParadigmRef ioParadigm,
+                                                         OTF2_IoHandleFlag ioHandleFlags, OTF2_CommRef comm,
+                                                         OTF2_IoHandleRef parent);
+    static inline OTF2_CallbackCode handle_def_io_fs_entry(void* userData, OTF2_IoFileRef self, OTF2_StringRef name,
+                                                           OTF2_SystemTreeNodeRef scope);
+    static inline OTF2_CallbackCode handle_def_io_paradigm(void* userData, OTF2_IoParadigmRef paradigm,
+                                                           OTF2_StringRef id, OTF2_StringRef name,
+                                                           OTF2_IoParadigmClass paradigmClass,
+                                                           OTF2_IoParadigmFlag flags, uint8_t numProperties,
+                                                           const OTF2_IoParadigmProperty* properties,
+                                                           const OTF2_Type* types, const OTF2_AttributeValue* values);
 
     /** @brief Callback for the Enter event record.
      *

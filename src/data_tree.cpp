@@ -30,7 +30,7 @@ data_tree::data_tree(map<uint64_t, tuple<uint64_t, uint64_t, shared_ptr<tree_nod
 // add a node without data
 shared_ptr<tree_node> data_tree::insert_node(uint64_t function_id, shared_ptr<tree_node> parent) {
     if (parent == nullptr) {
-        shared_ptr<tree_node> tmp(new tree_node(function_id, parent));
+        shared_ptr<tree_node> tmp = std::make_shared<tree_node>(function_id, parent);
 
         root_nodes.insert(make_pair(function_id, tmp));
 
@@ -40,7 +40,7 @@ shared_ptr<tree_node> data_tree::insert_node(uint64_t function_id, shared_ptr<tr
         auto node = parent->children.find(function_id);
 
         if (node == parent->children.end()) {
-            shared_ptr<tree_node> tmp(new tree_node(function_id, parent));
+            shared_ptr<tree_node> tmp = std::make_shared<tree_node>(function_id, parent);
 
             parent->children.insert(node, make_pair(function_id, tmp));
 
@@ -55,7 +55,7 @@ shared_ptr<tree_node> data_tree::insert_node(uint64_t function_id, shared_ptr<tr
 // same as above with different intake and return
 tree_node* data_tree::insert_node(uint64_t function_id, tree_node* parent) {
     if (parent == nullptr) {
-        shared_ptr<tree_node> tmp(new tree_node(function_id, parent));
+        shared_ptr<tree_node> tmp = std::make_shared<tree_node>(function_id, parent);
 
         root_nodes.insert(make_pair(function_id, tmp));
 
@@ -65,7 +65,8 @@ tree_node* data_tree::insert_node(uint64_t function_id, tree_node* parent) {
         auto node = parent->children.find(function_id);
 
         if (node == parent->children.end()) {
-            shared_ptr<tree_node> tmp(new tree_node(function_id, parent));
+            shared_ptr<tree_node> tmp = std::make_shared<tree_node>(function_id, parent);
+
             parent->children.insert(make_pair(function_id, tmp));
 
             return tmp.get();
@@ -140,10 +141,10 @@ void data_tree::insert_sub_tree(shared_ptr<tree_node>& parent, shared_ptr<tree_n
 // iterate through the tree, generate a mapping and fill the given data deques
 // for communication via MPI
 // only getting called by serialize_data - not intended for usage on it's own
-void getting_serial(map<uint64_t, pair<uint64_t, uint64_t>>&         mapping,
-                    deque<tuple<uint64_t, uint64_t, FunctionData*>>& f_data,
-                    deque<tuple<uint64_t, uint64_t, MessageData*>>&  m_data,
-                    deque<tuple<uint64_t, uint64_t, CollopData*>>&   c_data,
+void getting_serial(map<uint64_t, pair<uint64_t, uint64_t>>&                 mapping,
+                    deque<tuple<uint64_t, uint64_t, FunctionData*>>&         f_data,
+                    deque<tuple<uint64_t, uint64_t, MessageData*>>&          m_data,
+                    deque<tuple<uint64_t, uint64_t, CollopData*>>&           c_data,
                     deque<tuple<uint64_t, uint64_t, uint64_t, MetricData*>>& met_data, shared_ptr<tree_node>& aNode,
                     uint64_t& counter, stack<uint64_t>& node_stack) {
     if (!node_stack.empty()) {
@@ -184,10 +185,10 @@ void getting_serial(map<uint64_t, pair<uint64_t, uint64_t>>&         mapping,
 }
 
 // function to serialize data for the MPI communication
-void data_tree::serialize_data(map<uint64_t, pair<uint64_t, uint64_t>>&         mapping,
-                               deque<tuple<uint64_t, uint64_t, FunctionData*>>& f_data,
-                               deque<tuple<uint64_t, uint64_t, MessageData*>>&  m_data,
-                               deque<tuple<uint64_t, uint64_t, CollopData*>>&   c_data,
+void data_tree::serialize_data(map<uint64_t, pair<uint64_t, uint64_t>>&                 mapping,
+                               deque<tuple<uint64_t, uint64_t, FunctionData*>>&         f_data,
+                               deque<tuple<uint64_t, uint64_t, MessageData*>>&          m_data,
+                               deque<tuple<uint64_t, uint64_t, CollopData*>>&           c_data,
                                deque<tuple<uint64_t, uint64_t, uint64_t, MetricData*>>& met_data) {
     stack<uint64_t> node_stack;
     uint64_t        counter = 0;  //<- gibt die node_id an die sonst nicht existiert, sie ist für das

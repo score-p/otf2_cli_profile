@@ -12,10 +12,10 @@
 using namespace std;
 
 /* mapping and data deques for serialisation */
-static map<uint64_t, pair<uint64_t, uint64_t>>         mapping;
-static deque<tuple<uint64_t, uint64_t, FunctionData*>> f_data;
-static deque<tuple<uint64_t, uint64_t, MessageData*>>  m_data;
-static deque<tuple<uint64_t, uint64_t, CollopData*>>   c_data;
+static map<uint64_t, pair<uint64_t, uint64_t>>                 mapping;
+static deque<tuple<uint64_t, uint64_t, FunctionData*>>         f_data;
+static deque<tuple<uint64_t, uint64_t, MessageData*>>          m_data;
+static deque<tuple<uint64_t, uint64_t, CollopData*>>           c_data;
 static deque<tuple<uint64_t, uint64_t, uint64_t, MetricData*>> met_data;
 
 /* fence between statistics parts within the buffer for consistency checking */

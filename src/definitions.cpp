@@ -40,4 +40,4 @@ SystemTree* SystemTree::copy_reduced(const SystemTree& sys_tree, uint32_t level)
 
     return n_tree;
 }
-}
+}  // namespace definitions
