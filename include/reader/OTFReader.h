@@ -14,7 +14,7 @@ class OTFReader : public TraceReader {
    public:
     OTFReader() = default;
 
-    ~OTFReader() { close(); };
+    ~OTFReader() { close(); }
 
     void close();
     bool initialize(AllData& alldata);

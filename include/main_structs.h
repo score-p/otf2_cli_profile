@@ -16,6 +16,43 @@ enum class MetricDataType : uint8_t {
     DOUBLE   // OTF2_TYPE_DOUBLE
 };
 
+enum class MetricMode : uint8_t {
+    ACCUMULATED_POINT,
+    ACCUMULATED_LAST,
+    ACCUMULATED_NEXT,
+    ABSOLUTE_POINT,
+    ABSOLUTE_LAST,
+    ABSOLUTE_NEXT,
+    RELATIVE_POINT,
+    RELATIVE_LAST,
+    RELATIVE_NEXT
+};
+
+enum class MetricType : uint8_t {
+    OTHER,
+    PAPI,
+    RUSAGE,
+    USER
+};
+
+enum class MetricBase : uint8_t{
+    BINARY,
+    DECIMAL
+};
+
+enum class MetricOccurrence : uint8_t{
+    SYNCHRONOUS_STRICT,
+    SYNCHRONOUS,
+    ASYNCHRONOUS
+};
+
+enum class RecorderKind : uint8_t{
+    UNKNOWN,
+    ABSTRACT,
+    CPU,
+    GPU
+};
+
 // TODO metrics funktionieren momentan NUR für strict sync + accumulated start
 //  --> benötigt wird noch eine sinnvolle strategie wie man mit verschiedenen Arten von Metriken umgehen kann
 //      --> problematisch dabei ist OTF da die Einschränkung im Sinne von Synchronität etc. nicht gibt
