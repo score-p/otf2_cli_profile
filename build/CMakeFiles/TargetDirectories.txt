@@ -1,7 +1,0 @@
-/home/s9165289/Documents/otf-profiler/otf2_cli_profile/build/CMakeFiles/install/strip.dir
-/home/s9165289/Documents/otf-profiler/otf2_cli_profile/build/CMakeFiles/edit_cache.dir
-/home/s9165289/Documents/otf-profiler/otf2_cli_profile/build/CMakeFiles/otf-profiler.dir
-/home/s9165289/Documents/otf-profiler/otf2_cli_profile/build/CMakeFiles/install.dir
-/home/s9165289/Documents/otf-profiler/otf2_cli_profile/build/CMakeFiles/rebuild_cache.dir
-/home/s9165289/Documents/otf-profiler/otf2_cli_profile/build/CMakeFiles/list_install_components.dir
-/home/s9165289/Documents/otf-profiler/otf2_cli_profile/build/CMakeFiles/install/local.dir
