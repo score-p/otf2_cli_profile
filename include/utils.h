@@ -130,9 +130,9 @@ struct Params {
                           << "      --cube              generates CUBE xml profile" << std::endl
                           << "      --json              generates json ouptut file" << std::endl
                           << "      --dot               generates dot file for drawing graphs" << std::endl
-                          << "        --filter <percent> only show path, where nodes took at least num \% of total time" << std::endl
-                          << "        --top <n>          only show top num nodes" << std::endl
-                          << "        --rank <n>         only show specific rank" << std::endl
+                          << "        -fi, --filter <percent>    only show path, where a node took at least num \% of total time" << std::endl
+                          << "        -t, --top <n>     only show top num nodes" << std::endl
+                          << "        -r, --rank <n>    only show specific rank" << std::endl
                           << std::endl
                           << "      -b <size>           set buffersize of the reader in Byte" << std::endl
                           << "                          (default: 1 M)" << std::endl
@@ -163,27 +163,28 @@ struct Params {
                 create_cube     = true;
                 output_type_set = true;
             } else if (arguments[i] == "--json") {
-<<<<<<< HEAD
                 create_json = true;
+                output_type_set = true;
 
             } else if (arguments[i] == "--dot") {
                 create_dot = true;
+                output_type_set = true;
 
-            } else if (arguments[i] == "--filter") {
+            } else if (arguments[i] == "--filter" || arguments[i] == "-fi") {
                 auto value = checkNextValue(arguments, i);
                 if (value < 0 || value > 100)
                     return false;
 
                 node_min_ratio = value;
                 ++i;
-            } else if (arguments[i] == "--rank") {
+            } else if (arguments[i] == "--rank" || arguments[i] == "-r") {
                 auto value = checkNextValue(arguments, i);
                 if (value < 0)
                     return false;
 
                 rank = value;
                 ++i;
-            } else if (arguments[i] == "--top") {
+            } else if (arguments[i] == "--top" || arguments[i] == "-t") {
             auto value = checkNextValue(arguments, i);
             if (value < 0)
                 return false;
@@ -191,10 +192,7 @@ struct Params {
             top_nodes = value;
             ++i;
             create_dot = true;
-=======
-                create_json     = true;
-                output_type_set = true;
->>>>>>> master
+
             } else if (arguments[i] == "-i") {
                 if (!checkNext(arguments, i))
                     return false;
