@@ -108,7 +108,7 @@ void Dot_writer::print_node(Node& node){
     node.state = NodeState::printed;
 }
 
-void Dot_writer::gather_meta(){
+void Dot_writer::gather_time_data(){
     for( const auto& node : nodes ){
 
         if( node->sum_excl_time < min_time )
@@ -167,7 +167,7 @@ void Dot_writer::add_node(Node* node){
 
 void Dot_writer::print(){
 
-    gather_meta();
+    gather_time_data();
 
     filter(params.node_min_ratio);
 

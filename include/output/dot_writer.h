@@ -43,7 +43,7 @@ public:
 private:
 
     // gathers global min, max, total time
-    void gather_meta();
+    void gather_time_data();
 
     // print node to dot file
     void print_node(Node& node);
