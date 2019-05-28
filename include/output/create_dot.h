@@ -17,8 +17,7 @@ enum NodeState
 
 struct Node {
     uint32_t call_id = 0;
-    
-    //name of function, block ...
+
     std::string region;
     uint32_t invocations = 0;
 

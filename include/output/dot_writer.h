@@ -24,35 +24,31 @@ private:
     // graph parameter
     const std::string splines = "ortho";
     const float ranksep = 1.5;
-    
+
     // node parameter
     const std::string shape = "record";
     const std::string colorscheme = "spectral9";
     const int num_colors = 9;
 
 public:
-    // open new ofstream
-    // set graph parameter 
+
     bool open(std::string filename);
 
     void close();
 
-    // add node to the graph
     void add_node(Node* node);
 
-    // print graph
     void print();
 
 private:
 
     // gathers global min, max, total time
     void gather_meta();
-    
+
     // print node to dot file
     void print_node(Node& node);
 
-    // get nodecolor
-    int node_color(const double time);
+    int get_node_color(const double time);
 
     // filter nodes
     void filter();
@@ -61,7 +57,7 @@ private:
     void top_nodes();
     
     // mark predecessor nodes to be printed
-    void mark_predecessors( Node* node);
+    void mark_predecessors(Node* node);
 
 };
 

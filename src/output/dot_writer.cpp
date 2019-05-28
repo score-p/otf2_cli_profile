@@ -4,17 +4,17 @@
 bool Dot_writer::open(std::string filename = "result.dot"){
     result_file.open(filename);
     if(result_file.is_open()){
-        
+
         // header of dot/graph file
-        result_file 
+        result_file
         << "digraph call_tree {\n"
         << "graph [splines=" << splines <<", ranksep=" << ranksep << "];\n"
         << "node [shape = "<< shape << ", colorscheme="<< colorscheme << "];\n"
         << "edge [];\n"
         << std::endl;
-        
+
         return true;
-    } 
+    }
     else
     {
         std::cout << "Error opening file" << std::endl;
@@ -55,7 +55,7 @@ void Dot_writer::filter(){
             }
         }
         filter = true;
-    } 
+    }
 
     if(!filter){
         for( const auto& node : nodes )
@@ -64,7 +64,7 @@ void Dot_writer::filter(){
 }
 
 void Dot_writer::print_node(Node& node){
-    result_file 
+    result_file
     << "\""             << node.call_id       << "\" [\n"
     << " label = \""    << node.region        << "\\l\n";
 
@@ -82,12 +82,12 @@ void Dot_writer::print_node(Node& node){
         << "  sum: "        << node.sum_excl_time << "\\l\n"
         << "  avg: "        << node.avg_excl_time << "\\l\n";
     }
-    
+
     result_file << " \"\n";
-    
+
     // colorize node
     result_file
-    << " fillcolor=" << node_color(node.sum_excl_time) << ",\n"
+    << " fillcolor=" << get_node_color(node.sum_excl_time) << ",\n"
     << " style=filled\n";
 
     // closing node tag
@@ -95,7 +95,7 @@ void Dot_writer::print_node(Node& node){
 
     // set edge between this node and its parent
     if( node.parent){
-        result_file 
+        result_file
         << node.parent->call_id
         << " -> "
         << node.call_id
@@ -104,7 +104,7 @@ void Dot_writer::print_node(Node& node){
     }
 
     // mark as printed
-    node.state = NodeState::printed; 
+    node.state = NodeState::printed;
 }
 
 void Dot_writer::gather_meta(){
@@ -122,7 +122,7 @@ void Dot_writer::gather_meta(){
     timerange = max_time - min_time;
 }
 
-void Dot_writer::mark_predecessors( Node* node){
+void Dot_writer::mark_predecessors(Node* node){
 
     Node* curr = node;
 
@@ -152,7 +152,7 @@ void Dot_writer::top_nodes(){
     }
 }
 
-int Dot_writer::node_color(const double time){
+int Dot_writer::get_node_color(const double time){
     int color_code = num_colors;
     for( int i = 0; i < num_colors; ++i ){
         if( time >= timerange/num_colors*i+min_time )
