@@ -1,7 +1,7 @@
 #include "dot_writer.h"
 
 
-bool Dot_writer::open(std::string filename = "result.dot"){
+bool Dot_writer::open(std::string filename){
     result_file.open(filename);
     if(result_file.is_open()){
 
