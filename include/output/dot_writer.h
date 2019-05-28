@@ -11,7 +11,7 @@ public:
     {}
 private:
     std::ofstream result_file;
-    Params params;
+    Params& params;
     Data data;
     std::vector<Node*> nodes;
 
@@ -51,11 +51,11 @@ private:
     int get_node_color(const double time);
 
     // filter nodes
-    void filter();
+    void filter(int node_min_ratio);
 
     // mark top x nodes, which took the most time
-    void top_nodes();
-    
+    void top_nodes(int num);
+
     // mark predecessor nodes to be printed
     void mark_predecessors(Node* node);
 
