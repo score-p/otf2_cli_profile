@@ -28,25 +28,24 @@ void Dot_writer::close(){
     result_file.close();
 }
 
-void Dot_writer::filter(int node_min_ratio){
+void Dot_writer::filter(){
     bool filter = false;
 
-    int num_top_nodes = params.top_nodes;
-    if(num_top_nodes != 0){
-        top_nodes(num_top_nodes);
+    if(params.top_nodes != 0){
+        top_nodes();
         filter = true;
     }
 
-    if(node_min_ratio > 0 && node_min_ratio < 100){
+    if(params.node_min_ratio > 0 && params.node_min_ratio < 100){
 
-        double ratio = total_time / 100 * node_min_ratio;
+        double ratio = total_time / 100 * params.node_min_ratio;
 
         int node_count = 0;
         for(const auto& node : nodes){
             if(node->sum_excl_time > ratio){
 
                 // check if printing more nodes than "top_nodes" marked
-                if(num_top_nodes != 0 && node_count == num_top_nodes)
+                if(params.top_nodes != 0 && node_count == params.top_nodes)
                     break;
                 ++node_count;
 
@@ -138,13 +137,14 @@ void Dot_writer::mark_predecessors(Node* node){
     }
 }
 
-void Dot_writer::top_nodes(int num){
+void Dot_writer::top_nodes(){
 
     std::sort(nodes.begin(), nodes.end(), [](Node* a, Node* b){
         return a->sum_excl_time > b->sum_excl_time;
     });
 
-    for( auto it = nodes.begin(); it != nodes.begin() + num; ++it ){
+    int num = params.top_nodes;
+    for( auto it = nodes.begin(); it != nodes.begin()+num; ++it ){
         if(it == nodes.end())
             break;
 
@@ -170,7 +170,7 @@ void Dot_writer::print(){
 
     gather_time_data();
 
-    filter(params.node_min_ratio);
+    filter();
 
     for( auto& node : nodes ){
         if(node->state != NodeState::dontprint)
