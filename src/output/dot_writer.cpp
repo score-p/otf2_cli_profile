@@ -1,7 +1,8 @@
 #include "dot_writer.h"
 
 
-bool Dot_writer::open(std::string filename){
+bool Dot_writer::open(){
+    std::string filename = params.output_file_prefix + ".dot";
     result_file.open(filename);
     if(result_file.is_open()){
 

@@ -32,7 +32,7 @@ private:
 
 public:
 
-    bool open(std::string filename);
+    bool open();
 
     void close();
 

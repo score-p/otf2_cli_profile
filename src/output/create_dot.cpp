@@ -78,8 +78,7 @@ bool CreateDot(AllData& alldata) {
     Data data = read_data(alldata);
 
     Dot_writer writer(alldata.params);
-    std::string filename = alldata.params.output_file_prefix + ".dot";
-    writer.open(filename);
+    writer.open();
 
     for( auto& node : data){
         writer.add_node(node);
