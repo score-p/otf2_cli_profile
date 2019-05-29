@@ -14,6 +14,7 @@ private:
     Data data;
     const Params& params;
     std::vector<Node*> nodes;
+    bool filter = false;
 
     // metaData
     double min_time = std::numeric_limits<uint64_t>::max();
@@ -50,12 +51,11 @@ private:
 
     int get_node_color(const double time);
 
-    // filter nodes
-    void filter();
+    void filter_nodes();
 
     // mark top x nodes, which took the most time
     void top_nodes();
-    
+
     // mark predecessor nodes to be printed
     void mark_predecessors(Node* node);
 

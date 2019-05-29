@@ -28,13 +28,7 @@ void Dot_writer::close(){
     result_file.close();
 }
 
-void Dot_writer::filter(){
-    bool filter = false;
-
-    if(params.top_nodes != 0){
-        top_nodes();
-        filter = true;
-    }
+void Dot_writer::filter_nodes(){
 
     if(params.node_min_ratio > 0 && params.node_min_ratio < 100){
 
@@ -139,6 +133,11 @@ void Dot_writer::mark_predecessors(Node* node){
 
 void Dot_writer::top_nodes(){
 
+    if(num == 0)
+        return;
+
+    filter = true;
+
     std::sort(nodes.begin(), nodes.end(), [](Node* a, Node* b){
         return a->sum_excl_time > b->sum_excl_time;
     });
@@ -170,7 +169,8 @@ void Dot_writer::print(){
 
     gather_time_data();
 
-    filter();
+    top_nodes();
+    filter_nodes();
 
     for( auto& node : nodes ){
         if(node->state != NodeState::dontprint)
