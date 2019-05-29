@@ -7,12 +7,12 @@
 
 class Dot_writer{
 public:
-    Dot_writer(Params& params): params(params)
+    Dot_writer(const Params& params): params(params)
     {}
 private:
     std::ofstream result_file;
-    Params params;
     Data data;
+    const Params& params;
     std::vector<Node*> nodes;
 
     // metaData
