@@ -106,6 +106,7 @@ struct Params {
     bool        create_cube        = false;
     bool        create_json        = false;
     bool        create_dot         = false;
+    bool        data_dump           = false;
     bool        summarize_it       = false;  // TODO added for testing
     std::string input_file_name    = "";
     std::string input_file_prefix  = "";
@@ -133,12 +134,13 @@ struct Params {
                           << "        -fi, --filter <percent>    only show path, where a node took at least num \% of total time" << std::endl
                           << "        -t, --top <n>     only show top num nodes" << std::endl
                           << "        -r, --rank <n>    only show specific rank" << std::endl
+                          << "      --datadump          dump all data into json file" << std::endl
                           << std::endl
                           << "      -b <size>           set buffersize of the reader in Byte" << std::endl
                           << "                          (default: 1 M)" << std::endl
                           << "      -f <n>              max. number of filehandles available per rank" << std::endl
                           << "                          (default: 50)" << std::endl
-                          << "      -i <file>           specify the input tracefile name" << std::endl
+                          << "      -i <file>           specify the input tracefile name or json dump file" << std::endl
                           << "      -nm, --no-metrics   neglect metric events" << std::endl
                           << "      -o <prefix>         specify the prefix of output file(s)" << std::endl
                           << "                          (default: result)" << std::endl
@@ -192,7 +194,9 @@ struct Params {
             top_nodes = value;
             ++i;
             create_dot = true;
-
+            } else if (arguments[i] == "--datadump") {
+                data_dump = true;
+                output_type_set = true;
             } else if (arguments[i] == "-i") {
                 if (!checkNext(arguments, i))
                     return false;

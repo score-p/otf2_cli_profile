@@ -20,11 +20,15 @@
 #include "reduce_data.h"
 #endif /* OTFPROFILER_MPI */
 
-#ifdef HAVE_JSON
-#include "create_json.h"
-#endif /* HAVE_JSON */
-
 #include "create_dot.h"
+
+#ifdef HAVE_DATA_OUT
+#include "data_out.h"
+#endif /* HAVE_DATA_OUT */
+
+#ifdef HAVE_DATA_IN
+#include "jsonreader.h"
+#endif /* HAVE_DATA_IN */
 
 using namespace std;
 
@@ -84,6 +88,7 @@ int main(int argc, char** argv) {
         alldata.tm.registerScope(ScopeID::CUBE, "Cube creation process");
         alldata.tm.registerScope(ScopeID::JSON, "JSON creation process");
         alldata.tm.registerScope(ScopeID::DOT, "DOT creation process");
+        alldata.tm.registerScope(ScopeID::JSON, "JSON data output creation process");
     }
 
     /* starts runtime measurement for total time */
@@ -100,7 +105,10 @@ int main(int argc, char** argv) {
     if (reader == nullptr)
         return error();
 
-    if (!reader->initialize(alldata) || !reader->readDefinitions(alldata) || !reader->readEvents(alldata))
+    if (!reader->initialize(alldata) ||
+        !reader->readDefinitions(alldata) ||
+        !reader->readEvents(alldata) ||
+        !reader->readStatistics(alldata))
         return error();
 
     reader.reset(nullptr);
@@ -141,7 +149,7 @@ int main(int argc, char** argv) {
         alldata.tm.stop(ScopeID::JSON);
     }
 #endif
-    
+
 // DOT
 if (alldata.params.create_dot) {
     alldata.tm.start(ScopeID::DOT);
@@ -149,6 +157,13 @@ if (alldata.params.create_dot) {
     alldata.tm.stop(ScopeID::DOT);
 }
 
+#ifdef HAVE_DATA_OUT
+    if (alldata.params.data_dump) {
+        alldata.tm.start(ScopeID::JSON);
+        DataOut(alldata);
+        alldata.tm.stop(ScopeID::JSON);
+    }
+#endif
     alldata.tm.stop(ScopeID::TOTAL);
 #ifdef SHOW_RESULTS
     /* step 6.3: show result data on stdout */

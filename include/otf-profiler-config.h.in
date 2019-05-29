@@ -16,6 +16,7 @@
 #cmakedefine HAVE_OTF2
 #cmakedefine HAVE_JSON
 #cmakedefine HAVE_MPI
+#cmakedefine HAVE_DATA_OUT
 
 #cmakedefine OTFPROFILER_MPI
 

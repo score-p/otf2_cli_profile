@@ -27,12 +27,25 @@ struct Region {
     std::string   file_name;
 };
 
+/*OTF2 Metric */
+
 struct Metric {
-    std::string    name;
-    std::string    description;
-    std::string    unit;
-    MetricDataType type; /*OTF2_TYPE_UINT64*/
-    bool           allowed;
+    std::string     name;
+    std::string     description;
+    MetricType      metricType;     // PAPI, etc.
+    MetricMode      metricMode;     // accumulative, relative, etc.
+    MetricDataType  type;           // OTF2_TYPE_INT64, OTF2_TYPE_UINT64, OTF2_TYPE_DOUBLE
+    MetricBase      base;           // binary or decimal
+    int64_t         exponent;       // Metric value scaled by factor base^exponent to get value in its base unit
+    std::string     unit;           // "bytes", "operations", or "seconds"
+    bool            allowed;        // ?
+};
+
+struct Metric_Class {
+    uint8_t                     num_of_metrics;
+    std::map<uint8_t, uint32_t> metric_member;
+    MetricOccurrence            metric_occurrence;
+    RecorderKind                recorder_kind;
 };
 
 struct Paradigm {
@@ -42,7 +55,7 @@ struct Paradigm {
 
 struct Group {
     std::string           name;
-    uint16_t              type;
+    uint8_t               type;
     paradigm_id_t         paradigm_id;
     std::vector<uint64_t> members;
 };
@@ -137,7 +150,7 @@ class SystemTree {
         else if (parent_id != static_cast<uint32_t>(-1))
             parent = system_nodes[parent_id];
 
-        auto new_node = std::make_shared<SystemNode_t>(SystemNode_t(parent, {}, {_size, name, class_id, id}));
+        auto new_node = std::make_shared<SystemNode_t>(SystemNode_t(parent, {}, {_size, name, class_id, id, 0}));
 
         if (parent != nullptr) {
             parent->children.insert(std::make_pair(_size, new_node));
@@ -148,7 +161,6 @@ class SystemTree {
             else
                 num_nodes_per_level.push_back(1);
         } else {
-            new_node->data.level = 0;
             num_nodes_per_level.push_back(1);
             root = new_node;
         }
@@ -166,6 +178,54 @@ class SystemTree {
             system_nodes.push_back(new_node.get());
 
         return new_node;
+    }
+
+    // insert node with predetermined IDs, necessary for jsonreader
+    const std::shared_ptr<SystemNode_t> insert_node(std::string name,
+                                                    uint32_t    node_id,
+                                                    SystemClass class_id,
+                                                    uint64_t    parent_id,
+                                                    uint64_t    location_id,
+                                                    uint64_t    parent_location_id
+                                                    ) {
+
+        SystemNode* parent = nullptr;
+
+        if (class_id == SystemClass::LOCATION)
+            parent = location_grps[parent_location_id];
+        else if (parent_id != static_cast<uint32_t>(-1))
+            parent = system_nodes[parent_id];
+
+        auto new_node = std::make_shared<SystemNode_t>(SystemNode_t(parent, {}, {node_id, name, class_id, location_id, 0}));
+
+        if (parent != nullptr) {
+            parent->children.insert(std::make_pair(node_id, new_node));
+            new_node->data.level = parent->data.level + 1;
+
+            if (new_node->data.level < num_nodes_per_level.size())
+                ++num_nodes_per_level[new_node->data.level];
+            else
+                num_nodes_per_level.push_back(1);
+        } else {
+            num_nodes_per_level.push_back(1);
+            root = new_node;
+        }
+
+        ++_size;
+
+        switch(class_id){
+            case SystemClass::LOCATION_GROUP :
+                location_grps.push_back(new_node.get());
+                break;
+            case SystemClass::LOCATION :
+                locations[location_id] = new_node.get();
+                break;
+            default :
+                system_nodes.push_back(new_node.get());
+        }
+
+        return new_node;
+
     }
 
     std::pair<uint8_t, std::unique_ptr<SystemTree>> summarize(const SystemTree& sys_tree, uint64_t limit) {
@@ -322,6 +382,7 @@ struct IoHandle {
 struct Definitions {
     DefinitionType<uint64_t, Region>        regions;
     DefinitionType<uint64_t, Metric>        metrics;
+    DefinitionType<uint64_t, Metric_Class>  metric_classes;
     DefinitionType<paradigm_id_t, Paradigm> paradigms;
     DefinitionType<paradigm_id_t, Paradigm> io_paradigms;
     DefinitionType<uint64_t, IoHandle>      iohandles;
@@ -339,7 +400,7 @@ struct meta_data {
 
     // std::map<uint64_t, metric_definition> metricIdToDef;
 
-    // class_id, pair< number_in_class, metric_id >
+    // class_id, pair< number of the metric in class, metric_id >
     std::map<uint64_t, std::map<uint64_t, uint64_t>> metricClassToMetric;
 
     uint64_t timerResolution;
