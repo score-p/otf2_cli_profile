@@ -98,7 +98,7 @@ struct Params {
     // bool        logaxis            = true;
     uint8_t verbose_level = 0;
     // bool        read_from_stats    = false;
-    float       node_min_ratio     = 0;
+    double       node_min_ratio     = 0;
     int32_t     rank               = -1;
     uint32_t    top_nodes          = 0;
     bool        read_metrics       = true;  // counter

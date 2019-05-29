@@ -36,7 +36,7 @@ void Dot_writer::filter(int node_min_ratio){
         filter = true;
     }
 
-    if(node_min_ratio != 0 && node_min_ratio != 100){
+    if(node_min_ratio > 0 && node_min_ratio < 100){
 
         double ratio = total_time / 100 * node_min_ratio;
 
