@@ -81,9 +81,11 @@ void Dot_writer::print_node(Node& node){
     result_file << " \"\n";
 
     // colorize node
-    result_file
-    << " fillcolor=" << get_node_color(node.sum_excl_time) << ",\n"
-    << " style=filled\n";
+    if(node.state == NodeState::full){
+        result_file << " fillcolor=" << get_node_color(node.sum_excl_time) << ",\n";
+        result_file << " style=filled\n";
+    }
+
 
     // closing node tag
     result_file << "];" << std::endl;
