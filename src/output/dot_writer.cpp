@@ -107,6 +107,9 @@ void Dot_writer::print_node(Node& node){
 void Dot_writer::gather_time_data(){
     for( const auto& node : nodes ){
 
+        if(filter == true && node->state != NodeState::full)
+            continue;
+
         if( node->sum_excl_time < min_time )
             min_time = node->sum_excl_time;
 
@@ -169,10 +172,10 @@ void Dot_writer::add_node(Node* node){
 
 void Dot_writer::print(){
 
-    gather_time_data();
-
     top_nodes();
     filter_nodes();
+
+    gather_time_data();
 
     for( auto& node : nodes ){
         if(node->state != NodeState::dontprint)
