@@ -9,7 +9,6 @@ void Dot_writer::read_data(AllData& alldata) {
 
     for ( const auto& region : alldata.call_path_tree ) {
 
-        // std::shared_ptr<Node> node = std::make_shared<Node>();
         Node* node = new Node;
 
         node->call_id = call_id;
@@ -62,6 +61,9 @@ void Dot_writer::read_data(AllData& alldata) {
         for( int i = 0; i < node->num_children; ++i )
             parent_nodes.push(node);
         nodes.push_back(node);
+
+        // accumulate total sum time of all nodes
+        total_time += node->sum_excl_time;
     }
 }
 
@@ -151,16 +153,14 @@ void Dot_writer::print_node(Node& node){
 }
 
 void Dot_writer::filter_nodes(){
-
     if(params.node_min_ratio > 0 && params.node_min_ratio < 100){
 
         double ratio = total_time / 100 * params.node_min_ratio;
-
         int node_count = 0;
         for(const auto& node : nodes){
             if(node->sum_excl_time > ratio){
 
-                // check if printing more nodes than "top_nodes" marked
+                // check if printing more nodes than number of "top_nodes"
                 if(params.top_nodes != 0 && node_count == params.top_nodes)
                     break;
                 ++node_count;
@@ -191,16 +191,12 @@ void Dot_writer::gather_time_data(){
 
         if( node->sum_excl_time > max_time )
             max_time = node->sum_excl_time;
-
-        total_time += node->sum_excl_time;
     }
 }
 
 void Dot_writer::mark_predecessors(Node* node){
-    // void Dot_writer::mark_predecessors(std::shared_ptr<Node> node){
 
     Node* curr = node;
-    // std::shared_ptr<Node> curr = node;
 
     while( curr->parent != nullptr ){
         curr = curr->parent;
@@ -220,7 +216,6 @@ void Dot_writer::top_nodes(){
     filter = true;
 
     std::sort(nodes.begin(), nodes.end(), [](Node* a, Node* b){
-    // std::sort(nodes.begin(), nodes.end(), [](std::shared_ptr<Node> a, std::shared_ptr<Node> b){
         return a->sum_excl_time > b->sum_excl_time;
     });
 

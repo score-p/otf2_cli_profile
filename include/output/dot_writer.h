@@ -4,6 +4,7 @@
 #include <fstream>
 #include <algorithm>
 #include <stack>
+#include <string>
 
 #include "all_data.h"
 
