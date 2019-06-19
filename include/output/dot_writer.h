@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <stack>
 #include <string>
+#include <tuple>
+#include <iomanip>
 
 #include "all_data.h"
 

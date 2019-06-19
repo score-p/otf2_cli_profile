@@ -1,6 +1,5 @@
 #include "dot_writer.h"
 
-
 void Dot_writer::read_data(AllData& alldata) {
 
     std::stack<Node*> parent_nodes;
@@ -107,6 +106,27 @@ void Dot_writer::print(){
     }
 }
 
+std::array<std::string, 3> time_unit = {"s", "ms", "µs"};
+std::tuple<double, std::string> formatting_time(double time){
+    double t;
+    std::string unit;
+    for (int i = 0; i < time_unit.size(); ++i) {
+        if(time >= 1){
+            t = time;
+            unit = time_unit[i];
+            break;
+        }else{
+            time *= 1000;
+        }
+    }
+    return std::make_tuple(t, unit);
+}
+
+std::ostream& operator<< (std::ostream &out, const std::tuple<double, std::string>& time){
+    out << std::setprecision(3) << std::fixed << std::get<0>(time) << std::get<1>(time);
+    return out;
+}
+
 void Dot_writer::print_node(Node& node){
     result_file
     << "\""             << node.call_id       << "\" [\n"
@@ -114,17 +134,17 @@ void Dot_writer::print_node(Node& node){
 
     if(node.state == NodeState::full){
         result_file
-        << " invocations: " << node.invocations   << "\\l\n"
-        << " include time:"                       << "\\l\n"
-        << "  min: "        << node.min_incl_time << "\\l\n"
-        << "  max: "        << node.max_incl_time << "\\l\n"
-        << "  sum: "        << node.sum_incl_time << "\\l\n"
-        << "  avg: "        << node.avg_incl_time << "\\l\n"
-        << " exclude time:"                       << "\\l\n"
-        << "  min: "        << node.min_excl_time << "\\l\n"
-        << "  max: "        << node.max_excl_time << "\\l\n"
-        << "  sum: "        << node.sum_excl_time << "\\l\n"
-        << "  avg: "        << node.avg_excl_time << "\\l\n";
+        << "invocations: "  << node.invocations                    << "\\l\n"
+        << "include time:"                                         << "\\l\n"
+        << tab << "min: "   << formatting_time(node.min_incl_time) << "\\l\n"
+        << tab << "max: "   << formatting_time(node.max_incl_time) << "\\l\n"
+        << tab << "sum: "   << formatting_time(node.sum_incl_time) << "\\l\n"
+        << tab << "avg: "   << formatting_time(node.avg_incl_time) << "\\l\n"
+        << "exclude time:"                                         << "\\l\n"
+        << tab << "min: "   << formatting_time(node.min_excl_time) << "\\l\n"
+        << tab << "max: "   << formatting_time(node.max_excl_time) << "\\l\n"
+        << tab << "sum: "   << formatting_time(node.sum_excl_time) << "\\l\n"
+        << tab << "avg: "   << formatting_time(node.avg_excl_time) << "\\l\n";
     }
 
     result_file << " \"\n";
