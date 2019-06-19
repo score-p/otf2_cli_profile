@@ -74,8 +74,17 @@ bool Dot_writer::open(){
         // header of dot/graph file
         result_file
         << "digraph call_tree {\n"
-        << "graph [splines=" << splines <<", ranksep=" << ranksep << "];\n"
-        << "node [shape = " << shape << ", colorscheme="<< colorscheme << "];\n"
+
+        << "graph "
+            << "[splines="  << splines
+            << ", ranksep=" << ranksep << "];\n"
+
+        << "node "
+            << "[shape = "  << shape
+            << ", fontname = \"Courier New\""
+            << ", colorscheme=" << colorscheme
+        << "];\n"
+
         << "edge [];\n"
         << std::endl;
 
@@ -129,8 +138,11 @@ std::ostream& operator<< (std::ostream &out, const std::tuple<double, std::strin
 
 void Dot_writer::print_node(Node& node){
     result_file
-    << "\""             << node.call_id       << "\" [\n"
-    << " label = \""    << node.region        << "\\l\n";
+    << "\""             << node.call_id    << "\" [\n"
+    << " label = \""    << node.region     << "\\l\n";
+
+    std::string sp = "\\ ";
+    std::string tab = "\\   "; // 3 spaces
 
     if(node.state == NodeState::full){
         result_file
