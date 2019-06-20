@@ -83,15 +83,12 @@ public:
 
 private:
 
-    // gathers global min, max, total time
-    void gather_time_data();
-
     // print node to dot file
     void print_node(Node& node);
 
     int get_node_color(const double time);
 
-    void filter_nodes();
+    // void filter_nodes();
 
     // mark top x nodes, which took the most time
     void top_nodes();
