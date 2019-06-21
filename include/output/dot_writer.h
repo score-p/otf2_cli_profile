@@ -41,6 +41,46 @@ struct Node {
 class Dot_writer{
 public:
     Dot_writer(const Params& params): params(params){}
+
+    Dot_writer(const Dot_writer& other): params(other.params){
+        filter      = other.filter;
+        min_time    = other.min_time;
+        max_time    = other.max_time;
+        total_time  = other.total_time;
+
+        for(const auto& node : other.nodes){
+            Node* new_node    = new Node;
+
+            new_node->call_id       = node->call_id;
+            new_node->invocations   = node->invocations;
+            new_node->parent        = node->parent;
+            new_node->num_children  = node->num_children;
+            new_node->min_incl_time = node->min_incl_time;
+            new_node->max_incl_time = node->max_incl_time;
+            new_node->sum_incl_time = node->sum_incl_time;
+            new_node->avg_incl_time = node->avg_incl_time;
+            new_node->min_excl_time = node->min_excl_time;
+            new_node->max_excl_time = node->max_excl_time;
+            new_node->sum_excl_time = node->sum_excl_time;
+            new_node->avg_excl_time = node->avg_excl_time;
+            new_node->state         = node->state;
+
+            this->nodes.push_back(new_node);
+        }
+    }
+
+    Dot_writer& operator=(const Dot_writer& other){
+        if(this != &other){
+            std::vector<Node*> new_nodes(other.nodes);
+
+            for(const auto& node : nodes)
+                delete node;
+
+            nodes = new_nodes;
+        }
+        return *this;
+    }
+
     ~Dot_writer(){
         for(const auto& node : nodes){
             delete node;
