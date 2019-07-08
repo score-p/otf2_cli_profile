@@ -20,6 +20,8 @@
 #include "reduce_data.h"
 #endif /* OTFPROFILER_MPI */
 
+#include "create_dot.h"
+
 #ifdef HAVE_DATA_OUT
 #include "data_out.h"
 #endif /* HAVE_DATA_OUT */
@@ -85,6 +87,7 @@ int main(int argc, char** argv) {
         alldata.tm.registerScope(ScopeID::REDUCE, "reduce data");
         alldata.tm.registerScope(ScopeID::CUBE, "Cube creation process");
         alldata.tm.registerScope(ScopeID::JSON, "JSON creation process");
+        alldata.tm.registerScope(ScopeID::DOT, "DOT creation process");
         alldata.tm.registerScope(ScopeID::JSON, "JSON data output creation process");
     }
 
@@ -146,6 +149,13 @@ int main(int argc, char** argv) {
         alldata.tm.stop(ScopeID::JSON);
     }
 #endif
+
+// DOT
+if (alldata.params.create_dot) {
+    alldata.tm.start(ScopeID::DOT);
+    CreateDot(alldata);
+    alldata.tm.stop(ScopeID::DOT);
+}
 
 #ifdef HAVE_DATA_OUT
     if (alldata.params.data_dump) {

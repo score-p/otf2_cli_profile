@@ -4,6 +4,7 @@
 ## Output formats
 * CUBE profile files for Scalasca and other compatible tools
 * High-level JSON summaries of the contents of the trace
+* Graphviz visualalization tree of the callpath of the trace
 
 ## Usage
 ```
@@ -13,6 +14,13 @@
 `--cube`: produce a CUBE profile
 
 `--json`: produce a JSON summary
+
+```
+--dot:  produce a DOT file (Graphviz)
+    -fi, --filter <n>: only show path, where one node took at least n% of total time
+    -t, --top <n>: only show top num nodes
+    -r, --rank <n>: only show specific rank
+```
 
 `-v n`: increase output verbosity
 

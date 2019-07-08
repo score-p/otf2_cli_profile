@@ -78,12 +78,17 @@ endif()
 if (HAVE_JSON AND USE_JSON)
     include_directories("${RAPIDJSON_INCLUDE_DIRS}")
     list(APPEND SOURCE_FILES src/output/create_json.cpp)
-endif()
+endif ()
+
+
+list(APPEND SOURCE_FILES src/output/create_dot.cpp)
+list(APPEND SOURCE_FILES src/output/dot_writer.cpp)
 
 if (HAVE_DATA_OUT AND USE_DATA_OUT)
     include_directories("${RAPIDJSON_INCLUDE_DIRS}")
     list(APPEND SOURCE_FILES src/output/data_out.cpp)
 endif()
+
 
 if (HAVE_JSON)
     list(APPEND SOURCE_FILES src/reader/jsonreader.cpp)
