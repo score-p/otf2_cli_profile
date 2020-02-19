@@ -285,7 +285,7 @@ bool JsonReader::readStatistics(AllData& alldata){
     alldata.metaData.numRanks        = document["meta_data"]["numRanks"].GetUint();
     #ifdef OTFPROFILER_MPI
         alldata.metaData.packBufferSize = document["meta_data"]["packBufferSize"].GetUint64();
-        alldata.metaData.Buffer         = document["meta_data"]["packBuffer"].GetUint64();
+        alldata.metaData.packBuffer     = document["meta_data"]["packBuffer"].GetUint64();
     #endif
     return true;
 }

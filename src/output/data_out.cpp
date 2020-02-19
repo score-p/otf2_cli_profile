@@ -360,7 +360,7 @@ void display_meta_data(AllData alldata, Writer& writer){
             writer.Key("packBufferSize");
             writer.Uint64(alldata.metaData.packBufferSize);
             writer.Key("packBuffer");
-            writer.String(alldata.metaData.Buffer);
+            writer.String(alldata.metaData.packBuffer);
         #endif
     writer.EndObject();
 }
