@@ -9,6 +9,7 @@
 #include <cassert>
 #include <map>
 #include <unordered_map>
+#include <cstdint>
 
 enum class MetricDataType : uint8_t {
     UINT64,  // OTF2_TYPE_UINT64
