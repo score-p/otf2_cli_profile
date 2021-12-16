@@ -105,7 +105,7 @@ enum class SystemClass : uint8_t {
 class SystemIterator;
 
 class SystemTree {
-   private:
+   public:
     struct SystemData {
         uint32_t    node_id;  // TODO ist traceid
         std::string name;
