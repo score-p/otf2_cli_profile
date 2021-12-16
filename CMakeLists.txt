@@ -3,6 +3,7 @@ cmake_minimum_required (VERSION 3.8)
 # Set the version number
 project ( OTFProfiler VERSION 2.0.0 )
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include_directories("${PROJECT_BINARY_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}/include")
@@ -26,10 +27,10 @@ if (USE_OTF2)
     set (HAVE_OTF2 OTF2_FOUND)
 endif()
 
-option (USE_CUBE "USE Cube package (library and GUI)" ON)
-if (USE_CUBE)
-    find_package (Cube)
-    set (HAVE_CUBE CUBE_FOUND)
+option (USE_Cubelib "USE Cube package (library and GUI)" ON)
+if (USE_Cubelib)
+    find_package (Cubelib)
+    set (HAVE_Cubelib Cubelib_FOUND)
 endif()
 
 option (USE_MPI "Build MPI parallel version of OTF-Profiler" OFF)
@@ -69,10 +70,10 @@ if (HAVE_OTF2 AND USE_OTF2)
     list(APPEND EXTRA_LIBS "${OTF2_LIBRARIES}")
 endif()
 
-if (HAVE_CUBE AND USE_CUBE)
-    include_directories("${CUBE_INCLUDE_DIRS}")
+if (HAVE_Cubelib AND USE_Cubelib)
+    include_directories("${Cubelib_INCLUDE_DIRS}")
     list(APPEND SOURCE_FILES src/output/create_cube.cpp)
-    list(APPEND EXTRA_LIBS "${CUBE_LIBRARIES}")
+    list(APPEND EXTRA_LIBS "${Cubelib_LIBRARIES}")
 endif()
 
 if (HAVE_JSON AND USE_JSON)
