@@ -132,7 +132,7 @@ int main(int argc, char** argv) {
     }
 #endif /* OTFPROFILER_MPI */
 
-#ifdef HAVE_CUBE
+#ifdef HAVE_Cube
     if (alldata.params.create_cube) {
         /* step 6.3: create CUBE output */
         alldata.tm.start(ScopeID::CUBE);

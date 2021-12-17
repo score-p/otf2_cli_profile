@@ -30,7 +30,7 @@ endif()
 option (USE_Cubelib "USE Cube package (library and GUI)" ON)
 if (USE_Cubelib)
     find_package (Cubelib)
-    set (HAVE_Cubelib Cubelib_FOUND)
+    set (HAVE_CUBE Cubelib_FOUND)
 endif()
 
 option (USE_MPI "Build MPI parallel version of OTF-Profiler" OFF)
@@ -39,16 +39,16 @@ if (USE_MPI)
     set (HAVE_MPI MPI_FOUND)
 endif()
 
-option (USE_JSON "USE JSON outputter (via rapidjson library)" OFF)
+option (USE_JSON "USE JSON outputter (via rapidjson library)" ON)
 if(USE_JSON)
-    find_package(rapidjson)
-    set(HAVE_JSON RAPIDJSON_FOUND)
+    find_package(RapidJson)
+    set(HAVE_JSON RapidJson_FOUND)
 endif()
 
 option (USE_DATA_OUT "export everything into json format" ON)
 if(USE_DATA_OUT)
-    find_package(rapidjson)
-    set(HAVE_DATA_OUT RAPIDJSON_FOUND)
+    find_package(RapidJson)
+    set(HAVE_DATA_OUT RapidJson_FOUND)
 endif()
 
 set(SOURCE_FILES
@@ -77,7 +77,7 @@ if (HAVE_Cubelib AND USE_Cubelib)
 endif()
 
 if (HAVE_JSON AND USE_JSON)
-    include_directories("${RAPIDJSON_INCLUDE_DIRS}")
+    include_directories("${RapidJson_INCLUDE_DIRS}")
     list(APPEND SOURCE_FILES src/output/create_json.cpp)
 endif ()
 
@@ -86,7 +86,7 @@ list(APPEND SOURCE_FILES src/output/create_dot.cpp)
 list(APPEND SOURCE_FILES src/output/dot_writer.cpp)
 
 if (HAVE_DATA_OUT AND USE_DATA_OUT)
-    include_directories("${RAPIDJSON_INCLUDE_DIRS}")
+    include_directories("${RapidJson_INCLUDE_DIRS}")
     list(APPEND SOURCE_FILES src/output/data_out.cpp)
 endif()
 
