@@ -70,7 +70,7 @@ if (HAVE_OTF2 AND USE_OTF2)
     list(APPEND EXTRA_LIBS "${OTF2_LIBRARIES}")
 endif()
 
-if (HAVE_Cubelib AND USE_Cubelib)
+if (HAVE_CUBE AND USE_Cubelib)
     include_directories("${Cubelib_INCLUDE_DIRS}")
     list(APPEND SOURCE_FILES src/output/create_cube.cpp)
     list(APPEND EXTRA_LIBS "${Cubelib_LIBRARIES}")

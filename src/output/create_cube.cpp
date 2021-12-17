@@ -211,14 +211,14 @@ bool CreateCube(AllData& alldata) {
     }
 
 // since 4.4, initialize() needed
-#ifdef CUBELIB_REVISION_NUMBER
+#ifdef Cubelib_REVISION_NUMBER
     cube_out.initialize();
 #endif
 
 // until version 4.4
-#ifdef CUBE_REVISION_NUMBER
+#ifdef Cubelib_REVISION_NUMBER
 
-#if CUBE_REVISION_NUMBER >= 14755
+#if Cubelib_REVISION_NUMBER >= 14755
     // initialize ist needed since rev 14755 (4.3.4)
     // needs to be initialised before nodes/metrics are filled with data -> else "Something is wrong
     // with ..." failure
