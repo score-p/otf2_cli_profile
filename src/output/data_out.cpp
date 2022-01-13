@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include "all_data.h"
 #include "data_out.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
@@ -24,7 +25,7 @@ bool DataOut(AllData& alldata){
     std::string fname = alldata.params.output_file_prefix + ".json";
     std::ofstream outfile(fname);
     outfile << buffer.GetString() << std::endl;
-    std::cout << buffer.GetString() << std::endl;
+    //std::cout << buffer.GetString() << std::endl;
 
     return true;
 }
@@ -32,17 +33,18 @@ bool DataOut(AllData& alldata){
 template <typename Writer>
 void display(Writer& writer, AllData alldata){
     writer.StartObject();
-        display_data_tree(alldata, writer);
         display_meta_data(alldata, writer);
+        display_meta_data_profiler(alldata, writer);
         display_definitions(alldata, writer);
         display_params(alldata, writer);
         display_system_tree(alldata, writer);
+        display_data_tree(alldata, writer);
     writer.EndObject();
 }
 
 template <typename Writer>
 void display_data_tree(AllData alldata, Writer& writer){
-    writer.String("data_tree");
+    writer.String("call_tree");
     writer.StartObject();
         writer.Key("root_nodes");
         writer.StartArray();
@@ -56,7 +58,7 @@ void display_data_tree(AllData alldata, Writer& writer){
 template <typename Writer>
 void display_node(std::shared_ptr<tree_node> node, Writer& writer){
     writer.StartObject();
-        writer.Key("function_id");
+        writer.Key("region_id");
         writer.Uint64(node->function_id);
 
         writer.Key("parent");
@@ -156,6 +158,16 @@ template <typename Writer>
 void display_definitions(AllData alldata, Writer& writer){
     writer.Key("Definitions");
     writer.StartObject();
+        writer.Key("paradigms");
+        writer.StartArray();
+            for(const auto& paradigm : alldata.definitions.paradigms.get_all()){
+                writer.StartObject();
+                    writer.Key(std::to_string(paradigm.first).c_str());
+                    writer.String(paradigm.second.name.c_str());
+                writer.EndObject();
+            }
+        writer.EndArray();
+
         writer.Key("regions");
         writer.StartArray();
             for(const auto& region : alldata.definitions.regions.get_all()){
@@ -230,16 +242,6 @@ void display_definitions(AllData alldata, Writer& writer){
             }
         writer.EndArray();
 
-        writer.Key("paradigms");
-        writer.StartArray();
-            for(const auto& paradigm : alldata.definitions.paradigms.get_all()){
-                writer.StartObject();
-                    writer.Key(std::to_string(paradigm.first).c_str());
-                    writer.String(paradigm.second.name.c_str());
-                writer.EndObject();
-            }
-        writer.EndArray();
-
         writer.Key("io_paradigms");
         writer.StartArray();
             for(const auto& io_paradigm : alldata.definitions.io_paradigms.get_all()){
@@ -299,7 +301,23 @@ template <typename Writer>
 void display_meta_data(AllData alldata, Writer& writer){
     writer.Key("meta_data");
     writer.StartObject();
-        writer.Key("communicators");
+        writer.Key("timerResolution");
+        writer.Double(alldata.metaData.timerResolution);
+
+        writer.Key("numRanks");
+        writer.Uint64(alldata.metaData.numRanks);
+
+        writer.Key("input_file_name");
+        writer.String(alldata.params.input_file_name.c_str());
+        
+    writer.EndObject();
+}
+
+template <typename Writer>
+void display_meta_data_profiler(AllData alldata, Writer& writer){
+    writer.Key("meta_data_profiler");
+    writer.StartObject();
+    writer.Key("communicators");
         writer.StartArray();
             for(const auto& comm : alldata.metaData.communicators){
                 writer.StartObject();
@@ -347,14 +365,8 @@ void display_meta_data(AllData alldata, Writer& writer){
             }
         writer.EndArray();
 
-        writer.Key("timerResolution");
-        writer.Uint64(alldata.metaData.timerResolution);
-
         writer.Key("myRank");
         writer.Uint64(alldata.metaData.myRank);
-
-        writer.Key("numRanks");
-        writer.Uint64(alldata.metaData.numRanks);
 
         #ifdef OTFPROFILER_MPI
             writer.Key("packBufferSize");
@@ -362,6 +374,7 @@ void display_meta_data(AllData alldata, Writer& writer){
             writer.Key("packBuffer");
             writer.String(alldata.metaData.packBuffer);
         #endif
+    
     writer.EndObject();
 }
 
