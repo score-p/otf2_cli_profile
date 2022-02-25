@@ -1,7 +1,10 @@
+#include <bits/stdint-uintn.h>
 #include <iostream>
 #include <sstream>
 
 #include "OTF2Reader.h"
+#include "otf2/OTF2_Definitions.h"
+#include "otf2/OTF2_GeneralDefinitions.h"
 
 #ifdef OTFPROFILE_MPI
 #include <otf2/OTF2_MPI_Collectives.h>
@@ -232,8 +235,13 @@ OTF2_CallbackCode OTF2Reader::handle_def_io_fs_entry(void* userData, OTF2_IoFile
     return OTF2_CALLBACK_SUCCESS;
 }
 
-OTF2_CallbackCode OTF2Reader::handle_def_clock_properties(void* userData, uint64_t timerResolution,
-                                                          uint64_t globalOffset, uint64_t traceLength) {
+#if VERSION_OTF2_MAJOR >= 3
+    OTF2_CallbackCode OTF2Reader::handle_def_clock_properties(void* userData, uint64_t timerResolution,
+                                                              uint64_t globalOffset, uint64_t traceLength, uint64_t realtimeTimestamp) {        //OTF2 3.x
+#else
+    OTF2_CallbackCode OTF2Reader::handle_def_clock_properties(void* userData, uint64_t timerResolution,
+                                                              uint64_t globalOffset, uint64_t traceLength) {                                    //OTF2 2.x
+#endif
     auto* alldata = static_cast<AllData*>(userData);
 
     alldata->metaData.timerResolution = timerResolution;
@@ -342,9 +350,15 @@ OTF2_CallbackCode OTF2Reader::handle_def_metric_class(  void*                   
     return OTF2_CALLBACK_SUCCESS;
 }
 
-OTF2_CallbackCode OTF2Reader::handle_def_location_group(void* userData, OTF2_LocationGroupRef groupIdentifier,
-                                                        OTF2_StringRef name, OTF2_LocationGroupType locationGroupType,
-                                                        OTF2_SystemTreeNodeRef systemTreeParent) {
+#if VERSION_OTF2_MAJOR >= 3
+    OTF2_CallbackCode OTF2Reader::handle_def_location_group(void* userData, OTF2_LocationGroupRef groupIdentifier,
+                                                            OTF2_StringRef name, OTF2_LocationGroupType locationGroupType,
+                                                            OTF2_SystemTreeNodeRef systemTreeParent, OTF2_LocationGroupRef creatingLocationGroup) {     //OTF2 3.x
+#else
+    OTF2_CallbackCode OTF2Reader::handle_def_location_group(void* userData, OTF2_LocationGroupRef groupIdentifier,
+                                                            OTF2_StringRef name, OTF2_LocationGroupType locationGroupType,
+                                                            OTF2_SystemTreeNodeRef systemTreeParent) {                                                  //OTF2 2.x
+#endif
     auto* alldata = static_cast<AllData*>(userData);
 
     auto strings = string_id.get(name);
@@ -480,8 +494,13 @@ OTF2_CallbackCode OTF2Reader::handle_def_system_tree_node(void* userData, OTF2_S
     return OTF2_CALLBACK_SUCCESS;
 }
 
-OTF2_CallbackCode OTF2Reader::handle_def_comm(void* userData, OTF2_CommRef self, OTF2_StringRef name,
-                                              OTF2_GroupRef group, OTF2_CommRef parent) {
+#if VERSION_OTF2_MAJOR >= 3
+    OTF2_CallbackCode OTF2Reader::handle_def_comm(void* userData, OTF2_CommRef self, OTF2_StringRef name,
+                                                  OTF2_GroupRef group, OTF2_CommRef parent, OTF2_CommFlag flag) {   //OTF2 3.x
+#else
+    OTF2_CallbackCode OTF2Reader::handle_def_comm(void* userData, OTF2_CommRef self, OTF2_StringRef name,
+                                                  OTF2_GroupRef group, OTF2_CommRef parent) {                       //OTF2 2.x
+#endif
     auto* alldata                         = static_cast<AllData*>(userData);
     alldata->metaData.communicators[self] = group;
 

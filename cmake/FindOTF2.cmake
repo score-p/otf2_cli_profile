@@ -7,14 +7,14 @@ endif()
 if(OTF2_CONFIG_PATH)
     find_program(OTF2_CONFIG NAMES otf2-config
         PATHS
-        /opt/otf2/bin
+        /opt/otf2_2_3/bin
         HINTS
         ${OTF2_CONFIG_PATH}
     )
 else(OTF2_CONFIG_PATH)
     find_program(OTF2_CONFIG NAMES otf2-config
         PATHS
-        /opt/otf2/bin
+        /opt/otf2_2_3/bin
     )
 endif()
 
@@ -30,8 +30,10 @@ else()
     string(REPLACE "otf2-config: version " "" OTF2_VERSION_STR ${OTF2_VERSION_STR})
     string(REGEX MATCH "^[0-9]*" OTF2_VERSION_MAJOR ${OTF2_VERSION_STR})
 
-    string(REGEX MATCH "\.[0-9]*" OTF2_VERSION_MINOR ${OTF2_VERSION_STR})
-    string(STRIP ${OTF2_VERSION_MINOR} OTF2_VERSION_MINOR)
+    string(STRIP ${OTF2_VERSION_STR} OTF2_VERSION_MINOR)
+    string(REGEX MATCH "\." OTF2_VERSION_MINOR ${OTF2_VERSION_MINOR})
+    message("OTF2 Minor: " ${OTF2_VERSION_MINOR} " String: " ${OTF2_VERSION_STR})
+    # string(REGEX REPLACE "[0-9]*\." "" OTF2_VERSION_MINOR ${OTF2_VERSION_MINOR})
 
     execute_process(COMMAND ${OTF2_CONFIG} "--cppflags" OUTPUT_VARIABLE OTF2_INCLUDE_DIRS)
     string(REPLACE "\n" "" OTF2_INCLUDE_DIRS ${OTF2_INCLUDE_DIRS})
