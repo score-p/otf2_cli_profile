@@ -57,11 +57,6 @@ int main(int argc, char** argv) {
 #else  /* OTFPROFILER_MPI */
     AllData alldata(0, 1);
 #endif /* OTFPROFILER_MPI */
-#if VERSION_OTF2_MAJOR < 3
-    std::cout << "Version < 3" << std::endl;
-#else
-    std::cout << "Version >= 3" << std::endl;
-#endif
     /* step 0: parse command line options */
     if (!alldata.params.parseCommandLine(argc, argv))
         return error();

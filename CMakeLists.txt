@@ -27,7 +27,6 @@ if (USE_OTF2)
     set (HAVE_OTF2 OTF2_FOUND)
     set (VERSION_OTF2_MAJOR ${OTF2_VERSION_MAJOR})
     set (VERSION_OTF2_MINOR ${OTF2_VERSION_MINOR})
-    message("OTF2 Version: " ${VERSION_OTF2_MAJOR} "." ${VERSION_OTF2_MINOR})
 endif()
 
 option (USE_Cubelib "USE Cube package (library and GUI)" ON)
