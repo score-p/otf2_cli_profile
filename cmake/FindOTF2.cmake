@@ -26,6 +26,12 @@ else()
     string(REPLACE ":" "." OTF2_VERSION ${OTF2_VERSION})
     string(STRIP ${OTF2_VERSION} OTF2_VERSION)
 
+    execute_process(COMMAND ${OTF2_CONFIG} "--version" OUTPUT_VARIABLE OTF2_VERSION_STR)
+    string(REPLACE "otf2-config: version " "" OTF2_VERSION_STR ${OTF2_VERSION_STR})
+    string(REGEX MATCH "^[0-9]*" OTF2_VERSION_MAJOR ${OTF2_VERSION_STR})
+
+    string(REGEX REPLACE "([0-9]*)\.([0-9]*)" "\\2" OTF2_VERSION_MINOR ${OTF2_VERSION_STR})
+
     execute_process(COMMAND ${OTF2_CONFIG} "--cppflags" OUTPUT_VARIABLE OTF2_INCLUDE_DIRS)
     string(REPLACE "\n" "" OTF2_INCLUDE_DIRS ${OTF2_INCLUDE_DIRS})
     string(REPLACE "-I" ";" OTF2_INCLUDE_DIRS ${OTF2_INCLUDE_DIRS})

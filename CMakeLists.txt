@@ -25,6 +25,8 @@ option (USE_OTF2 "Use OTF2 library" ON)
 if (USE_OTF2)
     find_package (OTF2)
     set (HAVE_OTF2 OTF2_FOUND)
+    set (VERSION_OTF2_MAJOR ${OTF2_VERSION_MAJOR})
+    set (VERSION_OTF2_MINOR ${OTF2_VERSION_MINOR})
 endif()
 
 option (USE_Cubelib "USE Cube package (library and GUI)" ON)

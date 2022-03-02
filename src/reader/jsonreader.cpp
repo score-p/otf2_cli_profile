@@ -140,7 +140,7 @@ bool JsonReader::readDefinitions(AllData& alldata){
 
 void read_node(const rapidjson::Value& node, AllData& alldata, std::shared_ptr<tree_node> parent){
 
-    uint64_t function_id = node["function_id"].GetUint64();
+    uint64_t function_id = node["region_id"].GetUint64();
     auto tmp_node        = std::make_shared<tree_node>(function_id);
     tmp_node->parent     = parent.get();
 
@@ -214,7 +214,7 @@ void read_node(const rapidjson::Value& node, AllData& alldata, std::shared_ptr<t
 
 bool JsonReader::readEvents(AllData& alldata){
 
-    const rapidjson::Value& root_nodes = document["data_tree"]["root_nodes"];
+    const rapidjson::Value& root_nodes = document["call_tree"]["root_nodes"];
 
     assert(root_nodes.IsArray());
     for(auto& node : root_nodes.GetArray()){
@@ -229,7 +229,7 @@ bool JsonReader::readStatistics(AllData& alldata){
 
     std::map<uint64_t, uint64_t>& communicators = alldata.metaData.communicators;
 
-    const rapidjson::Value& comm = document["meta_data"]["communicators"];
+    const rapidjson::Value& comm = document["meta_data_profiler"]["communicators"];
     assert(comm.IsArray());
 
     for(const auto& var : comm.GetArray()){
@@ -239,7 +239,7 @@ bool JsonReader::readStatistics(AllData& alldata){
     }
 
     // parse processIdToName
-    const rapidjson::Value& procs = document["meta_data"]["processIdToName"];
+    const rapidjson::Value& procs = document["meta_data_profiler"]["processIdToName"];
     assert(procs.IsArray());
 
     std::map<uint64_t, std::string>& processId_data = alldata.metaData.processIdToName;
@@ -252,7 +252,7 @@ bool JsonReader::readStatistics(AllData& alldata){
 
     // parse metricIdToName
 
-    const rapidjson::Value& metric = document["meta_data"]["metricIdToName"];
+    const rapidjson::Value& metric = document["meta_data_profiler"]["metricIdToName"];
     assert(metric.IsArray());
 
     std::map<uint64_t, std::string>& metricId_data = alldata.metaData.metricIdToName;
@@ -265,7 +265,7 @@ bool JsonReader::readStatistics(AllData& alldata){
 
     // parse metricClassToMetric
 
-    const rapidjson::Value& metricClassToMetric = document["meta_data"]["metricClassToMetric"];
+    const rapidjson::Value& metricClassToMetric = document["meta_data_profiler"]["metricClassToMetric"];
 
     for(rapidjson::SizeType i = 0; i < metricClassToMetric.Size(); ++i){
         uint64_t metricClassId   = metricClassToMetric[i]["metricClassId"].GetUint64();
@@ -280,12 +280,13 @@ bool JsonReader::readStatistics(AllData& alldata){
 
 
     // parse rest of meta_data
-    alldata.metaData.timerResolution = document["meta_data"]["timerResolution"].GetUint();
-    alldata.metaData.myRank          = document["meta_data"]["myRank"].GetUint();
+    alldata.metaData.timerResolution = document["meta_data"]["timerResolution"].GetDouble();
+    alldata.metaData.myRank          = document["meta_data_profiler"]["myRank"].GetUint();
     alldata.metaData.numRanks        = document["meta_data"]["numRanks"].GetUint();
+    alldata.params.input_file_name   = document["meta_data"]["input_file_name"].GetString();
     #ifdef OTFPROFILER_MPI
-        alldata.metaData.packBufferSize = document["meta_data"]["packBufferSize"].GetUint64();
-        alldata.metaData.packBuffer     = document["meta_data"]["packBuffer"].GetUint64();
+        alldata.metaData.packBufferSize = document["meta_data_profiler"]["packBufferSize"].GetUint64();
+        alldata.metaData.packBuffer     = document["meta_data_profiler"]["packBuffer"].GetUint64();
     #endif
     return true;
 }
@@ -311,4 +312,5 @@ bool JsonReader::readSystemTree(AllData& alldata){
     uint64_t location_id   = node["data"]["location_id"].GetUint64();
 
     readSystemNode(node, parent_id, 0, alldata);
+    return true;
 }

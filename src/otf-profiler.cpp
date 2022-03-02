@@ -4,6 +4,7 @@
 */
 
 #include "otf-profiler.h"
+#include <iostream>
 #include "tracereader.h"
 #include "utils.h"
 
@@ -56,7 +57,6 @@ int main(int argc, char** argv) {
 #else  /* OTFPROFILER_MPI */
     AllData alldata(0, 1);
 #endif /* OTFPROFILER_MPI */
-
     /* step 0: parse command line options */
     if (!alldata.params.parseCommandLine(argc, argv))
         return error();
