@@ -14,7 +14,7 @@
 #endif
 
 #if defined HAVE_OTF2
-#include "OTF2Reader.h"
+#include "otf2xx/reader/OTF2Reader.hpp"
 #endif
 
 #ifdef HAVE_JSON

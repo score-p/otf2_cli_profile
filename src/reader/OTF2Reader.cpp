@@ -2,7 +2,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "OTF2Reader.h"
+#include "otf2xx/reader/OTF2Reader.hpp"
 #include "otf2/OTF2_Definitions.h"
 #include "otf2/OTF2_GeneralDefinitions.h"
 
