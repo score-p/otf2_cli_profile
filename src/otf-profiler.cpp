@@ -31,6 +31,11 @@
 #include "jsonreader.h"
 #endif /* HAVE_DATA_IN */
 
+#include <memory>
+#include "all_data.h"
+#include "definitions.h"
+#include "otf-profiler-config.h"
+
 using namespace std;
 
 int error() {

@@ -12,6 +12,11 @@
 #include <memory>
 #include <tuple>
 
+#include <assert.h>
+#include <cstdint>
+#include <map>
+#include <utility>
+
 class tree_iter;
 class tree_node;
 

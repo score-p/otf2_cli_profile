@@ -3,6 +3,7 @@
  Authors: Maximillian Neumann, Denis Hünich, Jens Doleschal
 */
 
+#include <stdint.h>
 #include "definitions.h"
 namespace definitions {
 

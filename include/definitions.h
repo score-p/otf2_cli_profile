@@ -11,8 +11,12 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <unordered_set>
+//#include <unordered_set>
 #include <vector>
+#include <stddef.h>
+#include <cstdint>
+#include <type_traits>
+#include <utility>
 
 #include "main_structs.h"
 

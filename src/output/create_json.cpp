@@ -9,7 +9,22 @@
 #include "rapidjson/document.h"
 #include "rapidjson/prettywriter.h"
 #include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
+//#include "rapidjson/writer.h"
+
+#include <rapidjson/encodings.h>
+#include <rapidjson/rapidjson.h>
+#include <stddef.h>
+#include <algorithm>
+#include <cstdint>
+#include <iterator>
+#include <map>
+#include <new>
+#include <set>
+#include <utility>
+#include "data_tree.h"
+#include "definitions.h"
+#include "main_structs.h"
+#include "utils.h"
 
 using namespace rapidjson;
 using std::cout;

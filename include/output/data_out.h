@@ -7,7 +7,10 @@ When changing names, syntax or adding/removing properties jsonreader needs to be
 #define DATA_OUT_H
 
 #include "all_data.h"
-#include "data_tree.h"
+//#include "data_tree.h"
+
+#include <memory>
+#include "definitions.h"
 
 template <typename Writer>
 void display(Writer& writer, AllData alldata);
