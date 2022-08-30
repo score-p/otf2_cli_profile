@@ -1,0 +1,253 @@
+{
+    "$schema": "https://json-schema.org/schema#",
+    "title": "ApplicationProfile",
+    "description": "A profile of an application generated from an OTF 2 trace file.",
+    "type": "object",
+    "properties": {
+        "metaData": {
+            "type": "object",
+            "description": "Provides information about the processed trace file.",
+            "properties": {
+                "numberOfLocations": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "inputFileName": {
+                    "type": "string"
+                },
+                "runtime": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                }
+            },
+            "required": ["inputFileName", "numberOfLocations"]
+        },
+        "definitions": {
+            "type": "object",
+            "description": "",
+            "properties": {
+                "paradigms": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "paradigmId": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": ["paradigmId", "name"]
+                    },
+                    "minItems": 1,
+                    "uniqueItems": true
+                },
+                "regions": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "regionId": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "paradigmId": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "sourceLine":{
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "fileName": {
+                                "type": "string"
+                            }
+                        },
+                        "required": ["regionId", "name", "paradigmId"]
+                    },
+                    "minItems": 1,
+                    "uniqueItems": true
+                },
+                "metrics": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "metricId": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "metricType": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "metricMode": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "type": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "base": {
+                                "type": "integer"
+                            },
+                            "exponent": {
+                                "type": "integer"
+                            },
+                            "unit": {
+                                "type": "string"
+                            },
+                            "allowed": {
+                                "type": "boolean"
+                            }
+                        },
+                        "required": ["metricId", "name", "metricType", "metricMode", "type", "base", "exponent", "unit", "allowed"]
+                    },
+                    "minItems": 0,
+                    "uniqueItems": true
+                }
+            }
+        },
+        "systemTree": {
+            "type": "object",
+            "properties": {
+                "systemTreeNodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/systemTreeNode"
+                    }
+                },
+                "size": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "numberOfNodesPerLevel": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer",
+                        "minimum": 0
+                    }
+                }
+            }
+        },
+        "callTrees": {
+            "type": "array",
+            "items" : {
+                "type": "object",
+                "properties": {
+                    "callTree": {
+                        "type": "object",
+                        "properties": {
+                            "rootNode": {
+                                "$ref": "#/$defs/callTreeNode"
+                            },
+                            "depth": {
+                                "type": "integer",
+                                "minimum": 1
+                            },
+                            "size": {
+                                "type": "integer",
+                                "minimum": 1
+                            }
+                        },
+                        "required": ["rootNode"]
+                    }
+                }
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        },
+        "statistics": {
+        }
+    },
+    "$defs": {
+        "systemTreeNode": {
+            "type": "object",
+            "properties": {
+                "nodeId": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "name": {
+                    "type": "string"
+                },
+                "classId": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "locationId": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "level": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "#ref": "#"
+                    }
+                }
+            }
+        },
+        "callTreeNode": {
+            "type": "object",
+            "properties": {
+                "regionId": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "#ref": "#"
+                    }
+                },
+                "nodeData": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "locationId": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "regionData": {
+                                "type": "object",
+                                "properties": {
+                                    "count": {
+                                        "type": "integer",
+                                        "minimum": 0
+                                    },
+                                    "inclusiveTime": {
+                                        "type": "number",
+                                        "exclusiveMinimum": 0
+                                    },
+                                    "exclusiveTime": {
+                                        "type": "number",
+                                        "exclusiveMinimum": 0
+                                    }
+                                }
+                            }
+                        },
+                        "required": ["locationId", "regionData"],
+                        "additionalProperties": true
+                    }
+                }
+            }
+        }
+    }
+}
