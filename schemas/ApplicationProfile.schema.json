@@ -147,24 +147,19 @@
             "items" : {
                 "type": "object",
                 "properties": {
-                    "callTree": {
-                        "type": "object",
-                        "properties": {
-                            "rootNode": {
-                                "$ref": "#/$defs/callTreeNode"
-                            },
-                            "depth": {
-                                "type": "integer",
-                                "minimum": 1
-                            },
-                            "size": {
-                                "type": "integer",
-                                "minimum": 1
-                            }
-                        },
-                        "required": ["rootNode"]
+                    "rootNode": {
+                        "$ref": "#/$defs/callTreeNode"
+                    },
+                    "depth": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "size": {
+                        "type": "integer",
+                        "minimum": 1
                     }
-                }
+                },
+                "required": ["rootNode"]
             },
             "minItems": 1,
             "uniqueItems": true
