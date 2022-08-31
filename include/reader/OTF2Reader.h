@@ -6,11 +6,11 @@
 #ifndef OTF2READER_H
 #define OTF2READER_H
 
-#include <bits/stdint-uintn.h>
 #include <otf2/otf2.h>
 #include "otf2/OTF2_Definitions.h"
 #include "otf2/OTF2_GeneralDefinitions.h"
 #include "tracereader.h"
+#include <array>
 
 template <typename RefT>
 class StringIdentifier {
@@ -28,7 +28,7 @@ class StringIdentifier {
         auto              pos = 0;
         Result_t<Refs...> result{};
 
-        for (auto ref : {refs...}) {
+        for (const auto& ref : {refs...}) {
             auto it = string_definitions.find(ref);
             if (it != string_definitions.end())
                 result[pos] = &it->second;
@@ -763,7 +763,7 @@ class OTF2Reader : public TraceReader {
                                                         OTF2_GroupRef group, OTF2_CommRef parent, OTF2_CommFlag flag); //OTF2 3.x
     #else
         static inline OTF2_CallbackCode handle_def_comm(void* userData, OTF2_CommRef self, OTF2_StringRef name,
-                                                        OTF2_GroupRef group, OTF2_CommRef parent);                     //OTF2 2.x                              
+                                                        OTF2_GroupRef group, OTF2_CommRef parent);                     //OTF2 2.x
     #endif
 
     /** @brief Callback which is triggered by a Region definition record.
