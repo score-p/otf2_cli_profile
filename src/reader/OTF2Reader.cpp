@@ -78,6 +78,9 @@ string OTF2ParadigmToString(OTF2_Paradigm paradigm) {
 
 MetricMode mappingOTF2MetricMode( OTF2_MetricMode metricMode ){
     switch (metricMode){
+        case OTF2_METRIC_ACCUMULATED_START:
+            return MetricMode::ACCUMULATED_START;
+
         case OTF2_METRIC_ACCUMULATED_POINT:
             return MetricMode::ACCUMULATED_POINT;
 
@@ -726,7 +729,7 @@ OTF2_CallbackCode OTF2Reader::handle_enter(OTF2_LocationRef locationID, OTF2_Tim
         }
     }
 
-    tmp_node->add_data(locationID, FunctionData{0, 0, 0});
+    tmp_node->add_data(locationID);
     auto& node_metrics = tmp_node->last_data->metrics;
 
     if (!tmp_metric.empty()) {

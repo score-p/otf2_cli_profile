@@ -78,9 +78,9 @@ void display_node(std::shared_ptr<tree_node> node, Writer& writer){
                         writer.Key("count");
                         writer.Uint64(data.second.f_data.count);
                         writer.Key("inclTime");
-                        writer.Uint64(data.second.f_data.incl_time);
+                        writer.Uint64(data.second.f_data.incl_time.sum);
                         writer.Key("exclTime");
-                        writer.Uint64(data.second.f_data.excl_time);
+                        writer.Uint64(data.second.f_data.excl_time.sum);
                     writer.EndObject();
                     writer.Key("mData");
                     writer.StartObject();
@@ -309,7 +309,7 @@ void display_meta_data(AllData alldata, Writer& writer){
 
         writer.Key("inputFileName");
         writer.String(alldata.params.input_file_name.c_str());
-        
+
     writer.EndObject();
 }
 
@@ -374,7 +374,7 @@ void display_meta_data_profiler(AllData alldata, Writer& writer){
             writer.Key("packBuffer");
             writer.String(alldata.metaData.packBuffer);
         #endif
-    
+
     writer.EndObject();
 }
 

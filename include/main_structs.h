@@ -10,6 +10,7 @@
 #include <map>
 #include <unordered_map>
 #include <cstdint>
+#include <limits>
 
 enum class MetricDataType : uint8_t {
     UINT64,  // OTF2_TYPE_UINT64
@@ -18,6 +19,7 @@ enum class MetricDataType : uint8_t {
 };
 
 enum class MetricMode : uint8_t {
+    ACCUMULATED_START,
     ACCUMULATED_POINT,
     ACCUMULATED_LAST,
     ACCUMULATED_NEXT,
@@ -205,12 +207,77 @@ struct metric_class_data {
     metric_class_data(uint64_t _class_id) : class_id(_class_id) {}
 };
 
+template<typename T>
+struct MinMaxSum {
+    T sum = 0;
+    T min = std::numeric_limits<T>::max();
+    T max = 0;
+
+    MinMaxSum(const T& value)
+    : sum(value), min(value), max(value) {
+    }
+
+    MinMaxSum()
+    : sum(), min(std::numeric_limits<T>::max()), max() {
+    }
+
+    MinMaxSum& operator+=(const T& value) {
+
+        sum += value;
+        if(value < min) {
+            min = value;
+        }
+        if(value > max) {
+            max = value;
+        }
+
+        return *this;
+    }
+
+    MinMaxSum& operator+=(const MinMaxSum& other) {
+
+        sum += other.sum;
+        if(other.min < min) {
+            min = other.min;
+        }
+        if(other.max > max) {
+            max = other.max;
+        }
+
+        return *this;
+    }
+};
+
 struct FunctionData {
     uint64_t count;
     uint64_t incl_time;
     uint64_t excl_time;
+};
+#include <iostream>
+struct FunctionDataStats {
+    uint64_t count = 0;
+    MinMaxSum<uint64_t> incl_time{};
+    MinMaxSum<uint64_t> excl_time{};
 
-    FunctionData& operator+=(const FunctionData& rhs) {
+    FunctionDataStats(const FunctionData& fdata)
+    : count(fdata.count), incl_time(fdata.incl_time), excl_time(fdata.excl_time) {
+
+        if(fdata.incl_time == 0) std::cout << "WTF" << std::endl;
+    }
+
+    FunctionDataStats()
+    : count(), incl_time(), excl_time() {
+    }
+
+    FunctionDataStats& operator+=(const FunctionData& rhs) {
+        count += rhs.count;
+        incl_time += rhs.incl_time;
+        excl_time += rhs.excl_time;
+
+        return *this;
+    }
+
+    FunctionDataStats& operator+=(const FunctionDataStats& rhs) {
         count += rhs.count;
         incl_time += rhs.incl_time;
         excl_time += rhs.excl_time;
@@ -277,14 +344,14 @@ struct RmaData {
 };
 
 struct NodeData {
-    FunctionData f_data;
-    MessageData  m_data;
-    CollopData   c_data;
+    FunctionDataStats f_data;
+    MessageData       m_data;
+    CollopData        c_data;
 
     std::map<uint64_t, MetricData> metrics;
     NodeData() : f_data(), m_data(), c_data() {}
 
-    NodeData(const FunctionData& _f_data) : f_data(_f_data), m_data(), c_data() {}
+    NodeData(const FunctionDataStats& _f_data) : f_data(_f_data), m_data(), c_data() {}
 
     NodeData(const MessageData& _m_data) : f_data(), m_data(_m_data), c_data() {}
 

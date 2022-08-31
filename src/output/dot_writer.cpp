@@ -29,14 +29,14 @@ void Dot_writer::read_data(AllData& alldata) {
 
                 node->invocations += location.second.f_data.count;
 
-                double incl_time = location.second.f_data.incl_time / timerResolution;
+                double incl_time = location.second.f_data.incl_time.sum / timerResolution;
                 if (node->min_incl_time > incl_time)
                     node->min_incl_time = incl_time;
                 if (node->max_incl_time < incl_time)
                     node->max_incl_time = incl_time;
                 node->sum_incl_time += incl_time;
 
-                double excl_time = location.second.f_data.excl_time / timerResolution;
+                double excl_time = location.second.f_data.excl_time.sum / timerResolution;
                 if (node->min_excl_time > excl_time)
                     node->min_excl_time = excl_time;
                 if (node->max_excl_time < excl_time)

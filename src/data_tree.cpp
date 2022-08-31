@@ -142,7 +142,7 @@ void data_tree::insert_sub_tree(shared_ptr<tree_node>& parent, shared_ptr<tree_n
 // for communication via MPI
 // only getting called by serialize_data - not intended for usage on it's own
 void getting_serial(map<uint64_t, pair<uint64_t, uint64_t>>&                 mapping,
-                    deque<tuple<uint64_t, uint64_t, FunctionData*>>&         f_data,
+                    deque<tuple<uint64_t, uint64_t, FunctionDataStats*>>&         f_data,
                     deque<tuple<uint64_t, uint64_t, MessageData*>>&          m_data,
                     deque<tuple<uint64_t, uint64_t, CollopData*>>&           c_data,
                     deque<tuple<uint64_t, uint64_t, uint64_t, MetricData*>>& met_data, shared_ptr<tree_node>& aNode,
@@ -186,7 +186,7 @@ void getting_serial(map<uint64_t, pair<uint64_t, uint64_t>>&                 map
 
 // function to serialize data for the MPI communication
 void data_tree::serialize_data(map<uint64_t, pair<uint64_t, uint64_t>>&                 mapping,
-                               deque<tuple<uint64_t, uint64_t, FunctionData*>>&         f_data,
+                               deque<tuple<uint64_t, uint64_t, FunctionDataStats*>>&         f_data,
                                deque<tuple<uint64_t, uint64_t, MessageData*>>&          m_data,
                                deque<tuple<uint64_t, uint64_t, CollopData*>>&           c_data,
                                deque<tuple<uint64_t, uint64_t, uint64_t, MetricData*>>& met_data) {
@@ -249,6 +249,27 @@ tree_node::tree_node(const uint64_t _function_id)
       has_collop(false) {}
 
 tree_node::~tree_node() {}
+
+// adding data to call path node and saving the location_id and a pointer to the last used section
+// to speed up repeatedly acces to data of the same location (useful on location/stream wise reading of traces
+void tree_node::add_data(const uint64_t location_id, const FunctionDataStats& fdata) {
+    if (last_loc == location_id) {
+        last_data->f_data += fdata;
+    } else {
+        last_loc = location_id;
+
+        auto it = node_data.find(location_id);
+
+        if (it != node_data.end()) {
+            it->second.f_data += fdata;
+
+            last_data = &it->second;
+
+        } else {
+            last_data = &node_data.insert(make_pair(location_id, fdata)).first->second;
+        }
+    }
+}
 
 // adding data to call path node and saving the location_id and a pointer to the last used section
 // to speed up repeatedly acces to data of the same location (useful on location/stream wise reading of traces

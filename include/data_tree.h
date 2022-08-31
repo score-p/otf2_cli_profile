@@ -30,7 +30,7 @@ class data_tree {
 
     /* map< node,parent > */  // mapping darf !NICHT! unordered sein -> Reihenfolge ist wichtig!
     void serialize_data(std::map<uint64_t, std::pair<uint64_t, uint64_t>>&                 mapping,
-                        std::deque<std::tuple<uint64_t, uint64_t, FunctionData*>>&         f_data,
+                        std::deque<std::tuple<uint64_t, uint64_t, FunctionDataStats*>>&    f_data,
                         std::deque<std::tuple<uint64_t, uint64_t, MessageData*>>&          m_data,
                         std::deque<std::tuple<uint64_t, uint64_t, CollopData*>>&           c_data,
                         std::deque<std::tuple<uint64_t, uint64_t, uint64_t, MetricData*>>& met_data);
@@ -50,6 +50,8 @@ class data_tree {
 };
 
 class tree_node {
+    public:
+     using NodeData_t = std::map<uint64_t, NodeData>;
     // TODO message map needs peer information in real version -> nicht wikrlich sofern wir nicht
     // zumindest nen teil-message-matching betreiben wollen (min. matching: process x hat n
     // nachichten an y gesendet mit m bytes volumen - dabei muss nur entweder sender oder
@@ -63,6 +65,7 @@ class tree_node {
 
     ~tree_node();
 
+    void add_data(const uint64_t location_id, const FunctionDataStats& fdata = FunctionDataStats());
     void add_data(const uint64_t location_id, const FunctionData& fdata);
     void add_data(const uint64_t location_id, const MessageData& mdata);
     void add_data(const uint64_t location_id, const CollopData& cdata);
