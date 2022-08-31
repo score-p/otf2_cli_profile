@@ -233,12 +233,10 @@
                                         "minimum": 0
                                     },
                                     "inclusiveTime": {
-                                        "type": "number",
-                                        "exclusiveMinimum": 0
+                                        "$ref": "#/$defs/minMaxSum"
                                     },
                                     "exclusiveTime": {
-                                        "type": "number",
-                                        "exclusiveMinimum": 0
+                                        "$ref": "#/$defs/minMaxSum"
                                     }
                                 }
                             }
@@ -248,6 +246,21 @@
                     }
                 }
             }
+        },
+        "minMaxSum": {
+            "type": "object",
+            "properties": {
+                "min": {
+                    "type": "number"
+                },
+                "max": {
+                    "type": "number"
+                },
+                "sum": {
+                    "type": "number"
+                }
+            },
+            "required": ["min", "max", "sum"]
         }
     }
 }
