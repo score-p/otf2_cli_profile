@@ -1,4 +1,5 @@
 #include "dot_writer.h"
+#include <array>
 
 void Dot_writer::read_data(AllData& alldata) {
 
