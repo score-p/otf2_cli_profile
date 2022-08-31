@@ -27,7 +27,7 @@ You then surround the function call of the new module like this:
     alldata.tm.stop(ScopeID::<scope_id>);
 */
 
-enum class ScopeID : uint8_t { TOTAL, COLLECT, REDUCE, CUBE, JSON ,DOT};
+enum class ScopeID : uint8_t { TOTAL, COLLECT, REDUCE, CUBE, JSON, JSONIO ,DOT};
 
 class TimeMeasurement {
    public:
@@ -105,6 +105,7 @@ struct Params {
     bool        output_type_set    = false;
     bool        create_cube        = false;
     bool        create_json        = false;
+    bool        create_json_io     = false;
     bool        create_dot         = false;
     bool        data_dump           = false;
     bool        summarize_it       = false;  // TODO added for testing
@@ -130,6 +131,7 @@ struct Params {
                           << std::endl
                           << "      --cube              generates CUBE xml profile" << std::endl
                           << "      --json              generates json ouptut file" << std::endl
+                          << "      --json-io           generates json ouptut file for io events" << std::endl
                           << "      --dot               generates dot file for drawing graphs" << std::endl
                           << "        -fi, --filter <percent>    only show path, where a node took at least num \% of total time" << std::endl
                           << "        -t, --top <n>     only show top num nodes" << std::endl
@@ -167,11 +169,12 @@ struct Params {
             } else if (arguments[i] == "--json") {
                 create_json = true;
                 output_type_set = true;
-
+            } else if (arguments[i] == "--json-io") {
+                create_json_io = true;
+                output_type_set = true;
             } else if (arguments[i] == "--dot") {
                 create_dot = true;
                 output_type_set = true;
-
             } else if (arguments[i] == "--filter" || arguments[i] == "-fi") {
                 auto value = checkNextValue(arguments, i);
                 if (value < 0 || value > 100)

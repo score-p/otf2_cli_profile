@@ -212,8 +212,8 @@ void WorkflowProfile::WriteProfile(Writer& w) const {
     w.EndObject();
 }
 
-bool CreateJSON(AllData& alldata) {
-    cout << "Creating JSON profile" << std::endl;
+bool CreateJsonIo(AllData& alldata) {
+    cout << "Creating JSON IO profile" << std::endl;
     WorkflowProfile            profile;
     StringBuffer               b;
     PrettyWriter<StringBuffer> w(b);
@@ -311,4 +311,8 @@ bool CreateJSON(AllData& alldata) {
     std::ofstream outfile(fname.c_str());
     outfile << b.GetString() << std::endl;
     return true;
+}
+
+bool CreateJson(AllData& alldata) {
+
 }

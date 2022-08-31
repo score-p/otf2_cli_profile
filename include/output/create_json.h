@@ -8,6 +8,8 @@
 
 #include "all_data.h"
 
-bool CreateJSON(AllData& alldata);
+bool CreateJson(AllData& alldata);
+
+bool CreateJsonIo(AllData& alldata);
 
 #endif

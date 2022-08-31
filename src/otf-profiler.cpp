@@ -148,10 +148,16 @@ int main(int argc, char** argv) {
 
 #ifdef HAVE_JSON
     if (alldata.params.create_json) {
-        /* step 6.3: create CUBE output */
+        /* create JSON IO output */
         alldata.tm.start(ScopeID::JSON);
-        CreateJSON(alldata);
+        CreateJson(alldata);
         alldata.tm.stop(ScopeID::JSON);
+    }
+if (alldata.params.create_json_io) {
+        /* create JSON IO output */
+        alldata.tm.start(ScopeID::JSONIO);
+        CreateJsonIo(alldata);
+        alldata.tm.stop(ScopeID::JSONIO);
     }
 #endif
 
