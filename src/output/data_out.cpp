@@ -67,7 +67,7 @@ void display_node(std::shared_ptr<tree_node> node, Writer& writer){
         else
             writer.Null();
 
-        writer.Key("node_data");
+        writer.Key("nodeData");
         writer.StartArray();
             for(const auto& data : node->node_data){
                 writer.StartObject();
@@ -415,7 +415,7 @@ void display_system_tree(AllData alldata, Writer& writer){
     writer.StartObject();
         writer.Key("systemNodes");
         display_system_node(alldata.definitions.system_tree.get_root(), alldata, writer);
-        writer.Key("_size");
+        writer.Key("size");
         writer.Uint(alldata.definitions.system_tree.size());
         writer.Key("numNodesPerLevel");
         writer.StartArray();
