@@ -1,25 +1,14 @@
 #include <fstream>
-//#include <iostream>
+#include <iostream>
 #include <string>
 #include "all_data.h"
 #include "data_out.h"
-//#include "rapidjson/document.h"
+#include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
-//#include "rapidjson/writer.h"
+#include "rapidjson/writer.h"
 #include "rapidjson/prettywriter.h"
 #include "definitions.h"
 #include "main_structs.h"
-
-#include <rapidjson/encodings.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <sys/types.h>
-#include <map>
-#include <new>
-#include <utility>
-#include <vector>
-#include "data_tree.h"
-#include "utils.h"
 
 bool DataOut(AllData& alldata){
 
@@ -78,7 +67,7 @@ void display_node(std::shared_ptr<tree_node> node, Writer& writer){
         else
             writer.Null();
 
-        writer.Key("nodeData");
+        writer.Key("node_data");
         writer.StartArray();
             for(const auto& data : node->node_data){
                 writer.StartObject();
@@ -426,7 +415,7 @@ void display_system_tree(AllData alldata, Writer& writer){
     writer.StartObject();
         writer.Key("systemNodes");
         display_system_node(alldata.definitions.system_tree.get_root(), alldata, writer);
-        writer.Key("size");
+        writer.Key("_size");
         writer.Uint(alldata.definitions.system_tree.size());
         writer.Key("numNodesPerLevel");
         writer.StartArray();

@@ -7,10 +7,6 @@
 
 #include <stack>
 
-#include <bits/utility.h>
-#include <cstddef>
-#include <type_traits>
-
 using namespace std;
 
 data_tree::data_tree() {}

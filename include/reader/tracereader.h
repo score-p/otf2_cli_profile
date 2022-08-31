@@ -8,9 +8,6 @@
 
 #include "all_data.h"
 
-#include <stdint.h>
-#include <memory>
-
 class TraceReader {
    public:
     virtual ~TraceReader() {}

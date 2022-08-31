@@ -6,22 +6,11 @@
 #ifndef OTF2READER_H
 #define OTF2READER_H
 
-#include <utility>
-#include <array>
-//#include <bits/stdint-uintn.h>
-//#include <otf2/otf2.h>
+#include <bits/stdint-uintn.h>
+#include <otf2/otf2.h>
 #include "otf2/OTF2_Definitions.h"
 #include "otf2/OTF2_GeneralDefinitions.h"
 #include "tracereader.h"
-
-#include <stdint.h>
-#include <map>
-#include <string>
-#include "otf-profiler-config.h"
-#include "otf2/OTF2_AttributeList.h"
-#include "otf2/OTF2_AttributeValue.h"
-#include "otf2/OTF2_Events.h"
-#include "otf2/OTF2_Reader.h"
 
 template <typename RefT>
 class StringIdentifier {

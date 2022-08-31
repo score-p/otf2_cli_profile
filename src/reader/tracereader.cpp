@@ -21,9 +21,6 @@
 #include "jsonreader.h"
 #endif
 
-#include "all_data.h"
-#include "utils.h"
-
 using namespace std;
 
 unique_ptr<TraceReader> getTraceReader(AllData& alldata) {
