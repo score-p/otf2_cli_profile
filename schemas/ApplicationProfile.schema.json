@@ -164,7 +164,28 @@
             "minItems": 1,
             "uniqueItems": true
         },
-        "statistics": {
+        "summary": {
+            "type": "object",
+            "properties": {
+                "runtime": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "paradigms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/summaryObject"
+                    }
+                },
+                "regions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/summaryObject"
+                    }
+                }
+
+            },
+            "required": ["runtime", "paradigms", "regions"]
         }
     },
     "$defs": {
@@ -242,17 +263,39 @@
                 }
             }
         },
+        "summaryObject": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "count": {
+                    "$ref": "#/$defs/minMaxSum"
+                },
+                "exclusiveTime": {
+                    "$ref": "#/$defs/minMaxSum"
+                },
+                "inclusiveTime": {
+                    "$ref": "#/$defs/minMaxSum"
+                }
+            },
+            "required": ["id"]
+        },
         "minMaxSum": {
             "type": "object",
             "properties": {
                 "min": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0
                 },
                 "max": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0
                 },
                 "sum": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0
                 }
             },
             "required": ["min", "max", "sum"]
