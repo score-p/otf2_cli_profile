@@ -23,8 +23,6 @@ auto get_regionData(const FunctionDataStats& reg_data, rapidjson::Document::Allo
     obj.AddMember("count", reg_data.count, alloc);
     obj.AddMember("inclusiveTime", get_minMaxSum(reg_data.incl_time, alloc), alloc);
     obj.AddMember("exclusiveTime", get_minMaxSum(reg_data.excl_time, alloc), alloc);
-    //obj.AddMember("inclusiveTime", get_minMaxSum(obj, alloc), alloc);
-    //obj.AddMember("exclusiveTime", get_minMaxSum(obj, alloc), alloc);
 
     return obj;
 }
@@ -78,7 +76,6 @@ bool CreateJson(AllData& alldata) {
 
     auto& alloc = document.GetAllocator();
     document.AddMember("callTrees", get_data_trees(alldata, alloc), alloc);
-    //document.AddMember("callTrees", 1, alloc);
     rapidjson::StringBuffer strbuf;
     rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(strbuf);
     document.Accept(writer);
