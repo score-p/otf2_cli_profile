@@ -81,6 +81,7 @@ endif()
 if (HAVE_JSON AND USE_JSON)
     include_directories("${RapidJson_INCLUDE_DIRS}")
     list(APPEND SOURCE_FILES src/output/create_json.cpp)
+    list(APPEND SOURCE_FILES src/output/create_json_io.cpp)
 endif ()
 
 
