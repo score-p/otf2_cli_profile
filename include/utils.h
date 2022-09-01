@@ -9,6 +9,8 @@
 #include <chrono>
 #include <iostream>
 #include <string>
+#include <map>
+#include <vector>
 
 #include "otf-profiler-config.h"
 
