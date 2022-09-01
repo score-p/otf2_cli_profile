@@ -18,7 +18,7 @@ rapidjson::Value get_minMaxSum(const MinMaxSum<T>& data, rapidjson::Document::Al
     return obj;
 }
 
-auto get_regionData(const FunctionDataStats& reg_data, rapidjson::Document::AllocatorType& alloc) {
+rapidjson::Value get_regionData(const FunctionDataStats& reg_data, rapidjson::Document::AllocatorType& alloc) {
     rapidjson::Value obj(rapidjson::kObjectType);
     obj.AddMember("count", reg_data.count, alloc);
     obj.AddMember("inclusiveTime", get_minMaxSum(reg_data.incl_time, alloc), alloc);
@@ -26,7 +26,6 @@ auto get_regionData(const FunctionDataStats& reg_data, rapidjson::Document::Allo
 
     return obj;
 }
-
 
 rapidjson::Value get_tree_node(const std::shared_ptr<tree_node>& node, rapidjson::Document::AllocatorType& alloc) {
     rapidjson::Value node_obj(rapidjson::kObjectType);
