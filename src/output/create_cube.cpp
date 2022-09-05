@@ -260,13 +260,13 @@ bool CreateCube(AllData& alldata) {
 
             metric = FIND(MapCubeMetrics, 0)->second;
             cube_out.set_sev(metric, tmp_cnode, tmp_thread,
-                             (double)it_data.second.f_data.excl_time / (double)alldata.metaData.timerResolution);
+                             (double)it_data.second.f_data.excl_time.sum / (double)alldata.metaData.timerResolution);
 
             id = FIND(paradigmToCubeMetric_time, para_id)->second;
 
             metric = FIND(MapCubeMetrics, id)->second;
             cube_out.set_sev(metric, tmp_cnode, tmp_thread,
-                             (double)it_data.second.f_data.excl_time / (double)alldata.metaData.timerResolution);
+                             (double)it_data.second.f_data.excl_time.sum / (double)alldata.metaData.timerResolution);
 
             // message data
             if (it_data.second.m_data.count_send > 0) {
