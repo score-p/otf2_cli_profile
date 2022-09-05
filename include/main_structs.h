@@ -209,6 +209,8 @@ struct metric_class_data {
 
 template<typename T>
 struct MinMaxSum {
+    using value_t = T;
+    
     T sum = 0;
     T min = std::numeric_limits<T>::max();
     T max = 0;
