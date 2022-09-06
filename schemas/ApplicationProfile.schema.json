@@ -12,15 +12,15 @@
                     "type": "integer",
                     "minimum": 1
                 },
-                "inputFileName": {
-                    "type": "string"
-                },
                 "runtime": {
                     "type": "number",
                     "exclusiveMinimum": 0
+                },
+                "inputFileName": {
+                    "type": "string"
                 }
             },
-            "required": ["inputFileName", "numberOfLocations"]
+            "required": ["numberOfLocations", "runtime", "inputFileName"]
         },
         "definitions": {
             "type": "object",
@@ -164,10 +164,6 @@
         "summary": {
             "type": "object",
             "properties": {
-                "runtime": {
-                    "type": "number",
-                    "minimum": 0
-                },
                 "paradigms": {
                     "type": "array",
                     "items": {
@@ -241,7 +237,7 @@
                     }
                 }
             },
-            "required": ["runtime", "paradigms", "regions"]
+            "required": ["paradigms", "regions"]
         }
     },
     "$defs": {

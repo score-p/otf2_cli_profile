@@ -62,10 +62,12 @@ rapidjson::Value get_minMaxSumSeconds(const MinMaxSum<T>& data, uint64_t timerRe
 }
 
 rapidjson::Value get_metaData(AllData& alldata, rapidjson::Document::AllocatorType& alloc) {
+    const auto& metaData = alldata.metaData;
+
     rapidjson::Value obj(rapidjson::kObjectType);
-    obj.AddMember("numberOfLocations", alldata.metaData.number_locations, alloc);
+    obj.AddMember("numberOfLocations", metaData.number_locations, alloc);
     obj.AddMember("inputFileName", rapidjson::Value(alldata.params.input_file_name.c_str(), alloc), alloc);
-    obj.AddMember("runtime", 10, alloc);
+    obj.AddMember("runtime", static_cast<double>(metaData.max_time_stamp - metaData.min_time_stamp) / metaData.timerResolution, alloc);
 
     return obj;
 }
@@ -163,8 +165,6 @@ rapidjson::Value get_summary(AllData& alldata, rapidjson::Document::AllocatorTyp
     const auto& metaData = alldata.metaData;
 
     rapidjson::Value summary(rapidjson::kObjectType);
-    summary.AddMember("runtime", static_cast<double>(metaData.max_time_stamp - metaData.min_time_stamp) / metaData.timerResolution, alloc);
-
     rapidjson::Value paradigms(rapidjson::kArrayType);
     create_paradigm_summary(alldata);
     for(const auto& paradigm : summary_para) {
