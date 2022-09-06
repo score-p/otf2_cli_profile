@@ -148,8 +148,7 @@ void create_paradigm_summary(AllData& alldata) {
     }
 }
 
-template<typename ResT>
-rapidjson::Value get_summaryObject(std::pair<uint64_t, SummaryObject> obj,rapidjson::Document::AllocatorType& alloc, ResT timerResolution) {
+rapidjson::Value get_summaryObject(std::pair<uint64_t, SummaryObject> obj, uint64_t timerResolution, rapidjson::Document::AllocatorType& alloc) {
     using value_t = typename decltype(obj.second.count)::value_t;
     rapidjson::Value summaryObject(rapidjson::kObjectType);
     summaryObject.AddMember("id", obj.first, alloc);
@@ -161,19 +160,21 @@ rapidjson::Value get_summaryObject(std::pair<uint64_t, SummaryObject> obj,rapidj
 }
 
 rapidjson::Value get_summary(AllData& alldata, rapidjson::Document::AllocatorType& alloc) {
+    const auto& metaData = alldata.metaData;
+
     rapidjson::Value summary(rapidjson::kObjectType);
-    summary.AddMember("runtime", 10, alloc);
+    summary.AddMember("runtime", static_cast<double>(metaData.max_time_stamp - metaData.min_time_stamp) / metaData.timerResolution, alloc);
 
     rapidjson::Value paradigms(rapidjson::kArrayType);
     create_paradigm_summary(alldata);
     for(const auto& paradigm : summary_para) {
-        paradigms.PushBack(get_summaryObject(paradigm, alloc, alldata.metaData.timerResolution), alloc);
+        paradigms.PushBack(get_summaryObject(paradigm, metaData.timerResolution, alloc), alloc);
     }
     summary.AddMember("paradigms", paradigms, alloc);
 
     rapidjson::Value regions(rapidjson::kArrayType);
     for(const auto& region : summary_reg) {
-        regions.PushBack(get_summaryObject(region, alloc, alldata.metaData.timerResolution), alloc);
+        regions.PushBack(get_summaryObject(region, alldata.metaData.timerResolution, alloc), alloc);
     }
     summary.AddMember("regions", regions, alloc);
 

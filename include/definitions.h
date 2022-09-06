@@ -403,6 +403,10 @@ struct meta_data {
     // class_id, pair< number of the metric in class, metric_id >
     std::map<uint64_t, std::map<uint64_t, uint64_t>> metricClassToMetric;
 
+
+    uint64_t min_time_stamp;
+    uint64_t max_time_stamp;
+
     uint64_t timerResolution;
     uint32_t myRank;
     uint32_t numRanks;
@@ -414,7 +418,9 @@ struct meta_data {
 
 #endif
 
-    meta_data(uint32_t my_rank = 0, uint32_t num_ranks = 1) : myRank(my_rank), numRanks(num_ranks), timerResolution(0) {
+    meta_data(uint32_t my_rank = 0, uint32_t num_ranks = 1)
+    : min_time_stamp(std::numeric_limits<uint64_t>::max()), max_time_stamp(0),
+      timerResolution(0), myRank(my_rank), numRanks(num_ranks) {
 #ifdef OTFPROFILER_MPI
 
         packBufferSize = 0;

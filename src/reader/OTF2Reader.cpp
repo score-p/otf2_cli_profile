@@ -707,6 +707,8 @@ OTF2_CallbackCode OTF2Reader::handle_enter(OTF2_LocationRef locationID, OTF2_Tim
 
 {
     auto*      alldata = static_cast<AllData*>(userData);
+
+    alldata->metaData.min_time_stamp = std::min(alldata->metaData.min_time_stamp, time);
     tree_node* tmp_node;
 
     if (!node_stack.empty()) {
@@ -759,6 +761,8 @@ OTF2_CallbackCode OTF2Reader::handle_enter(OTF2_LocationRef locationID, OTF2_Tim
 OTF2_CallbackCode OTF2Reader::handle_leave(OTF2_LocationRef locationID, OTF2_TimeStamp time, uint64_t eventPosition,
                                            void* userData, OTF2_AttributeList* attributeList, OTF2_RegionRef region) {
     auto* alldata = static_cast<AllData*>(userData);
+
+    alldata->metaData.max_time_stamp = std::max(alldata->metaData.max_time_stamp, time);
 
     auto&    tmp       = node_stack.front();
     uint64_t incl_time = time - tmp.time;
