@@ -66,8 +66,8 @@ rapidjson::Value get_metaData(AllData& alldata, rapidjson::Document::AllocatorTy
 
     rapidjson::Value obj(rapidjson::kObjectType);
     obj.AddMember("numberOfLocations", metaData.number_locations, alloc);
-    obj.AddMember("inputFileName", rapidjson::Value(alldata.params.input_file_name.c_str(), alloc), alloc);
     obj.AddMember("runtime", static_cast<double>(metaData.max_time_stamp - metaData.min_time_stamp) / metaData.timerResolution, alloc);
+    obj.AddMember("inputFileName", rapidjson::Value(alldata.params.input_file_name.c_str(), alloc), alloc);
 
     return obj;
 }
