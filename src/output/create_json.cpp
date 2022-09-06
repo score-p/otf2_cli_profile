@@ -2,9 +2,11 @@
  This is part of the OTF-Profiler. Copyright by ZIH, TU Dresden 2016-2018.
  Authors: Maximillian Neumann, Denis Hünich, Jens Doleschal, Bill Williams
 */
+#include <algorithm>
 #include <fstream>
 #include <map>
 
+#include <bits/stdint-uintn.h>
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/stringbuffer.h>
@@ -39,6 +41,8 @@ private:
 
 std::map<uint64_t, SummaryObject> summary_para;
 std::map<uint64_t, SummaryObject> summary_reg;
+uint64_t depth = 0;
+uint64_t size = 0;
 
 template<typename T>
 rapidjson::Value get_minMaxSum(const MinMaxSum<T>& data, rapidjson::Document::AllocatorType& alloc) {
@@ -190,13 +194,16 @@ rapidjson::Value get_regionData(const FunctionDataStats& reg_data, uint64_t time
     return obj;
 }
 
-rapidjson::Value get_tree_node(const std::shared_ptr<tree_node>& node, uint64_t timerResolution, rapidjson::Document::AllocatorType& alloc) {
+rapidjson::Value get_tree_node(const std::shared_ptr<tree_node>& node, uint64_t timerResolution, rapidjson::Document::AllocatorType& alloc, uint64_t path_depth) {
     rapidjson::Value node_obj(rapidjson::kObjectType);
     rapidjson::Value children(rapidjson::kArrayType);
 
     node_obj.AddMember("regionId", node->function_id, alloc);
 
     auto& sum_reg_values = summary_reg[node->function_id];
+
+    path_depth += 1;
+    ++size;
 
     rapidjson::Value locations(rapidjson::kArrayType);
     for(const auto& data : node->node_data) {
@@ -210,11 +217,12 @@ rapidjson::Value get_tree_node(const std::shared_ptr<tree_node>& node, uint64_t 
     }
     node_obj.AddMember("nodeData", locations, alloc);
 
-
     for(const auto& child : node->children) {
-        children.PushBack(get_tree_node(child.second, timerResolution, alloc), alloc);
+        children.PushBack(get_tree_node(child.second, timerResolution, alloc, path_depth), alloc);
     }
     node_obj.AddMember("children", children, alloc);
+
+    depth = std::max(depth, path_depth);
 
     return node_obj;
 }
@@ -225,9 +233,10 @@ rapidjson::Value get_data_trees(AllData& alldata, rapidjson::Document::Allocator
 
     for(const auto& root_node : alldata.call_path_tree.root_nodes) {
         rapidjson::Value root_obj(rapidjson::kObjectType);
-        root_obj.AddMember("rootNode", get_tree_node(root_node.second, alldata.metaData.timerResolution, alloc), alloc);
-        root_obj.AddMember("depth", 1, alloc);
-        root_obj.AddMember("size", 1, alloc);
+        uint64_t path_depth = 0;
+        root_obj.AddMember("rootNode", get_tree_node(root_node.second, alldata.metaData.timerResolution, alloc, path_depth), alloc);
+        root_obj.AddMember("depth", depth, alloc);
+        root_obj.AddMember("size", size, alloc);
         trees.PushBack(root_obj , alloc);
     }
 
