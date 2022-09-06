@@ -173,7 +173,7 @@ bool OTF2Reader::initialize(AllData& alldata) {
     OTF2_MPI_Reader_SetCollectiveCallbacks(_reader, MPI_COMM_WORLD);
 #endif
 
-    uint64_t number_locations;
+    auto& number_locations = alldata.metaData.number_locations;
     OTF2_Reader_GetNumberOfLocations(_reader, &number_locations);
 
     if (number_locations < alldata.metaData.numRanks) {

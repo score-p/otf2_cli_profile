@@ -63,7 +63,7 @@ rapidjson::Value get_minMaxSumSeconds(const MinMaxSum<T>& data, uint64_t timerRe
 
 rapidjson::Value get_metaData(AllData& alldata, rapidjson::Document::AllocatorType& alloc) {
     rapidjson::Value obj(rapidjson::kObjectType);
-    obj.AddMember("numberOfLocations", 200, alloc);
+    obj.AddMember("numberOfLocations", alldata.metaData.number_locations, alloc);
     obj.AddMember("inputFileName", rapidjson::Value(alldata.params.input_file_name.c_str(), alloc), alloc);
     obj.AddMember("runtime", 10, alloc);
 
