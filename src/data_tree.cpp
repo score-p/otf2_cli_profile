@@ -9,8 +9,6 @@
 
 using namespace std;
 
-data_tree::data_tree() {}
-
 // generating a tree out of a mapping sent with MPI - ReduceData - (has no data inside a tree node)
 data_tree::data_tree(map<uint64_t, tuple<uint64_t, uint64_t, shared_ptr<tree_node>>>& mapping) {
     shared_ptr<tree_node> tmp_node;

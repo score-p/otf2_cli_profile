@@ -17,7 +17,7 @@ class tree_node;
 
 class data_tree {
    public:
-    data_tree();
+    data_tree() = default;
 
     data_tree(std::map<uint64_t, std::tuple<uint64_t, uint64_t, std::shared_ptr<tree_node>>>& mapping);
 
