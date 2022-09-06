@@ -124,10 +124,7 @@
             "type": "object",
             "properties": {
                 "systemTreeNodes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/$defs/systemTreeNode"
-                    }
+                    "$ref": "#/$defs/systemTreeNode"
                 },
                 "size": {
                     "type": "integer",
@@ -182,8 +179,67 @@
                     "items": {
                         "$ref": "#/$defs/summaryObject"
                     }
+                },
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "locationId": {
+                                "type": "integer"
+                            },
+                            "numberOfMessages": {
+                                "type": "integer"
+                            },
+                            "messageSize": {
+                                "$ref": "#/$defs/minMaxSum"
+                            },
+                            "transferTime": {
+                                "$ref": "#/$defs/minMaxSum"
+                            },
+                            "dataRate": {
+                                "type" : "object",
+                                "properties" : {
+                                    "min" : {
+                                        "type" : "number",
+                                        "minimum" : 0
+                                    },
+                                    "max" : {
+                                        "type" : "number",
+                                        "minimum" : 0
+                                    },
+                                    "average" : {
+                                        "type" : "number",
+                                        "minimum" : 0
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "communicators": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "communicationCount": {
+                                "type" : "integer"
+                            },
+                            "duration" : {
+                                "type" : "number"
+                            },
+                            "dataSent" : {
+                                "type" : "number"
+                            },
+                            "dataReceived" : {
+                                "type" : "number"
+                            }
+                        }
+                    }
                 }
-
             },
             "required": ["runtime", "paradigms", "regions"]
         }
