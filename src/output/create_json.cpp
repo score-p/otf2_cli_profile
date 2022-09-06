@@ -2,11 +2,9 @@
  This is part of the OTF-Profiler. Copyright by ZIH, TU Dresden 2016-2018.
  Authors: Maximillian Neumann, Denis Hünich, Jens Doleschal, Bill Williams
 */
-#include <algorithm>
 #include <fstream>
 #include <map>
 
-#include <bits/stdint-uintn.h>
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/stringbuffer.h>
