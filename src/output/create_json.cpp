@@ -2,34 +2,61 @@
  This is part of the OTF-Profiler. Copyright by ZIH, TU Dresden 2016-2018.
  Authors: Maximillian Neumann, Denis Hünich, Jens Doleschal, Bill Williams
 */
-#include <bits/stdint-uintn.h>
-#include <rapidjson/rapidjson.h>
 #include <fstream>
 #include <map>
-#include <memory>
-#include <utility>
+
+#include <rapidjson/document.h>
+#include <rapidjson/prettywriter.h>
+#include <rapidjson/stringbuffer.h>
+
 #include "all_data.h"
-#include "definitions.h"
-#include "main_structs.h"
-#include "rapidjson/document.h"
-#include "rapidjson/prettywriter.h"
-#include "rapidjson/stringbuffer.h"
 
 struct SummaryObject {
     MinMaxSum<uint64_t> count;
     MinMaxSum<uint64_t> excl_time;
     MinMaxSum<uint64_t> incl_time;
+
+    SummaryObject& operator+=(const FunctionDataStats& rhs) {
+        addData(rhs);
+
+        return *this;
+    }
+
+    SummaryObject& operator+=(const SummaryObject& rhs) {
+        addData(rhs);
+
+        return *this;
+    }
+
+private:
+    template<typename T>
+    void addData(const T& rhs) {
+        count += rhs.count;
+        incl_time += rhs.incl_time;
+        excl_time += rhs.excl_time;
+    }
 };
 
 std::map<uint64_t, SummaryObject> summary_para;
 std::map<uint64_t, SummaryObject> summary_reg;
 
-template<typename T, typename ResT, typename RetT=uint64_t>
-rapidjson::Value get_minMaxSum(const MinMaxSum<T>& data, rapidjson::Document::AllocatorType& alloc, ResT timerResolution) {
+template<typename T>
+rapidjson::Value get_minMaxSum(const MinMaxSum<T>& data, rapidjson::Document::AllocatorType& alloc) {
     rapidjson::Value obj(rapidjson::kObjectType);
-    obj.AddMember("min", static_cast<RetT>(data.min) / timerResolution, alloc);
-    obj.AddMember("max", static_cast<RetT>(data.max) / timerResolution, alloc);
-    obj.AddMember("sum", static_cast<RetT>(data.sum) / timerResolution, alloc);
+    obj.AddMember("min", data.min, alloc);
+    obj.AddMember("max", data.max, alloc);
+    obj.AddMember("sum", data.sum, alloc);
+
+    return obj;
+}
+
+
+template<typename T>
+rapidjson::Value get_minMaxSumSeconds(const MinMaxSum<T>& data, uint64_t timerResolution, rapidjson::Document::AllocatorType& alloc) {
+    rapidjson::Value obj(rapidjson::kObjectType);
+    obj.AddMember("min", static_cast<double>(data.min) / timerResolution, alloc);
+    obj.AddMember("max", static_cast<double>(data.max) / timerResolution, alloc);
+    obj.AddMember("sum", static_cast<double>(data.sum) / timerResolution, alloc);
 
     return obj;
 }
@@ -114,23 +141,10 @@ rapidjson::Value get_system_tree(AllData& alldata, rapidjson::Document::Allocato
     return systemTree;
 }
 
-void add_minMaxSum(const FunctionDataStats& reg_data, SummaryObject& obj) {
-    obj.count += reg_data.count;
-    obj.excl_time += reg_data.excl_time;
-    obj.incl_time += reg_data.incl_time;
-}
-
-void add_minMaxSum(const SummaryObject& reg_data, SummaryObject& obj) {
-    obj.count += reg_data.count;
-    obj.excl_time += reg_data.excl_time;
-    obj.incl_time += reg_data.incl_time;
-}
-
 void create_paradigm_summary(AllData& alldata) {
     rapidjson::Value paradigms(rapidjson::kArrayType);
     for(const auto& region : summary_reg) {
-        auto& value = summary_para[alldata.definitions.regions.get(region.first)->paradigm_id];
-        add_minMaxSum(region.second, value);
+        summary_para[alldata.definitions.regions.get(region.first)->paradigm_id] += region.second;
     }
 }
 
@@ -139,9 +153,9 @@ rapidjson::Value get_summaryObject(std::pair<uint64_t, SummaryObject> obj,rapidj
     using value_t = typename decltype(obj.second.count)::value_t;
     rapidjson::Value summaryObject(rapidjson::kObjectType);
     summaryObject.AddMember("id", obj.first, alloc);
-    summaryObject.AddMember("count", get_minMaxSum<value_t, uint64_t>(obj.second.count, alloc, 1), alloc);
-    summaryObject.AddMember("exclusiveTime", get_minMaxSum<value_t, uint64_t, double>(obj.second.excl_time, alloc, timerResolution), alloc);
-    summaryObject.AddMember("inclusiveTime", get_minMaxSum<value_t, uint64_t, double>(obj.second.incl_time, alloc, timerResolution), alloc);
+    summaryObject.AddMember("count", get_minMaxSum(obj.second.count, alloc), alloc);
+    summaryObject.AddMember("exclusiveTime", get_minMaxSumSeconds(obj.second.excl_time, timerResolution, alloc), alloc);
+    summaryObject.AddMember("inclusiveTime", get_minMaxSumSeconds(obj.second.incl_time, timerResolution, alloc), alloc);
 
     return summaryObject;
 }
@@ -156,7 +170,7 @@ rapidjson::Value get_summary(AllData& alldata, rapidjson::Document::AllocatorTyp
         paradigms.PushBack(get_summaryObject(paradigm, alloc, alldata.metaData.timerResolution), alloc);
     }
     summary.AddMember("paradigms", paradigms, alloc);
-    
+
     rapidjson::Value regions(rapidjson::kArrayType);
     for(const auto& region : summary_reg) {
         regions.PushBack(get_summaryObject(region, alloc, alldata.metaData.timerResolution), alloc);
@@ -166,39 +180,39 @@ rapidjson::Value get_summary(AllData& alldata, rapidjson::Document::AllocatorTyp
     return summary;
 }
 
-rapidjson::Value get_regionData(const FunctionDataStats& reg_data, rapidjson::Document::AllocatorType& alloc, uint64_t timerResolution) {
+rapidjson::Value get_regionData(const FunctionDataStats& reg_data, uint64_t timerResolution, rapidjson::Document::AllocatorType& alloc) {
     using value_t = decltype(reg_data.count);
     rapidjson::Value obj(rapidjson::kObjectType);
     obj.AddMember("count", reg_data.count, alloc);
-    obj.AddMember("inclusiveTime", get_minMaxSum<value_t, uint64_t, double>(reg_data.incl_time, alloc, timerResolution), alloc);
-    obj.AddMember("exclusiveTime", get_minMaxSum<value_t, uint64_t, double>(reg_data.excl_time, alloc, timerResolution), alloc);
+    obj.AddMember("inclusiveTime", get_minMaxSumSeconds(reg_data.incl_time, timerResolution, alloc), alloc);
+    obj.AddMember("exclusiveTime", get_minMaxSumSeconds(reg_data.excl_time, timerResolution, alloc), alloc);
 
     return obj;
 }
 
-rapidjson::Value get_tree_node(const std::shared_ptr<tree_node>& node, rapidjson::Document::AllocatorType& alloc, uint64_t timerResolution) {
+rapidjson::Value get_tree_node(const std::shared_ptr<tree_node>& node, uint64_t timerResolution, rapidjson::Document::AllocatorType& alloc) {
     rapidjson::Value node_obj(rapidjson::kObjectType);
     rapidjson::Value children(rapidjson::kArrayType);
 
     node_obj.AddMember("regionId", node->function_id, alloc);
 
-    auto& reg_values = summary_reg[node->function_id];
+    auto& sum_reg_values = summary_reg[node->function_id];
 
     rapidjson::Value locations(rapidjson::kArrayType);
     for(const auto& data : node->node_data) {
         rapidjson::Value obj(rapidjson::kObjectType);
         obj.AddMember("locationId", data.first, alloc);
-        obj.AddMember("regionData", get_regionData(data.second.f_data, alloc, timerResolution), alloc);
+        obj.AddMember("regionData", get_regionData(data.second.f_data, timerResolution, alloc), alloc);
 
         locations.PushBack(obj, alloc);
 
-        add_minMaxSum(data.second.f_data, reg_values);
+        sum_reg_values += data.second.f_data;
     }
     node_obj.AddMember("nodeData", locations, alloc);
 
 
     for(const auto& child : node->children) {
-        children.PushBack(get_tree_node(child.second, alloc, timerResolution), alloc);
+        children.PushBack(get_tree_node(child.second, timerResolution, alloc), alloc);
     }
     node_obj.AddMember("children", children, alloc);
 
@@ -211,7 +225,7 @@ rapidjson::Value get_data_trees(AllData& alldata, rapidjson::Document::Allocator
 
     for(const auto& root_node : alldata.call_path_tree.root_nodes) {
         rapidjson::Value root_obj(rapidjson::kObjectType);
-        root_obj.AddMember("rootNode", get_tree_node(root_node.second, alloc, alldata.metaData.timerResolution), alloc);
+        root_obj.AddMember("rootNode", get_tree_node(root_node.second, alldata.metaData.timerResolution, alloc), alloc);
         root_obj.AddMember("depth", 1, alloc);
         root_obj.AddMember("size", 1, alloc);
         trees.PushBack(root_obj , alloc);
