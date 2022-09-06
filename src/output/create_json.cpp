@@ -82,7 +82,7 @@ rapidjson::Value get_definitions(AllData& alldata, rapidjson::Document::Allocato
     rapidjson::Value regions(rapidjson::kArrayType);
     for(const auto& region : alldata.definitions.regions.get_all()) {
         rapidjson::Value obj(rapidjson::kObjectType);
-        obj.AddMember("regionID", region.first, alloc);
+        obj.AddMember("regionId", region.first, alloc);
         obj.AddMember("name", rapidjson::Value(region.second.name.c_str(), alloc), alloc);
         obj.AddMember("paradigmId", region.second.paradigm_id, alloc);
         obj.AddMember("sourceLine", region.second.source_line, alloc);
