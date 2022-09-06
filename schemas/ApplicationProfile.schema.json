@@ -124,10 +124,7 @@
             "type": "object",
             "properties": {
                 "systemTreeNodes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/$defs/systemTreeNode"
-                    }
+                    "$ref": "#/$defs/systemTreeNode"
                 },
                 "size": {
                     "type": "integer",
