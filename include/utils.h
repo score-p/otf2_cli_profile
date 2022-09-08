@@ -35,33 +35,33 @@ class TimeMeasurement {
    public:
     TimeMeasurement() = default;
 
-    void registerScope(ScopeID scope_id, std::string desc) { scopes.insert(std::make_pair(scope_id, Scope(desc))); }
+    void registerScope(ScopeID scope_id, std::string desc) { scopes_.insert(std::make_pair(scope_id, Scope(desc))); }
 
     bool isRegistered(ScopeID scope_id) {
-        if (scopes.find(scope_id) == scopes.end())
+        if (scopes_.find(scope_id) == scopes_.end())
             return false;
 
         return true;
     }
 
     void start(ScopeID scope_id) {
-        auto it = scopes.find(scope_id);
-        if (it == scopes.end())
+        auto it = scopes_.find(scope_id);
+        if (it == scopes_.end())
             return;
 
         it->second.start_time = std::chrono::system_clock::now();
     }
 
     void stop(ScopeID scope_id) {
-        auto it = scopes.find(scope_id);
-        if (it == scopes.end())
+        auto it = scopes_.find(scope_id);
+        if (it == scopes_.end())
             return;
 
         it->second.stop_time = std::chrono::system_clock::now();
     }
 
     void printAll() {
-        for (const auto& scope : scopes)
+        for (const auto& scope : scopes_)
             std::cout << scope.second << std::endl;
     }
 
@@ -90,17 +90,14 @@ class TimeMeasurement {
     };
 
     // stores all registered scopes
-    std::map<ScopeID, Scope> scopes;
+    std::map<ScopeID, Scope> scopes_;
 };
 
 struct Params {
-    uint32_t max_file_handles = 50;           // TODO sinn/unsinn?
-    uint32_t buffer_size      = 1024 * 1024;  // TODO sinn/unsinn?
-    // uint32_t    max_groups         = 16;
-    // bool        logaxis            = true;
-    uint8_t verbose_level = 0;
-    // bool        read_from_stats    = false;
-    double       node_min_ratio     = 0;
+    uint32_t    max_file_handles   = 50;           // TODO sinn/unsinn?
+    uint32_t    buffer_size        = 1024 * 1024;  // TODO sinn/unsinn?
+    uint8_t     verbose_level = 0;
+    double      node_min_ratio     = 0;
     int32_t     rank               = -1;
     uint32_t    top_nodes          = 0;
     bool        read_metrics       = true;  // counter
@@ -109,8 +106,7 @@ struct Params {
     bool        create_json        = false;
     bool        create_json_io     = false;
     bool        create_dot         = false;
-    bool        data_dump           = false;
-    bool        summarize_it       = false;  // TODO added for testing
+    bool        data_dump          = false;
     std::string input_file_name    = "";
     std::string input_file_prefix  = "";
     std::string output_file_prefix = "result";
@@ -122,33 +118,29 @@ struct Params {
 
         for (auto i = 0; i < arguments.size(); ++i) {
             if (arguments[i] == "--help" || arguments[i] == "-h") {
-                std::cout << std::endl
+                std::cout << "\n"
                           << " " << argv[0] << " - Generates a profile of an OTF or OTF2 trace in CUBE and/or other"
-                          << "formats." << std::endl
-                          << std::endl
-                          << " Syntax: " << argv[0] << " -i <input file name> [options]" << std::endl
-                          << std::endl
-                          << "   options:" << std::endl
-                          << "      -h, --help          show this help message" << std::endl
-                          << std::endl
-                          << "      --cube              generates CUBE xml profile" << std::endl
-                          << "      --json              generates json ouptut file" << std::endl
-                          << "      --json-io           generates json ouptut file for io events" << std::endl
-                          << "      --dot               generates dot file for drawing graphs" << std::endl
-                          << "        -fi, --filter <percent>    only show path, where a node took at least num \% of total time" << std::endl
-                          << "        -t, --top <n>     only show top num nodes" << std::endl
-                          << "        -r, --rank <n>    only show specific rank" << std::endl
-                          << "      --datadump          dump all data into json file" << std::endl
-                          << std::endl
-                          << "      -b <size>           set buffersize of the reader in Byte" << std::endl
-                          << "                          (default: 1 M)" << std::endl
-                          << "      -f <n>              max. number of filehandles available per rank" << std::endl
-                          << "                          (default: 50)" << std::endl
-                          << "      -i <file>           specify the input tracefile name or json dump file" << std::endl
-                          << "      -nm, --no-metrics   neglect metric events" << std::endl
-                          << "      -o <prefix>         specify the prefix of output file(s)" << std::endl
-                          << "                          (default: result)" << std::endl
-                          << "      -v <level>          set verbosity level" << std::endl
+                          << "formats.\n\n"
+                          << " Syntax: " << argv[0] << " -i <input file name> [options]\n\n"
+                          << "   options:\n"
+                          << "      -h, --help          show this help message\n\n"
+                          << "      --cube              generates CUBE xml profile\n"
+                          << "      --json              generates json ouptut file\n"
+                          << "      --json-io           generates json ouptut file for io events\n"
+                          << "      --dot               generates dot file for drawing graphs\n"
+                          << "        -fi, --filter <percent>    only show path, where a node took at least num \% of total time\n"
+                          << "        -t, --top <n>     only show top num nodes\n"
+                          << "        -r, --rank <n>    only show specific rank\n"
+                          << "      --datadump          dump all data into json file\n\n"
+                          << "      -b <size>           set buffersize of the reader in Byte\n"
+                          << "                          (default: 1 M)\n"
+                          << "      -f <n>              max. number of filehandles available per rank\n"
+                          << "                          (default: 50)\n"
+                          << "      -i <file>           specify the input tracefile name or json dump file\n"
+                          << "      -nm, --no-metrics   neglect metric events\n"
+                          << "      -o <prefix>         specify the prefix of output file(s)\n"
+                          << "                          (default: result)\n"
+                          << "      -v <level>          set verbosity level\n"
                           << "      --version           prints version information" << std::endl;
 
                 return false;
@@ -163,8 +155,6 @@ struct Params {
                 std::cout << "OTF-Profiler version " << OTFPROFILER_VERSION_MAJOR << "." << OTFPROFILER_VERSION_MINOR
                           << "." << OTFPROFILER_VERSION_PATCH << std::endl;
                 return false;
-            } else if (arguments[i] == "--summarize" || arguments[i] == "-s") {
-                summarize_it = true;
             } else if (arguments[i] == "--cube") {
                 create_cube     = true;
                 output_type_set = true;
