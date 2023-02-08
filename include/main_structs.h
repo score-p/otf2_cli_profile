@@ -210,7 +210,7 @@ struct metric_class_data {
 template<typename T>
 struct MinMaxSum {
     using value_t = T;
-    
+
     T sum = 0;
     T min = std::numeric_limits<T>::max();
     T max = 0;
@@ -308,6 +308,18 @@ struct MessageData {
         count_recv += rhs.count_recv;
         bytes_send += rhs.bytes_send;
         bytes_recv += rhs.bytes_recv;
+
+        return *this;
+    }
+};
+
+struct MData {
+    uint64_t count = 0;
+    uint64_t bytes = 0;
+
+    MData& operator+=(const MData& other) {
+        count += other.count;
+        bytes += other.bytes;
 
         return *this;
     }

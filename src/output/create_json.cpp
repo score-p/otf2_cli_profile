@@ -4,36 +4,51 @@
 */
 #include <fstream>
 #include <map>
+#include <string>
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/stringbuffer.h>
 
 #include "all_data.h"
+#include "main_structs.h"
 
 struct SummaryObject {
     MinMaxSum<uint64_t> count;
     MinMaxSum<uint64_t> excl_time;
     MinMaxSum<uint64_t> incl_time;
+    MinMaxSum<uint64_t> count_send;
+    MinMaxSum<uint64_t> count_recv;
+    MinMaxSum<uint64_t> bytes_send;
+    MinMaxSum<uint64_t> bytes_recv;
 
     SummaryObject& operator+=(const FunctionDataStats& rhs) {
-        addData(rhs);
+        count += rhs.count;
+        incl_time += rhs.incl_time;
+        excl_time += rhs.excl_time;
+
+        return *this;
+    }
+
+    SummaryObject& operator+=(const MessageData& rhs) {
+        count_send += rhs.count_send;
+        count_recv += rhs.count_recv;
+        bytes_send += rhs.bytes_send;
+        bytes_recv += rhs.bytes_recv;
 
         return *this;
     }
 
     SummaryObject& operator+=(const SummaryObject& rhs) {
-        addData(rhs);
-
-        return *this;
-    }
-
-private:
-    template<typename T>
-    void addData(const T& rhs) {
         count += rhs.count;
         incl_time += rhs.incl_time;
         excl_time += rhs.excl_time;
+        count_send += rhs.count_send;
+        count_recv += rhs.count_recv;
+        bytes_send += rhs.bytes_send;
+        bytes_recv += rhs.bytes_recv;
+
+        return *this;
     }
 };
 
@@ -159,7 +174,10 @@ rapidjson::Value get_summaryObject(std::pair<uint64_t, SummaryObject> obj, uint6
     summaryObject.AddMember("count", get_minMaxSum(obj.second.count, alloc), alloc);
     summaryObject.AddMember("exclusiveTime", get_minMaxSumSeconds(obj.second.excl_time, timerResolution, alloc), alloc);
     summaryObject.AddMember("inclusiveTime", get_minMaxSumSeconds(obj.second.incl_time, timerResolution, alloc), alloc);
-
+    summaryObject.AddMember("count_send", get_minMaxSum(obj.second.count_send, alloc), alloc);
+    summaryObject.AddMember("count_recv", get_minMaxSum(obj.second.count_recv, alloc), alloc);
+    summaryObject.AddMember("bytes_send", get_minMaxSum(obj.second.bytes_send, alloc), alloc);
+    summaryObject.AddMember("bytes_recv", get_minMaxSum(obj.second.bytes_recv, alloc), alloc);
     return summaryObject;
 }
 
@@ -183,12 +201,62 @@ rapidjson::Value get_summary(AllData& alldata, rapidjson::Document::AllocatorTyp
     return summary;
 }
 
+rapidjson::Value get_msgObject(uint64_t loc, MData obj, rapidjson::Document::AllocatorType& alloc) {
+    rapidjson::Value msgObject(rapidjson::kObjectType);
+    msgObject.AddMember("id", loc, alloc);
+    msgObject.AddMember("count", obj.count, alloc);
+    msgObject.AddMember("bytes", obj.bytes, alloc);
+
+    return msgObject;
+}
+
+rapidjson::Value get_messages(AllData& alldata, rapidjson::Document::AllocatorType& alloc) {
+
+    rapidjson::Value msg(rapidjson::kObjectType);
+    rapidjson::Value send(rapidjson::kArrayType);
+    for(const auto& loc : alldata.p2p_comm_send) {
+        rapidjson::Value loc_send(rapidjson::kArrayType);
+        for(const auto& mdata : loc.second) {
+            loc_send.PushBack(get_msgObject(mdata.first, mdata.second, alloc), alloc);
+        }
+        rapidjson::Value tmp(rapidjson::kObjectType);
+        tmp.AddMember("id", loc.first, alloc);
+        tmp.AddMember("to", loc_send, alloc);
+        send.PushBack(tmp, alloc);
+    }
+    msg.AddMember("send", send, alloc);
+
+    rapidjson::Value recv(rapidjson::kArrayType);
+    for(const auto& loc : alldata.p2p_comm_recv) {
+        rapidjson::Value loc_recv(rapidjson::kArrayType);
+        for(const auto& mdata : loc.second) {
+            loc_recv.PushBack(get_msgObject(mdata.first, mdata.second, alloc), alloc);
+        }
+        rapidjson::Value tmp(rapidjson::kObjectType);
+        tmp.AddMember("id", loc.first, alloc);
+        tmp.AddMember("from", loc_recv, alloc);
+        recv.PushBack(tmp, alloc);
+    }
+    msg.AddMember("recv", recv, alloc);
+
+    return msg;
+}
+
 rapidjson::Value get_regionData(const FunctionDataStats& reg_data, uint64_t timerResolution, rapidjson::Document::AllocatorType& alloc) {
-    using value_t = decltype(reg_data.count);
     rapidjson::Value obj(rapidjson::kObjectType);
     obj.AddMember("count", reg_data.count, alloc);
     obj.AddMember("inclusiveTime", get_minMaxSumSeconds(reg_data.incl_time, timerResolution, alloc), alloc);
     obj.AddMember("exclusiveTime", get_minMaxSumSeconds(reg_data.excl_time, timerResolution, alloc), alloc);
+
+    return obj;
+}
+
+rapidjson::Value get_regionMsgData(const MessageData& msg_data, rapidjson::Document::AllocatorType& alloc) {
+    rapidjson::Value obj(rapidjson::kObjectType);
+    obj.AddMember("count_send", msg_data.count_send, alloc);
+    obj.AddMember("count_recv", msg_data.count_recv, alloc);
+    obj.AddMember("bytes_send", msg_data.bytes_send, alloc);
+    obj.AddMember("bytes_recv", msg_data.bytes_recv, alloc);
 
     return obj;
 }
@@ -209,10 +277,12 @@ rapidjson::Value get_tree_node(const std::shared_ptr<tree_node>& node, uint64_t 
         rapidjson::Value obj(rapidjson::kObjectType);
         obj.AddMember("locationId", data.first, alloc);
         obj.AddMember("regionData", get_regionData(data.second.f_data, timerResolution, alloc), alloc);
+        obj.AddMember("msgData", get_regionMsgData(data.second.m_data, alloc), alloc);
 
         locations.PushBack(obj, alloc);
 
         sum_reg_values += data.second.f_data;
+        sum_reg_values += data.second.m_data;
     }
     node_obj.AddMember("nodeData", locations, alloc);
 
@@ -252,12 +322,20 @@ bool CreateJson(AllData& alldata) {
     document.AddMember("systemTree", get_system_tree(alldata, alloc), alloc);
     document.AddMember("callTrees", get_data_trees(alldata, alloc), alloc);
     document.AddMember("summary", get_summary(alldata, alloc), alloc);
+    document.AddMember("messages", get_messages(alldata, alloc), alloc);
     rapidjson::StringBuffer strbuf;
     rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(strbuf);
     document.Accept(writer);
     std::string fname = alldata.params.output_file_prefix + ".json";
     std::ofstream outfile(fname);
     outfile << strbuf.GetString() << std::endl;
+
+    for(const auto& loc : alldata.p2p_comm_send) {
+        std::cout << "Location: " << loc.first << "\n";
+        for(const auto& mdata : loc.second) {
+            std::cout << mdata.first << ": " << mdata.second.count << "\n";
+        }
+    }
 
     return true;
 }

@@ -801,6 +801,9 @@ OTF2_CallbackCode OTF2Reader::handle_mpi_send(OTF2_LocationRef locationID, OTF2_
                                               OTF2_CommRef communicator, uint32_t msgTag, uint64_t msgLength) {
     auto* alldata = static_cast<AllData*>(userData);
 
+    auto& msg_location = (alldata->p2p_comm_send)[locationID];
+    msg_location[receiver] += MData{1, msgLength};
+
     auto& tmp = node_stack.front();
     tmp.node_p->add_data(locationID, MessageData{1, 0, msgLength, 0});
     // TODO workaround
@@ -813,6 +816,9 @@ OTF2_CallbackCode OTF2Reader::handle_mpi_recv(OTF2_LocationRef locationID, OTF2_
                                               void* userData, OTF2_AttributeList* attributeList, uint32_t sender,
                                               OTF2_CommRef communicator, uint32_t msgTag, uint64_t msgLength) {
     auto* alldata = static_cast<AllData*>(userData);
+
+    auto& msg_location = (alldata->p2p_comm_recv)[locationID];
+    msg_location[sender] += MData{1, msgLength};
 
     auto& tmp = node_stack.front();
     tmp.node_p->add_data(locationID, MessageData{0, 1, 0, msgLength});
@@ -827,6 +833,9 @@ OTF2_CallbackCode OTF2Reader::handle_mpi_isend(OTF2_LocationRef locationID, OTF2
                                                OTF2_CommRef communicator, uint32_t msgTag, uint64_t msgLength,
                                                uint64_t requestID) {
     auto* alldata = static_cast<AllData*>(userData);
+
+    auto& msg_location = (alldata->p2p_comm_send)[locationID];
+    msg_location[receiver] += MData{1, msgLength};
 
     auto& tmp = node_stack.front();
     tmp.node_p->add_data(locationID, MessageData{1, 0, msgLength, 0});
@@ -857,6 +866,9 @@ OTF2_CallbackCode OTF2Reader::handle_mpi_irecv(OTF2_LocationRef locationID, OTF2
                                                OTF2_CommRef communicator, uint32_t msgTag, uint64_t msgLength,
                                                uint64_t requestID) {
     auto* alldata = static_cast<AllData*>(userData);
+
+    auto& msg_location = (alldata->p2p_comm_recv)[locationID];
+    msg_location[sender] += MData{1, msgLength};
 
     auto& tmp = node_stack.front();
     tmp.node_p->add_data(locationID, MessageData{0, 1, 0, msgLength});

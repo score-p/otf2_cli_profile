@@ -18,6 +18,9 @@ struct AllData {
     /*meta meta*/
     meta_data metaData;
 
+    std::map<uint64_t, std::map<uint64_t, MData>> p2p_comm_send;
+    std::map<uint64_t, std::map<uint64_t, MData>> p2p_comm_recv;
+
     definitions::Definitions definitions;
     uint64_t                 traceID;
 
