@@ -78,6 +78,15 @@ rapidjson::Value get_minMaxSumSeconds(const MinMaxSum<T>& data, uint64_t timerRe
     return obj;
 }
 
+rapidjson::Value get_minMaxSumtodo(const uint64_t data, rapidjson::Document::AllocatorType& alloc) {
+    rapidjson::Value obj(rapidjson::kObjectType);
+    obj.AddMember("min", data, alloc);
+    obj.AddMember("max", data, alloc);
+    obj.AddMember("sum", data, alloc);
+
+    return obj;
+}
+
 rapidjson::Value get_metaData(AllData& alldata, rapidjson::Document::AllocatorType& alloc) {
     const auto& metaData = alldata.metaData;
 
@@ -174,10 +183,15 @@ rapidjson::Value get_summaryObject(std::pair<uint64_t, SummaryObject> obj, uint6
     summaryObject.AddMember("count", get_minMaxSum(obj.second.count, alloc), alloc);
     summaryObject.AddMember("exclusiveTime", get_minMaxSumSeconds(obj.second.excl_time, timerResolution, alloc), alloc);
     summaryObject.AddMember("inclusiveTime", get_minMaxSumSeconds(obj.second.incl_time, timerResolution, alloc), alloc);
-    summaryObject.AddMember("count_send", get_minMaxSum(obj.second.count_send, alloc), alloc);
-    summaryObject.AddMember("count_recv", get_minMaxSum(obj.second.count_recv, alloc), alloc);
-    summaryObject.AddMember("bytes_send", get_minMaxSum(obj.second.bytes_send, alloc), alloc);
-    summaryObject.AddMember("bytes_recv", get_minMaxSum(obj.second.bytes_recv, alloc), alloc);
+    rapidjson::Value send(rapidjson::kObjectType);
+    send.AddMember("count", get_minMaxSum(obj.second.count_send, alloc), alloc);
+    send.AddMember("bytes", get_minMaxSum(obj.second.bytes_send, alloc), alloc);
+    summaryObject.AddMember("send", send, alloc);
+    rapidjson::Value recv(rapidjson::kObjectType);
+    recv.AddMember("count", get_minMaxSum(obj.second.count_recv, alloc), alloc);
+    recv.AddMember("bytes", get_minMaxSum(obj.second.bytes_recv, alloc), alloc);
+    summaryObject.AddMember("recv", recv, alloc);
+
     return summaryObject;
 }
 
@@ -251,12 +265,17 @@ rapidjson::Value get_regionData(const FunctionDataStats& reg_data, uint64_t time
     return obj;
 }
 
-rapidjson::Value get_regionMsgData(const MessageData& msg_data, rapidjson::Document::AllocatorType& alloc) {
+template<typename T>
+rapidjson::Value get_regionCommData(const T& comm_data, rapidjson::Document::AllocatorType& alloc) {
     rapidjson::Value obj(rapidjson::kObjectType);
-    obj.AddMember("count_send", msg_data.count_send, alloc);
-    obj.AddMember("count_recv", msg_data.count_recv, alloc);
-    obj.AddMember("bytes_send", msg_data.bytes_send, alloc);
-    obj.AddMember("bytes_recv", msg_data.bytes_recv, alloc);
+    rapidjson::Value mSent(rapidjson::kObjectType);
+    mSent.AddMember("count", comm_data.count_send, alloc);
+    mSent.AddMember("bytes", comm_data.bytes_send, alloc);
+    obj.AddMember("send", mSent, alloc);
+    rapidjson::Value mRecv(rapidjson::kObjectType);
+    mRecv.AddMember("count", comm_data.count_recv, alloc);
+    mRecv.AddMember("bytes", comm_data.bytes_recv, alloc);
+    obj.AddMember("recv", mRecv, alloc);
 
     return obj;
 }
@@ -277,7 +296,8 @@ rapidjson::Value get_tree_node(const std::shared_ptr<tree_node>& node, uint64_t 
         rapidjson::Value obj(rapidjson::kObjectType);
         obj.AddMember("locationId", data.first, alloc);
         obj.AddMember("regionData", get_regionData(data.second.f_data, timerResolution, alloc), alloc);
-        obj.AddMember("msgData", get_regionMsgData(data.second.m_data, alloc), alloc);
+        obj.AddMember("messageData", get_regionCommData(data.second.m_data, alloc), alloc);
+        obj.AddMember("collectiveData", get_regionCommData(data.second.c_data, alloc), alloc);
 
         locations.PushBack(obj, alloc);
 

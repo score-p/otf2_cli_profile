@@ -175,66 +175,6 @@
                     "items": {
                         "$ref": "#/$defs/summaryObject"
                     }
-                },
-                "messages": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "locationId": {
-                                "type": "integer"
-                            },
-                            "numberOfMessages": {
-                                "type": "integer"
-                            },
-                            "messageSize": {
-                                "$ref": "#/$defs/minMaxSum"
-                            },
-                            "transferTime": {
-                                "$ref": "#/$defs/minMaxSum"
-                            },
-                            "dataRate": {
-                                "type" : "object",
-                                "properties" : {
-                                    "min" : {
-                                        "type" : "number",
-                                        "minimum" : 0
-                                    },
-                                    "max" : {
-                                        "type" : "number",
-                                        "minimum" : 0
-                                    },
-                                    "average" : {
-                                        "type" : "number",
-                                        "minimum" : 0
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "communicators": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "id": {
-                                "type": "integer"
-                            },
-                            "communicationCount": {
-                                "type" : "integer"
-                            },
-                            "duration" : {
-                                "type" : "number"
-                            },
-                            "dataSent" : {
-                                "type" : "number"
-                            },
-                            "dataReceived" : {
-                                "type" : "number"
-                            }
-                        }
-                    }
                 }
             },
             "required": ["paradigms", "regions"]
@@ -305,6 +245,12 @@
                                     },
                                     "exclusiveTime": {
                                         "$ref": "#/$defs/minMaxSum"
+                                    },
+                                    "messageData" : {
+                                        "$ref" : "#/$defs/messageObject"
+                                    },
+                                    "collectiveData" : {
+                                        "$ref" : "#/$defs/messageObject"
                                     }
                                 }
                             }
@@ -315,8 +261,19 @@
                 }
             }
         },
+        "messageObject" : {
+            "type" : "object",
+            "properties" : {
+                "sent" : {
+                    "$ref" : "#/$defs/dataType"
+                },
+                "received" : {
+                    "$ref" : "#/$defs/dataType"
+                }
+            }
+        },
         "summaryObject": {
-            "type": "object",
+            "type" : "object",
             "properties": {
                 "id": {
                     "type": "integer",
@@ -351,6 +308,17 @@
                 }
             },
             "required": ["min", "max", "sum"]
+        },
+        "dataType" : {
+            "type" : "object",
+            "properties" : {
+                "count" : {
+                    "type" : "integer"
+                },
+                "bytes" : {
+                    "$ref" : "#/$defs/minMaxSum"
+                }
+            }
         }
     }
 }
