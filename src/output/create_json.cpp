@@ -60,7 +60,11 @@ uint64_t size = 0;
 template<typename T>
 rapidjson::Value get_minMaxSum(const MinMaxSum<T>& data, rapidjson::Document::AllocatorType& alloc) {
     rapidjson::Value obj(rapidjson::kObjectType);
-    obj.AddMember("min", data.min, alloc);
+    if(data.sum == 0) {
+        obj.AddMember("min", 0, alloc);
+    } else {
+        obj.AddMember("min", data.min, alloc);
+    }
     obj.AddMember("max", data.max, alloc);
     obj.AddMember("sum", data.sum, alloc);
 
@@ -71,7 +75,11 @@ rapidjson::Value get_minMaxSum(const MinMaxSum<T>& data, rapidjson::Document::Al
 template<typename T>
 rapidjson::Value get_minMaxSumSeconds(const MinMaxSum<T>& data, uint64_t timerResolution, rapidjson::Document::AllocatorType& alloc) {
     rapidjson::Value obj(rapidjson::kObjectType);
-    obj.AddMember("min", static_cast<double>(data.min) / timerResolution, alloc);
+    if(data.sum == 0) {
+        obj.AddMember("min", 0.0, alloc);
+    } else {
+        obj.AddMember("min", static_cast<double>(data.min) / timerResolution, alloc);
+    }
     obj.AddMember("max", static_cast<double>(data.max) / timerResolution, alloc);
     obj.AddMember("sum", static_cast<double>(data.sum) / timerResolution, alloc);
 
