@@ -178,6 +178,43 @@
                 }
             },
             "required": ["paradigms", "regions"]
+        },
+        "messages": {
+            "type": "object",
+            "properties": {
+                "send": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "to": {
+                                "$ref": "#/$defs/locationMessageObject"
+                            }
+                        },
+                        "required": ["id"]
+                    }
+                },
+                "recv": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "from": {
+                                "$ref": "#/$defs/locationMessageObject"
+                            }
+                        },
+                        "required": ["id"]
+                    }
+                }
+            }
         }
     },
     "$defs": {
@@ -245,14 +282,14 @@
                                     },
                                     "exclusiveTime": {
                                         "$ref": "#/$defs/minMaxSum"
-                                    },
-                                    "messageData" : {
-                                        "$ref" : "#/$defs/messageObject"
-                                    },
-                                    "collectiveData" : {
-                                        "$ref" : "#/$defs/messageObject"
                                     }
                                 }
+                            },
+                            "messageData" : {
+                                "$ref" : "#/$defs/messageObject"
+                            },
+                            "collectiveData" : {
+                                "$ref" : "#/$defs/messageObject"
                             }
                         },
                         "required": ["locationId", "regionData"],
@@ -264,12 +301,37 @@
         "messageObject" : {
             "type" : "object",
             "properties" : {
-                "sent" : {
-                    "$ref" : "#/$defs/dataType"
+                "sentCount" : {
+                    "type" : "integer"
                 },
-                "received" : {
-                    "$ref" : "#/$defs/dataType"
+                "sentSize" : {
+                    "$ref" : "#/$defs/minMaxSum"
+                },
+                "receivedCount" : {
+                    "type" : "integer"
+                },
+                "receivedSize" : {
+                    "$ref" : "#/$defs/minMaxSum"
                 }
+            }
+        },
+        "locationMessageObject": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "count": {
+                        "type": "integer"
+                    },
+                    "bytes": {
+                        "$ref": "#/$defs/minMaxSum"
+                    }
+                },
+                "required": ["id"]
             }
         },
         "summaryObject": {
@@ -287,6 +349,23 @@
                 },
                 "inclusiveTime": {
                     "$ref": "#/$defs/minMaxSum"
+                },
+                "messageData": {
+                    "type": "object",
+                    "properties": {
+                        "sentCount": {
+                            "$ref": "#/$defs/minMaxSum"
+                        },
+                        "sentSize": {
+                            "$ref": "#/$defs/minMaxSum"
+                        },
+                        "receivedCount": {
+                            "$ref": "#/$defs/minMaxSum"
+                        },
+                        "receivedSize": {
+                            "$ref": "#/$defs/minMaxSum"
+                        }
+                    }
                 }
             },
             "required": ["id"]
@@ -308,17 +387,6 @@
                 }
             },
             "required": ["min", "max", "sum"]
-        },
-        "dataType" : {
-            "type" : "object",
-            "properties" : {
-                "count" : {
-                    "type" : "integer"
-                },
-                "bytes" : {
-                    "$ref" : "#/$defs/minMaxSum"
-                }
-            }
         }
     }
 }
