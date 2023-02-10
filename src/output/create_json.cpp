@@ -219,7 +219,7 @@ rapidjson::Value get_msgObject(uint64_t loc, MData obj, rapidjson::Document::All
     rapidjson::Value msgObject(rapidjson::kObjectType);
     msgObject.AddMember("id", loc, alloc);
     msgObject.AddMember("count", obj.count, alloc);
-    msgObject.AddMember("bytes", obj.bytes, alloc);
+    msgObject.AddMember("bytes", get_minMaxSum(obj.bytes, alloc), alloc);
 
     return msgObject;
 }
@@ -270,11 +270,11 @@ rapidjson::Value get_regionCommData(const T& comm_data, rapidjson::Document::All
     rapidjson::Value obj(rapidjson::kObjectType);
     rapidjson::Value mSent(rapidjson::kObjectType);
     mSent.AddMember("count", comm_data.count_send, alloc);
-    mSent.AddMember("bytes", comm_data.bytes_send, alloc);
+    mSent.AddMember("bytes", get_minMaxSum(comm_data.bytes_send, alloc), alloc);
     obj.AddMember("send", mSent, alloc);
     rapidjson::Value mRecv(rapidjson::kObjectType);
     mRecv.AddMember("count", comm_data.count_recv, alloc);
-    mRecv.AddMember("bytes", comm_data.bytes_recv, alloc);
+    mRecv.AddMember("bytes", get_minMaxSum(comm_data.bytes_recv, alloc), alloc);
     obj.AddMember("recv", mRecv, alloc);
 
     return obj;
@@ -349,13 +349,6 @@ bool CreateJson(AllData& alldata) {
     std::string fname = alldata.params.output_file_prefix + ".json";
     std::ofstream outfile(fname);
     outfile << strbuf.GetString() << std::endl;
-
-    for(const auto& loc : alldata.p2p_comm_send) {
-        std::cout << "Location: " << loc.first << "\n";
-        for(const auto& mdata : loc.second) {
-            std::cout << mdata.first << ": " << mdata.second.count << "\n";
-        }
-    }
 
     return true;
 }

@@ -89,9 +89,9 @@ void display_node(std::shared_ptr<tree_node> node, Writer& writer){
                         writer.Key("countRecv");
                         writer.Uint64(data.second.m_data.count_recv);
                         writer.Key("bytesSend");
-                        writer.Uint64(data.second.m_data.bytes_send);
+                        writer.Uint64(data.second.m_data.bytes_send.sum);
                         writer.Key("bytesRecv");
-                        writer.Uint64(data.second.m_data.bytes_recv);
+                        writer.Uint64(data.second.m_data.bytes_recv.sum);
                     writer.EndObject();
                     writer.Key("cData");
                     writer.StartObject();
@@ -100,9 +100,9 @@ void display_node(std::shared_ptr<tree_node> node, Writer& writer){
                         writer.Key("countRecv");
                         writer.Uint64(data.second.c_data.count_recv);
                         writer.Key("bytesSend");
-                        writer.Uint64(data.second.c_data.bytes_send);
+                        writer.Uint64(data.second.c_data.bytes_send.sum);
                         writer.Key("bytesRecv");
-                        writer.Uint64(data.second.c_data.bytes_recv);
+                        writer.Uint64(data.second.c_data.bytes_recv.sum);
                     writer.EndObject();
                     writer.Key("metrics");
                     writer.StartArray();

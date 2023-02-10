@@ -300,8 +300,8 @@ struct FunctionDataStats {
 struct MessageData {
     uint64_t count_send;
     uint64_t count_recv;
-    uint64_t bytes_send;
-    uint64_t bytes_recv;
+    MinMaxSum<uint64_t>  bytes_send;
+    MinMaxSum<uint64_t>  bytes_recv;
 
     MessageData& operator+=(const MessageData& rhs) {
         count_send += rhs.count_send;
@@ -315,7 +315,7 @@ struct MessageData {
 
 struct MData {
     uint64_t count = 0;
-    uint64_t bytes = 0;
+    MinMaxSum<uint64_t> bytes{};
 
     MData& operator+=(const MData& other) {
         count += other.count;
@@ -328,8 +328,8 @@ struct MData {
 struct CollopData {
     uint64_t count_send;
     uint64_t count_recv;
-    uint64_t bytes_send;
-    uint64_t bytes_recv;
+    MinMaxSum<uint64_t>  bytes_send;
+    MinMaxSum<uint64_t>  bytes_recv;
 
     CollopData& operator+=(const CollopData& rhs) {
         count_send += rhs.count_send;

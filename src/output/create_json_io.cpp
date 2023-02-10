@@ -248,14 +248,14 @@ bool CreateJsonIo(AllData& alldata) {
             auto&       collop_entry  = profile.collops_by_paradigm[paradigm];
             const auto& message_data  = one_node_data.second.m_data;
             const auto& collop_data   = one_node_data.second.c_data;
-            message_entry.add_data(bytestr, message_data.bytes_send);
-            message_entry.add_data(bytestr, message_data.bytes_recv);
+            message_entry.add_data(bytestr, message_data.bytes_send.sum);
+            message_entry.add_data(bytestr, message_data.bytes_recv.sum);
             message_entry.add_data(countstr, message_data.count_send);
             message_entry.add_data(countstr, message_data.count_recv);
-            if (one_node_data.second.c_data.bytes_send)
-                profile.collops_by_paradigm[paradigm].entries[bytestr] += one_node_data.second.c_data.bytes_send;
-            if (one_node_data.second.c_data.bytes_recv)
-                profile.collops_by_paradigm[paradigm].entries[bytestr] += one_node_data.second.c_data.bytes_recv;
+            if (one_node_data.second.c_data.bytes_send.sum)
+                profile.collops_by_paradigm[paradigm].entries[bytestr] += one_node_data.second.c_data.bytes_send.sum;
+            if (one_node_data.second.c_data.bytes_recv.sum)
+                profile.collops_by_paradigm[paradigm].entries[bytestr] += one_node_data.second.c_data.bytes_recv.sum;
             if (one_node_data.second.c_data.count_send)
                 profile.collops_by_paradigm[paradigm].entries[countstr] += one_node_data.second.c_data.count_send;
             if (one_node_data.second.c_data.count_recv)
