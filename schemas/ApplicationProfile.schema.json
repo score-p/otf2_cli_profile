@@ -192,7 +192,10 @@
                                 "minimum": 0
                             },
                             "to": {
-                                "$ref": "#/$defs/locationMessageObject"
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/$defs/locationMessageObject"
+                                }
                             }
                         },
                         "required": ["id"]
@@ -208,7 +211,10 @@
                                 "minimum": 0
                             },
                             "from": {
-                                "$ref": "#/$defs/locationMessageObject"
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/$defs/locationMessageObject"
+                                }
                             }
                         },
                         "required": ["id"]
@@ -286,10 +292,10 @@
                                 }
                             },
                             "messageData" : {
-                                "$ref" : "#/$defs/messageObject"
+                                "$ref" : "#/$defs/locationMessageObject"
                             },
                             "collectiveData" : {
-                                "$ref" : "#/$defs/messageObject"
+                                "$ref" : "#/$defs/locationMessageObject"
                             }
                         },
                         "required": ["locationId", "regionData"],
@@ -298,40 +304,26 @@
                 }
             }
         },
-        "messageObject" : {
+        "locationMessageObject" : {
             "type" : "object",
             "properties" : {
-                "sentCount" : {
-                    "type" : "integer"
+                "sent": {
+                    "$ref": "#/$defs/messageDataLocation"
                 },
-                "sentSize" : {
-                    "$ref" : "#/$defs/minMaxSum"
-                },
-                "receivedCount" : {
-                    "type" : "integer"
-                },
-                "receivedSize" : {
-                    "$ref" : "#/$defs/minMaxSum"
+                "received": {
+                    "$ref": "#/$defs/messageDataLocation"
                 }
             }
         },
-        "locationMessageObject": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "minimum": 0
-                    },
-                    "count": {
-                        "type": "integer"
-                    },
-                    "bytes": {
-                        "$ref": "#/$defs/minMaxSum"
-                    }
+        "regionMessageObject": {
+            "type": "object",
+            "properties": {
+                "sent": {
+                    "$ref": "#/$defs/messageDataRegion"
                 },
-                "required": ["id"]
+                "received": {
+                    "$ref": "#/$defs/messageDataRegion"
+                }
             }
         },
         "summaryObject": {
@@ -353,22 +345,33 @@
                 "messageData": {
                     "type": "object",
                     "properties": {
-                        "sentCount": {
-                            "$ref": "#/$defs/minMaxSum"
-                        },
-                        "sentSize": {
-                            "$ref": "#/$defs/minMaxSum"
-                        },
-                        "receivedCount": {
-                            "$ref": "#/$defs/minMaxSum"
-                        },
-                        "receivedSize": {
-                            "$ref": "#/$defs/minMaxSum"
-                        }
+                        "$ref": "#/$defs/regionMessageObject"
                     }
                 }
             },
             "required": ["id"]
+        },
+        "messageDataLocation": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "bytes": {
+                    "$ref": "#/$defs/minMaxSum"
+                }
+            }
+        },
+        "messageDataRegion": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "$ref": "#/$defs/minMaxSum"
+                },
+                "bytes": {
+                    "$ref": "#/$defs/minMaxSum"
+                }
+            }
         },
         "minMaxSum": {
             "type": "object",
