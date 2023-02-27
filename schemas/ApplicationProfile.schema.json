@@ -183,42 +183,10 @@
             "type": "object",
             "properties": {
                 "send": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "id": {
-                                "type": "integer",
-                                "minimum": 0
-                            },
-                            "to": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/$defs/locationMessageObject"
-                                }
-                            }
-                        },
-                        "required": ["id"]
-                    }
+                    "$ref": "#/$defs/messageData"
                 },
                 "recv": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "id": {
-                                "type": "integer",
-                                "minimum": 0
-                            },
-                            "from": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/$defs/locationMessageObject"
-                                }
-                            }
-                        },
-                        "required": ["id"]
-                    }
+                    "$ref": "#/$defs/messageData"
                 }
             }
         }
@@ -350,6 +318,33 @@
                 }
             },
             "required": ["id"]
+        },
+        "messageData": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "sourceId": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "messageData": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "targetId": {
+                                    "type": "integer"
+                                },
+                                "data": {
+                                    "$ref": "#/$defs/messageDataLocation"
+                                }
+                            }
+                        }
+                    }
+                },
+                "required": ["id"]
+            }
         },
         "messageDataLocation": {
             "type": "object",
