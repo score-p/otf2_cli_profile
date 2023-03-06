@@ -225,7 +225,7 @@ rapidjson::Value get_summary(AllData& alldata, rapidjson::Document::AllocatorTyp
 
 rapidjson::Value get_msgObject(uint64_t loc, MData obj, rapidjson::Document::AllocatorType& alloc) {
     rapidjson::Value msgObject(rapidjson::kObjectType);
-    msgObject.AddMember("id", loc, alloc);
+    msgObject.AddMember("targetId", loc, alloc);
     msgObject.AddMember("count", obj.count, alloc);
     msgObject.AddMember("bytes", get_minMaxSum(obj.bytes, alloc), alloc);
 
@@ -242,8 +242,8 @@ rapidjson::Value get_messages(AllData& alldata, rapidjson::Document::AllocatorTy
             loc_send.PushBack(get_msgObject(mdata.first, mdata.second, alloc), alloc);
         }
         rapidjson::Value tmp(rapidjson::kObjectType);
-        tmp.AddMember("id", loc.first, alloc);
-        tmp.AddMember("to", loc_send, alloc);
+        tmp.AddMember("sourceId", loc.first, alloc);
+        tmp.AddMember("data", loc_send, alloc);
         send.PushBack(tmp, alloc);
     }
     msg.AddMember("send", send, alloc);
@@ -255,8 +255,8 @@ rapidjson::Value get_messages(AllData& alldata, rapidjson::Document::AllocatorTy
             loc_recv.PushBack(get_msgObject(mdata.first, mdata.second, alloc), alloc);
         }
         rapidjson::Value tmp(rapidjson::kObjectType);
-        tmp.AddMember("id", loc.first, alloc);
-        tmp.AddMember("from", loc_recv, alloc);
+        tmp.AddMember("sourceId", loc.first, alloc);
+        tmp.AddMember("data", loc_recv, alloc);
         recv.PushBack(tmp, alloc);
     }
     msg.AddMember("recv", recv, alloc);
