@@ -312,17 +312,6 @@
           }
         }
       },
-      "regionMessageObject": {
-        "type": "object",
-        "properties": {
-          "sent": {
-            "$ref": "#/$defs/messageDataRegion"
-          },
-          "received": {
-            "$ref": "#/$defs/messageDataRegion"
-          }
-        }
-      },
       "summaryObject": {
         "type": "object",
         "properties": {
@@ -331,7 +320,8 @@
             "minimum": 0
           },
           "count": {
-            "$ref": "#/$defs/minMaxSum"
+            "type": "integer",
+            "minimum": 0
           },
           "exclusiveTime": {
             "$ref": "#/$defs/minMaxSum"
@@ -342,7 +332,7 @@
           "messageData": {
             "type": "object",
             "properties": {
-              "$ref": "#/$defs/regionMessageObject"
+              "$ref": "#/$defs/locationMessageObject"
             }
           }
         },
@@ -381,18 +371,8 @@
         "type": "object",
         "properties": {
           "count": {
-            "type": "integer"
-          },
-          "bytes": {
-            "$ref": "#/$defs/minMaxSum"
-          }
-        }
-      },
-      "messageDataRegion": {
-        "type": "object",
-        "properties": {
-          "count": {
-            "$ref": "#/$defs/minMaxSum"
+            "type": "integer",
+            "minimum": 0
           },
           "bytes": {
             "$ref": "#/$defs/minMaxSum"
