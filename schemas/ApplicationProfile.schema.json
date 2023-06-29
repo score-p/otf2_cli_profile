@@ -200,7 +200,33 @@
             }
           },
           "communicationMatrix": {
-            "$ref": "#/$defs/communication"
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sourceId": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "targetId": {
+                        "type": "integer"
+                      },
+                      "messageData": {
+                        "$ref": "#/$defs/messageData"
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "sourceId"
+              ]
+            }
           }
         },
         "required": [
@@ -313,40 +339,15 @@
           "communication": {
             "type": "object",
             "properties": {
-              "$ref": "#/$defs/messageDirection"
+              "messageDirection": {
+                "$ref": "#/$defs/messageDirection"
+              }
             }
           }
         },
         "required": [
           "id"
         ]
-      },
-      "communication": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "sourceId": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "data": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "targetId": {
-                    "type": "integer"
-                  },
-                  "$ref": "#/$defs/messageData"
-                }
-              }
-            }
-          },
-          "required": [
-            "sourceId"
-          ]
-        }
       },
       "messageDirection": {
         "type": "object",
