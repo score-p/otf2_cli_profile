@@ -198,23 +198,15 @@
             "items": {
               "$ref": "#/$defs/summaryObject"
             }
+          },
+          "communicationMatrix": {
+            "$ref": "#/$defs/communication"
           }
         },
         "required": [
           "paradigms",
           "regions"
         ]
-      },
-      "messages": {
-        "type": "object",
-        "properties": {
-          "send": {
-            "$ref": "#/$defs/messageData"
-          },
-          "recv": {
-            "$ref": "#/$defs/messageData"
-          }
-        }
       }
     },
     "$defs": {
@@ -285,11 +277,11 @@
                     }
                   }
                 },
-                "messageData": {
-                  "$ref": "#/$defs/locationMessageObject"
+                "nodeMessages": {
+                  "$ref": "#/$defs/messageDirection"
                 },
                 "collectiveData": {
-                  "$ref": "#/$defs/locationMessageObject"
+                  "$ref": "#/$defs/messageDirection"
                 }
               },
               "required": [
@@ -298,17 +290,6 @@
               ],
               "additionalProperties": true
             }
-          }
-        }
-      },
-      "locationMessageObject": {
-        "type": "object",
-        "properties": {
-          "sent": {
-            "$ref": "#/$defs/messageDataLocation"
-          },
-          "received": {
-            "$ref": "#/$defs/messageDataLocation"
           }
         }
       },
@@ -329,10 +310,10 @@
           "inclusiveTime": {
             "$ref": "#/$defs/minMaxSum"
           },
-          "messageData": {
+          "communication": {
             "type": "object",
             "properties": {
-              "$ref": "#/$defs/locationMessageObject"
+              "$ref": "#/$defs/messageDirection"
             }
           }
         },
@@ -340,7 +321,7 @@
           "id"
         ]
       },
-      "messageData": {
+      "communication": {
         "type": "array",
         "items": {
           "type": "object",
@@ -357,7 +338,7 @@
                   "targetId": {
                     "type": "integer"
                   },
-                  "$ref": "#/$defs/messageDataLocation"
+                  "$ref": "#/$defs/messageData"
                 }
               }
             }
@@ -367,7 +348,18 @@
           ]
         }
       },
-      "messageDataLocation": {
+      "messageDirection": {
+        "type": "object",
+        "properties": {
+          "sent": {
+            "$ref": "#/$defs/messageData"
+          },
+          "received": {
+            "$ref": "#/$defs/messageData"
+          }
+        }
+      },
+      "messageData": {
         "type": "object",
         "properties": {
           "count": {
