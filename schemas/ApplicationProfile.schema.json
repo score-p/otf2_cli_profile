@@ -217,7 +217,7 @@
                         "type": "integer"
                       },
                       "messageData": {
-                        "$ref": "#/$defs/messageData"
+                        "$ref": "#/$defs/messageStats"
                       }
                     }
                   }
@@ -289,25 +289,13 @@
                   "minimum": 0
                 },
                 "regionData": {
-                  "type": "object",
-                  "properties": {
-                    "count": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "inclusiveTime": {
-                      "$ref": "#/$defs/minMaxSum"
-                    },
-                    "exclusiveTime": {
-                      "$ref": "#/$defs/minMaxSum"
-                    }
-                  }
+                  "$ref": "#/$defs/countTimeStats"
                 },
                 "nodeMessages": {
-                  "$ref": "#/$defs/messageDirection"
+                  "$ref": "#/$defs/communication"
                 },
                 "collectiveData": {
-                  "$ref": "#/$defs/messageDirection"
+                  "$ref": "#/$defs/communication"
                 }
               },
               "required": [
@@ -326,21 +314,14 @@
             "type": "integer",
             "minimum": 0
           },
-          "count": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "exclusiveTime": {
-            "$ref": "#/$defs/minMaxSum"
-          },
-          "inclusiveTime": {
-            "$ref": "#/$defs/minMaxSum"
+          "countTimeStats": {
+            "$refs": "#/$defs/countTimeStats"
           },
           "communication": {
             "type": "object",
             "properties": {
               "messageDirection": {
-                "$ref": "#/$defs/messageDirection"
+                "$ref": "#/$defs/communication"
               }
             }
           }
@@ -349,25 +330,38 @@
           "id"
         ]
       },
-      "messageDirection": {
+      "communication": {
         "type": "object",
         "properties": {
           "sent": {
-            "$ref": "#/$defs/messageData"
+            "$ref": "#/$defs/messageStats"
           },
           "received": {
-            "$ref": "#/$defs/messageData"
+            "$ref": "#/$defs/messageStats"
           }
         }
       },
-      "messageData": {
+      "messageStats": {
         "type": "object",
         "properties": {
           "count": {
-            "type": "integer",
-            "minimum": 0
+            "$ref": "#/$defs/count"
           },
           "bytes": {
+            "$ref": "#/$defs/minMaxSum"
+          }
+        }
+      },
+      "countTimeStats": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "$ref": "#/$defs/count"
+          },
+          "inclusiveTime": {
+            "$ref": "#/$defs/minMaxSum"
+          },
+          "exclusiveTime": {
             "$ref": "#/$defs/minMaxSum"
           }
         }
@@ -393,6 +387,10 @@
           "max",
           "sum"
         ]
+      },
+      "count": {
+        "type": "integer",
+        "minimum": 0
       }
     }
   }
