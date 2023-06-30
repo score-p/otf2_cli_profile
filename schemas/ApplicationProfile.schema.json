@@ -1,396 +1,397 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "ApplicationProfile",
-    "description": "A profile of an application generated from an OTF 2 trace file.",
-    "type": "object",
-    "properties": {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://json-schema.org/draft-07/schema#",
+  "title": "ApplicationProfile",
+  "description": "A profile of an application generated from an OTF 2 trace file.",
+  "type": "object",
+  "properties": {
       "metaData": {
-        "type": "object",
-        "description": "Provides information about the processed trace file.",
-        "properties": {
-          "numberOfLocations": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "runtime": {
-            "type": "number",
-            "exclusiveMinimum": 0
-          },
-          "inputFileName": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "numberOfLocations",
-          "runtime",
-          "inputFileName"
-        ]
-      },
-      "definitions": {
-        "type": "object",
-        "description": "",
-        "properties": {
-          "paradigms": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "paradigmId": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "name": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "paradigmId",
-                "name"
-              ]
-            },
-            "minItems": 1,
-            "uniqueItems": true
-          },
-          "regions": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "regionId": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "name": {
-                  "type": "string"
-                },
-                "paradigmId": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "sourceLine": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "fileName": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "regionId",
-                "name",
-                "paradigmId"
-              ]
-            },
-            "minItems": 1,
-            "uniqueItems": true
-          },
-          "metrics": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "metricId": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "name": {
-                  "type": "string"
-                },
-                "description": {
-                  "type": "string"
-                },
-                "metricType": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "metricMode": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "type": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "base": {
-                  "type": "integer"
-                },
-                "exponent": {
-                  "type": "integer"
-                },
-                "unit": {
-                  "type": "string"
-                },
-                "allowed": {
-                  "type": "boolean"
-                }
-              },
-              "required": [
-                "metricId",
-                "name",
-                "metricType",
-                "metricMode",
-                "type",
-                "base",
-                "exponent",
-                "unit",
-                "allowed"
-              ]
-            },
-            "minItems": 0,
-            "uniqueItems": true
-          }
-        }
-      },
-      "systemTree": {
-        "type": "object",
-        "properties": {
-          "systemTreeNodes": {
-            "$ref": "#/$defs/systemTreeNode"
-          },
-          "size": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "numberOfNodesPerLevel": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "minimum": 0
-            }
-          }
-        }
-      },
-      "callTrees": {
-        "type": "array",
-        "items": {
           "type": "object",
+          "description": "Provides information about the processed trace file.",
           "properties": {
-            "rootNode": {
-              "$ref": "#/$defs/callTreeNode"
-            },
-            "depth": {
-              "type": "integer",
-              "minimum": 1
-            },
-            "size": {
-              "type": "integer",
-              "minimum": 1
-            }
+              "numberOfLocations": {
+                  "type": "integer",
+                  "minimum": 1
+              },
+              "runtime": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+              },
+              "inputFileName": {
+                  "type": "string"
+              }
           },
           "required": [
-            "rootNode"
+              "numberOfLocations",
+              "runtime",
+              "inputFileName"
           ]
-        },
-        "minItems": 1,
-        "uniqueItems": true
       },
-      "summary": {
-        "type": "object",
-        "properties": {
-          "paradigms": {
-            "type": "array",
-            "items": {
-              "$ref": "#/$defs/summaryObject"
-            }
-          },
-          "regions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/$defs/summaryObject"
-            }
-          },
-          "communicationMatrix": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "sourceId": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "data": {
+      "definitions": {
+          "type": "object",
+          "description": "",
+          "properties": {
+              "paradigms": {
                   "type": "array",
                   "items": {
-                    "type": "object",
-                    "properties": {
-                      "targetId": {
-                        "type": "integer"
+                      "type": "object",
+                      "properties": {
+                          "paradigmId": {
+                              "type": "integer",
+                              "minimum": 0
+                          },
+                          "name": {
+                              "type": "string"
+                          }
                       },
-                      "messageData": {
-                        "$ref": "#/$defs/messageStats"
-                      }
-                    }
-                  }
-                }
+                      "required": [
+                          "paradigmId",
+                          "name"
+                      ]
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
               },
-              "required": [
-                "sourceId"
-              ]
-            }
+              "regions": {
+                  "type": "array",
+                  "items": {
+                      "type": "object",
+                      "properties": {
+                          "regionId": {
+                              "type": "integer",
+                              "minimum": 0
+                          },
+                          "name": {
+                              "type": "string"
+                          },
+                          "paradigmId": {
+                              "type": "integer",
+                              "minimum": 0
+                          },
+                          "sourceLine": {
+                              "type": "integer",
+                              "minimum": 0
+                          },
+                          "fileName": {
+                              "type": "string"
+                          }
+                      },
+                      "required": [
+                          "regionId",
+                          "name",
+                          "paradigmId"
+                      ]
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+              },
+              "metrics": {
+                  "type": "array",
+                  "items": {
+                      "type": "object",
+                      "properties": {
+                          "metricId": {
+                              "type": "integer",
+                              "minimum": 0
+                          },
+                          "name": {
+                              "type": "string"
+                          },
+                          "description": {
+                              "type": "string"
+                          },
+                          "metricType": {
+                              "type": "integer",
+                              "minimum": 0
+                          },
+                          "metricMode": {
+                              "type": "integer",
+                              "minimum": 0
+                          },
+                          "type": {
+                              "type": "integer",
+                              "minimum": 0
+                          },
+                          "base": {
+                              "type": "integer"
+                          },
+                          "exponent": {
+                              "type": "integer"
+                          },
+                          "unit": {
+                              "type": "string"
+                          },
+                          "allowed": {
+                              "type": "boolean"
+                          }
+                      },
+                      "required": [
+                          "metricId",
+                          "name",
+                          "metricType",
+                          "metricMode",
+                          "type",
+                          "base",
+                          "exponent",
+                          "unit",
+                          "allowed"
+                      ]
+                  },
+                  "minItems": 0,
+                  "uniqueItems": true
+              }
           }
-        },
-        "required": [
-          "paradigms",
-          "regions"
-        ]
-      }
-    },
-    "$defs": {
-      "systemTreeNode": {
-        "type": "object",
-        "properties": {
-          "nodeId": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "name": {
-            "type": "string"
-          },
-          "classId": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "locationId": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "level": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "children": {
-            "type": "array",
-            "items": {
-              "#ref": "#"
-            }
-          }
-        }
       },
-      "callTreeNode": {
-        "type": "object",
-        "properties": {
-          "regionId": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "children": {
-            "type": "array",
-            "items": {
-              "#ref": "#"
-            }
-          },
-          "nodeData": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "locationId": {
+      "systemTree": {
+          "type": "object",
+          "properties": {
+              "systemTreeNodes": {
+                  "$ref": "#/$defs/systemTreeNode"
+              },
+              "size": {
                   "type": "integer",
                   "minimum": 0
-                },
-                "regionData": {
-                  "$ref": "#/$defs/countTimeStats"
-                },
-                "nodeMessages": {
-                  "$ref": "#/$defs/communication"
-                },
-                "collectiveData": {
-                  "$ref": "#/$defs/communication"
-                }
+              },
+              "numberOfNodesPerLevel": {
+                  "type": "array",
+                  "items": {
+                      "type": "integer",
+                      "minimum": 0
+                  }
+              }
+          }
+      },
+      "callTrees": {
+          "type": "array",
+          "items": {
+              "type": "object",
+              "properties": {
+                  "rootNode": {
+                      "$ref": "#/$defs/callTreeNode"
+                  },
+                  "depth": {
+                      "type": "integer",
+                      "minimum": 1
+                  },
+                  "size": {
+                      "type": "integer",
+                      "minimum": 1
+                  }
               },
               "required": [
-                "locationId",
-                "regionData"
-              ],
-              "additionalProperties": true
-            }
+                  "rootNode"
+              ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+      },
+      "summary": {
+          "type": "object",
+          "properties": {
+              "paradigms": {
+                  "type": "array",
+                  "items": {
+                      "$ref": "#/$defs/summaryObject"
+                  }
+              },
+              "regions": {
+                  "type": "array",
+                  "items": {
+                      "$ref": "#/$defs/summaryObject"
+                  }
+              },
+              "communicationMatrix": {
+                  "type": "array",
+                  "items": {
+                      "type": "object",
+                      "properties": {
+                          "sourceId": {
+                              "type": "integer",
+                              "minimum": 0
+                          },
+                          "data": {
+                              "type": "array",
+                              "items": {
+                                  "type": "object",
+                                  "properties": {
+                                      "targetId": {
+                                          "type": "integer"
+                                      },
+                                      "messageData": {
+                                          "$ref": "#/$defs/messageStats"
+                                      }
+                                  }
+                              }
+                          }
+                      },
+                      "required": [
+                          "sourceId"
+                      ]
+                  }
+              }
+          },
+          "required": [
+              "paradigms",
+              "regions"
+          ]
+      }
+  },
+  "$defs": {
+      "systemTreeNode": {
+          "type": "object",
+          "properties": {
+              "nodeId": {
+                  "type": "integer",
+                  "minimum": 0
+              },
+              "name": {
+                  "type": "string"
+              },
+              "classId": {
+                  "type": "integer",
+                  "minimum": 0
+              },
+              "locationId": {
+                  "type": "integer",
+                  "minimum": 0
+              },
+              "level": {
+                  "type": "integer",
+                  "minimum": 0
+              },
+              "children": {
+                  "type": "array",
+                  "items": {
+                      "#ref": "#"
+                  }
+              }
           }
-        }
+      },
+      "callTreeNode": {
+          "type": "object",
+          "properties": {
+              "regionId": {
+                  "type": "integer",
+                  "minimum": 0
+              },
+              "children": {
+                  "type": "array",
+                  "items": {
+                      "#ref": "#"
+                  }
+              },
+              "nodeData": {
+                  "type": "array",
+                  "items": {
+                      "type": "object",
+                      "properties": {
+                          "locationId": {
+                              "type": "integer",
+                              "minimum": 0
+                          },
+                          "regionData": {
+                              "$ref": "#/$defs/countTimeStats"
+                          },
+                          "nodeMessages": {
+                              "$ref": "#/$defs/communication"
+                          },
+                          "collectiveData": {
+                              "$ref": "#/$defs/communication"
+                          }
+                      },
+                      "required": [
+                          "locationId",
+                          "regionData"
+                      ],
+                      "additionalProperties": true
+                  }
+              }
+          }
       },
       "summaryObject": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "countTimeStats": {
-            "$refs": "#/$defs/countTimeStats"
-          },
-          "communication": {
-            "type": "object",
-            "properties": {
-              "messageDirection": {
-                "$ref": "#/$defs/communication"
+          "type": "object",
+          "properties": {
+              "id": {
+                  "type": "integer",
+                  "minimum": 0
+              },
+              "countTimeStats": {
+                  "$refs": "#/$defs/countTimeStats"
+              },
+              "communication": {
+                  "type": "object",
+                  "properties": {
+                      "messageDirection": {
+                          "$ref": "#/$defs/communication"
+                      }
+                  }
               }
-            }
-          }
-        },
-        "required": [
-          "id"
-        ]
+          },
+          "required": [
+              "id"
+          ]
       },
       "communication": {
-        "type": "object",
-        "properties": {
-          "sent": {
-            "$ref": "#/$defs/messageStats"
-          },
-          "received": {
-            "$ref": "#/$defs/messageStats"
+          "type": "object",
+          "properties": {
+              "sent": {
+                  "$ref": "#/$defs/messageStats"
+              },
+              "received": {
+                  "$ref": "#/$defs/messageStats"
+              }
           }
-        }
       },
       "messageStats": {
-        "type": "object",
-        "properties": {
-          "count": {
-            "$ref": "#/$defs/count"
-          },
-          "bytes": {
-            "$ref": "#/$defs/minMaxSum"
+          "type": "object",
+          "properties": {
+              "count": {
+                  "$ref": "#/$defs/count"
+              },
+              "bytes": {
+                  "$ref": "#/$defs/minMaxSum"
+              }
           }
-        }
       },
       "countTimeStats": {
-        "type": "object",
-        "properties": {
-          "count": {
-            "$ref": "#/$defs/count"
-          },
-          "inclusiveTime": {
-            "$ref": "#/$defs/minMaxSum"
-          },
-          "exclusiveTime": {
-            "$ref": "#/$defs/minMaxSum"
+          "type": "object",
+          "properties": {
+              "count": {
+                  "$ref": "#/$defs/count"
+              },
+              "inclusiveTime": {
+                  "$ref": "#/$defs/minMaxSum"
+              },
+              "exclusiveTime": {
+                  "$ref": "#/$defs/minMaxSum"
+              }
           }
-        }
       },
       "minMaxSum": {
-        "type": "object",
-        "properties": {
-          "min": {
-            "type": "number",
-            "minimum": 0
+          "type": "object",
+          "properties": {
+              "min": {
+                  "type": "number",
+                  "minimum": 0
+              },
+              "max": {
+                  "type": "number",
+                  "minimum": 0
+              },
+              "sum": {
+                  "type": "number",
+                  "minimum": 0
+              }
           },
-          "max": {
-            "type": "number",
-            "minimum": 0
-          },
-          "sum": {
-            "type": "number",
-            "minimum": 0
-          }
-        },
-        "required": [
-          "min",
-          "max",
-          "sum"
-        ]
+          "required": [
+              "min",
+              "max",
+              "sum"
+          ]
       },
       "count": {
-        "type": "integer",
-        "minimum": 0
+          "type": "integer",
+          "minimum": 0
       }
-    }
   }
+}
