@@ -25,7 +25,8 @@
               "numberOfLocations",
               "runtime",
               "inputFileName"
-          ]
+          ],
+          "additionalProperties": true
       },
       "definitions": {
           "type": "object",
@@ -192,15 +193,17 @@
                   "type": "array",
                   "items": {
                       "$ref": "#/$defs/summaryObject"
-                  }
+                  },
+                  "minItems": 1
               },
               "regions": {
                   "type": "array",
                   "items": {
                       "$ref": "#/$defs/summaryObject"
-                  }
+                  },
+                  "minItems": 1
               },
-              "communicationMatrix": {
+              "communications": {
                   "type": "array",
                   "items": {
                       "type": "object",
@@ -209,7 +212,7 @@
                               "type": "integer",
                               "minimum": 0
                           },
-                          "data": {
+                          "targetStats": {
                               "type": "array",
                               "items": {
                                   "type": "object",
@@ -217,23 +220,31 @@
                                       "targetId": {
                                           "type": "integer"
                                       },
-                                      "messageData": {
-                                          "$ref": "#/$defs/messageStats"
+                                      "pointToPointStats": {
+                                          "$ref": "#/$defs/countSizeObject"
+                                      },
+                                      "collectiveStats": {
+                                          "$ref": "#/$defs/countSizeObject"
                                       }
-                                  }
-                              }
+                                  },
+                                  "required": [
+                                      "targetId"
+                                  ]
+                              },
+                              "minItems": 1
                           }
                       },
                       "required": [
-                        "sourceId"
+                        "sourceId",
+                        "targetStats"
                       ]
-                  }
+                  },
+                  "minItems": 1
               }
           },
           "required": [
             "paradigms",
-            "regions",
-            "communicationMatrix"
+            "regions"
           ]
       }
   },
@@ -290,23 +301,23 @@
                           "type": "integer",
                           "minimum": 0
                         },
-                        "regionData": {
-                          "$ref": "#/$defs/countTimeStats"
+                        "regionStats": {
+                          "$ref": "#/$defs/countTimeObject"
                         },
-                        "nodeMessages": {
-                          "$ref": "#/$defs/communication"
+                        "pointToPointStats": {
+                          "$ref": "#/$defs/sendReceiveObject"
                         },
-                        "collectiveData": {
-                          "$ref": "#/$defs/communication"
+                        "collectiveStats": {
+                          "$ref": "#/$defs/sendReceiveObject"
                         }
                       },
                       "required": [
                         "locationId",
-                        "regionData",
-                        "nodeMessages"
+                        "regionStats"
                       ],
                       "additionalProperties": true
-                  }
+                  },
+                  "minItems": 1
               }
           }
       },
@@ -318,62 +329,61 @@
                   "minimum": 0
               },
               "countTimeStats": {
-                  "$refs": "#/$defs/countTimeStats"
+                  "$refs": "#/$defs/countTimeObject"
               },
-              "communication": {
-                  "type": "object",
-                  "properties": {
-                      "messageDirection": {
-                          "$ref": "#/$defs/communication"
-                      }
-                  }
+              "pointToPointStats": {
+                  "$ref": "#/$defs/sendReceiveObject"
+              },
+              "collectiveStats": {
+                  "$ref": "#/$defs/sendReceiveObject"
               }
           },
           "required": [
-            "id"
+            "id",
+            "countTimeStats"
           ]
       },
-      "communication": {
+      "sendReceiveObject": {
           "type": "object",
           "properties": {
               "send": {
-                  "$ref": "#/$defs/messageStats"
+                  "$ref": "#/$defs/countSizeObject"
               },
-              "recv": {
-                  "$ref": "#/$defs/messageStats"
+              "receive": {
+                  "$ref": "#/$defs/countSizeObject"
               }
           },
         "required": [
           "send",
-          "recv"
+          "receive"
         ]
       },
-      "messageStats": {
+      "countSizeObject": {
           "type": "object",
           "properties": {
               "count": {
-                  "$ref": "#/$defs/count"
+                  "$ref": "#/$defs/countObject"
               },
-              "bytes": {
-                  "$ref": "#/$defs/minMaxSum"
+              "size": {
+                  "$ref": "#/$defs/minMaxSumObject"
               }
           },
         "required": [
           "count",
-          "bytes"
+          "size"
         ]
       },
-      "countTimeStats": {
+      "countTimeObject": {
           "type": "object",
           "properties": {
               "count": {
-                  "$ref": "#/$defs/count"
+                  "$ref": "#/$defs/countObject"
               },
               "inclusiveTime": {
-                  "$ref": "#/$defs/minMaxSum"
+                  "$ref": "#/$defs/minMaxSumObject"
               },
               "exclusiveTime": {
-                  "$ref": "#/$defs/minMaxSum"
+                  "$ref": "#/$defs/minMaxSumObject"
               }
           },
         "required": [
@@ -382,20 +392,17 @@
           "exclusiveTime"
         ]
       },
-      "minMaxSum": {
+      "minMaxSumObject": {
           "type": "object",
           "properties": {
               "min": {
-                  "type": "number",
-                  "minimum": 0
+                  "$ref": "#/$defs/positiveNumberObject"
               },
               "max": {
-                  "type": "number",
-                  "minimum": 0
+                  "$ref": "#/$defs/positiveNumberObject"
               },
               "sum": {
-                  "type": "number",
-                  "minimum": 0
+                  "$ref": "#/$defs/positiveNumberObject"
               }
           },
           "required": [
@@ -404,8 +411,12 @@
               "sum"
           ]
       },
-      "count": {
+      "countObject": {
           "type": "integer",
+          "minimum": 0
+      },
+      "positiveNumberObject": {
+          "type": "number",
           "minimum": 0
       }
   }
