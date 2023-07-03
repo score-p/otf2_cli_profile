@@ -225,14 +225,15 @@
                           }
                       },
                       "required": [
-                          "sourceId"
+                        "sourceId"
                       ]
                   }
               }
           },
           "required": [
-              "paradigms",
-              "regions"
+            "paradigms",
+            "regions",
+            "communicationMatrix"
           ]
       }
   },
@@ -285,23 +286,24 @@
                   "items": {
                       "type": "object",
                       "properties": {
-                          "locationId": {
-                              "type": "integer",
-                              "minimum": 0
-                          },
-                          "regionData": {
-                              "$ref": "#/$defs/countTimeStats"
-                          },
-                          "nodeMessages": {
-                              "$ref": "#/$defs/communication"
-                          },
-                          "collectiveData": {
-                              "$ref": "#/$defs/communication"
-                          }
+                        "locationId": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "regionData": {
+                          "$ref": "#/$defs/countTimeStats"
+                        },
+                        "nodeMessages": {
+                          "$ref": "#/$defs/communication"
+                        },
+                        "collectiveData": {
+                          "$ref": "#/$defs/communication"
+                        }
                       },
                       "required": [
-                          "locationId",
-                          "regionData"
+                        "locationId",
+                        "regionData",
+                        "nodeMessages"
                       ],
                       "additionalProperties": true
                   }
@@ -328,19 +330,23 @@
               }
           },
           "required": [
-              "id"
+            "id"
           ]
       },
       "communication": {
           "type": "object",
           "properties": {
-              "sent": {
+              "send": {
                   "$ref": "#/$defs/messageStats"
               },
-              "received": {
+              "recv": {
                   "$ref": "#/$defs/messageStats"
               }
-          }
+          },
+        "required": [
+          "send",
+          "recv"
+        ]
       },
       "messageStats": {
           "type": "object",
@@ -351,7 +357,11 @@
               "bytes": {
                   "$ref": "#/$defs/minMaxSum"
               }
-          }
+          },
+        "required": [
+          "count",
+          "bytes"
+        ]
       },
       "countTimeStats": {
           "type": "object",
@@ -365,7 +375,12 @@
               "exclusiveTime": {
                   "$ref": "#/$defs/minMaxSum"
               }
-          }
+          },
+        "required": [
+          "count",
+          "inclusiveTime",
+          "exclusiveTime"
+        ]
       },
       "minMaxSum": {
           "type": "object",

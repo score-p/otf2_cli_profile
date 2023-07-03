@@ -289,7 +289,7 @@ rapidjson::Value get_regionCommData(const T& comm_data, rapidjson::Document::All
     rapidjson::Value mSent(rapidjson::kObjectType);
     mSent.AddMember("count", comm_data.count_send, alloc);
     mSent.AddMember("bytes", get_minMaxSum(comm_data.bytes_send, alloc), alloc);
-    obj.AddMember("sent", mSent, alloc);
+    obj.AddMember("send", mSent, alloc);
     rapidjson::Value mRecv(rapidjson::kObjectType);
     mRecv.AddMember("count", comm_data.count_recv, alloc);
     mRecv.AddMember("bytes", get_minMaxSum(comm_data.bytes_recv, alloc), alloc);
