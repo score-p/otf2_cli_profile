@@ -60,7 +60,7 @@ uint64_t depth = 0;
 uint64_t size = 0;
 
 template<typename T>
-rapidjson::Value get_minMaxSum(const MinMaxSum<T>& data, rapidjson::Document::AllocatorType& alloc) {
+rapidjson::Value get_minMaxSumObject(const MinMaxSum<T>& data, rapidjson::Document::AllocatorType& alloc) {
     rapidjson::Value obj(rapidjson::kObjectType);
     if(data.sum == 0) {
         obj.AddMember("min", 0, alloc);
@@ -96,19 +96,19 @@ rapidjson::Value get_minMaxSumtodo(const uint64_t data, rapidjson::Document::All
     return obj;
 }
 
-rapidjson::Value get_messageStats(MData obj, rapidjson::Document::AllocatorType& alloc){
+rapidjson::Value get_countSizeObject(MData obj, rapidjson::Document::AllocatorType& alloc){
     rapidjson::Value msgStats(rapidjson::kObjectType);
     msgStats.AddMember("count", obj.count, alloc);
-    msgStats.AddMember("bytes", get_minMaxSum(obj.bytes, alloc), alloc);
+    msgStats.AddMember("size", get_minMaxSumObject(obj.bytes, alloc), alloc);
 
     return msgStats;
 }
 
 template<typename T>
-rapidjson::Value get_messageStatsComm(MinMaxSum<T> count, MinMaxSum<T> bytes, rapidjson::Document::AllocatorType& alloc){
+rapidjson::Value get_countSizeObjectSumm(MinMaxSum<T> count, MinMaxSum<T> bytes, rapidjson::Document::AllocatorType& alloc){
     rapidjson::Value msgStats(rapidjson::kObjectType);
     msgStats.AddMember("count", count.sum, alloc);
-    msgStats.AddMember("bytes", get_minMaxSum(bytes, alloc), alloc);
+    msgStats.AddMember("size", get_minMaxSumObject(bytes, alloc), alloc);
 
     return msgStats;
 }
@@ -122,10 +122,10 @@ rapidjson::Value get_countTimeStats(std::pair<uint64_t, SummaryObject> obj, uint
     return stats;
 }
 
-rapidjson::Value get_communication(std::pair<uint64_t, SummaryObject> obj, rapidjson::Document::AllocatorType& alloc){
+rapidjson::Value get_sendReceiveObject(std::pair<uint64_t, SummaryObject> obj, rapidjson::Document::AllocatorType& alloc){
     rapidjson::Value communication(rapidjson::kObjectType);
-    communication.AddMember("send", get_messageStatsComm(obj.second.count_send, obj.second.bytes_send, alloc), alloc);
-    communication.AddMember("recv", get_messageStatsComm(obj.second.count_recv, obj.second.bytes_recv, alloc), alloc);
+    communication.AddMember("send", get_countSizeObjectSumm(obj.second.count_send, obj.second.bytes_send, alloc), alloc);
+    communication.AddMember("receive", get_countSizeObjectSumm(obj.second.count_recv, obj.second.bytes_recv, alloc), alloc);
 
     return communication;
 }
@@ -224,7 +224,7 @@ rapidjson::Value get_summaryObject(std::pair<uint64_t, SummaryObject> obj, uint6
     rapidjson::Value summaryObject(rapidjson::kObjectType);
     summaryObject.AddMember("id", obj.first, alloc);
     summaryObject.AddMember("countTimeStats", get_countTimeStats(obj, timerResolution, alloc), alloc);
-    summaryObject.AddMember("communication", get_communication(obj, alloc), alloc);
+    summaryObject.AddMember("pointToPointStats", get_sendReceiveObject(obj, alloc), alloc);
 
     return summaryObject;
 }
@@ -232,12 +232,12 @@ rapidjson::Value get_summaryObject(std::pair<uint64_t, SummaryObject> obj, uint6
 rapidjson::Value get_msgObject(uint64_t loc, MData obj, rapidjson::Document::AllocatorType& alloc) {
     rapidjson::Value msgObject(rapidjson::kObjectType);
     msgObject.AddMember("targetId", loc, alloc);
-    msgObject.AddMember("messageStats", get_messageStats(obj, alloc), alloc);
+    msgObject.AddMember("pointToPointStats", get_countSizeObject(obj, alloc), alloc);
 
     return msgObject;
 }
 
-rapidjson::Value get_communicationMatrix(AllData& alldata, rapidjson::Document::AllocatorType& alloc) {
+rapidjson::Value get_communications(AllData& alldata, rapidjson::Document::AllocatorType& alloc) {
 
     rapidjson::Value msg(rapidjson::kArrayType);
     for(const auto& loc : alldata.p2p_comm_send) {
@@ -247,7 +247,8 @@ rapidjson::Value get_communicationMatrix(AllData& alldata, rapidjson::Document::
         }
         rapidjson::Value tmp(rapidjson::kObjectType);
         tmp.AddMember("sourceId", loc.first, alloc);
-        tmp.AddMember("data", loc_send, alloc);
+        tmp.AddMember("targetStats", loc_send, alloc);
+        
         msg.PushBack(tmp, alloc);
     }
     return msg;
@@ -269,7 +270,7 @@ rapidjson::Value get_summary(AllData& alldata, rapidjson::Document::AllocatorTyp
         regions.PushBack(get_summaryObject(region, alldata.metaData.timerResolution, alloc), alloc);
     }
     summary.AddMember("regions", regions, alloc);
-    summary.AddMember("communicationMatrix", get_communicationMatrix(alldata, alloc), alloc);
+    summary.AddMember("communications", get_communications(alldata, alloc), alloc);
 
     return summary;
 }
@@ -288,12 +289,12 @@ rapidjson::Value get_regionCommData(const T& comm_data, rapidjson::Document::All
     rapidjson::Value obj(rapidjson::kObjectType);
     rapidjson::Value mSent(rapidjson::kObjectType);
     mSent.AddMember("count", comm_data.count_send, alloc);
-    mSent.AddMember("bytes", get_minMaxSum(comm_data.bytes_send, alloc), alloc);
+    mSent.AddMember("size", get_minMaxSumObject(comm_data.bytes_send, alloc), alloc);
     obj.AddMember("send", mSent, alloc);
     rapidjson::Value mRecv(rapidjson::kObjectType);
     mRecv.AddMember("count", comm_data.count_recv, alloc);
-    mRecv.AddMember("bytes", get_minMaxSum(comm_data.bytes_recv, alloc), alloc);
-    obj.AddMember("recv", mRecv, alloc);
+    mRecv.AddMember("size", get_minMaxSumObject(comm_data.bytes_recv, alloc), alloc);
+    obj.AddMember("receive", mRecv, alloc);
 
     return obj;
 }
@@ -313,9 +314,9 @@ rapidjson::Value get_tree_node(const std::shared_ptr<tree_node>& node, uint64_t 
     for(const auto& data : node->node_data) {
         rapidjson::Value obj(rapidjson::kObjectType);
         obj.AddMember("locationId", data.first, alloc);
-        obj.AddMember("regionData", get_regionData(data.second.f_data, timerResolution, alloc), alloc);
-        obj.AddMember("nodeMessages", get_regionCommData(data.second.m_data, alloc), alloc);
-        obj.AddMember("collectiveData", get_regionCommData(data.second.c_data, alloc), alloc);
+        obj.AddMember("regionStats", get_regionData(data.second.f_data, timerResolution, alloc), alloc);
+        obj.AddMember("pointToPointStats", get_regionCommData(data.second.m_data, alloc), alloc);
+        obj.AddMember("collectiveStats", get_regionCommData(data.second.c_data, alloc), alloc);
 
         locations.PushBack(obj, alloc);
 
